@@ -1,5 +1,6 @@
 from my_dataset import *
 from swav.swav_model import *
+from model_eval import *
 
 model_path = '../../models/swav/'
 
@@ -15,7 +16,7 @@ fine_tune_img_size = [128, 256]
 if __name__ == '__main__':
     ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
                    image_col='image', image_folder='resized256/', balanced=True, data_size=20)
-
+    res = open(model_path + 'results.txt', 'w')
     for epoch in pretrain_epochs:
         for size_crops in pretrain_size_crops:
             for bs in pretrain_batch_sizes:
@@ -29,4 +30,28 @@ if __name__ == '__main__':
                                 fine_tune_params = FineTuneParams(warmup_epochs, fine_tune_epochs, model_path, ft_bs,
                                                                   img_size)
 
-                                run_fine_tune(ds, pretrain_params, fine_tune_params)
+                                fine_tune_model, _ = run_fine_tune(ds, pretrain_params, fine_tune_params)
+                                res.write('pretrain:' + pretrain_params.get_summary() + '\n')
+                                res.write('fine-tune: ' + fine_tune_params.get_summary() + '\n')
+                                eval_model(fine_tune_model, ds, res.write, 32)
+                                res.write('---------')
+
+    res.close()
+
+
+def test():
+    ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                   image_col='image', image_folder='resized256/', balanced=True, data_size=20)
+    epochs, size_crops, batch_size = 2, [32, 64], 32
+    warmup_epochs, fine_tune_epochs, bs, crop_to = 2, 2, 16, 32
+
+    pretrain_params = PretrainParams(epochs, size_crops, batch_size, model_path)
+    fine_tune_params = FineTuneParams(warmup_epochs, fine_tune_epochs, model_path, bs, crop_to)
+
+    res = open(model_path + 'results.txt', 'w')
+    # run_pretrain(ds, model_path, pretrain_params)
+    fine_tune_model, _ = run_fine_tune(ds, pretrain_params, fine_tune_params)
+    res.write('pretrain:' + pretrain_params.get_summary() + '\n')
+    res.write('fine-tune: ' + fine_tune_params.get_summary() + '\n')
+    eval_model(fine_tune_model, ds, res.write, 32)
+    res.write('---------')

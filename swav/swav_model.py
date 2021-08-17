@@ -32,7 +32,7 @@ class FineTuneParams:
         self.crop_to = crop_to
 
     def get_summary(self):
-        return 'we{0}_e{1}'.format(self.warmup_epochs, self.fine_tune_epochs)
+        return 'we{0}_e{1}_imgsize{2}'.format(self.warmup_epochs, self.fine_tune_epochs, self.crop_to)
 
 
 class SwAVModel(SelfSupervisedModel):
@@ -56,7 +56,7 @@ class SwAVModel(SelfSupervisedModel):
 
         pretrain_model.save_models(models, fpath, ppath)
         plt.plot(epoch_wise_loss)
-        plt.savefig(params.model_path +'figures/pretrain_'+ params.get_summary())
+        plt.savefig(params.model_path + 'figures/pretrain_' + params.get_summary())
         # pretrain_model.visualize_training(epoch_wise_loss)
         return models
 
@@ -68,7 +68,8 @@ class SwAVModel(SelfSupervisedModel):
         feature_backbone, prot = pretrain_models
         ft = FineTune(feature_backbone)
         warmup_model, history = ft.warm_up(training_ds, params.crop_to, outshape, params.warmup_epochs)
-        fine_tuned_model, history = ft.fine_tune_model(training_ds, testing_ds, params.crop_to, params.fine_tune_epochs, warmup_model)
+        fine_tuned_model, history = ft.fine_tune_model(training_ds, testing_ds, params.crop_to, params.fine_tune_epochs,
+                                                       warmup_model)
 
         plt.plot(history.history['loss'])
         plt.title('fine-tune loss')
@@ -101,7 +102,7 @@ def run_fine_tune(ds: MyDataset, pretrain_params: PretrainParams, fine_tune_para
     fpath, ppath = pretrain_params.get_model_path()
     pretrain_models = pretrain_model.load_models(fpath, ppath)
     outshape = ds.train_labels.shape[-1]
-    fine_tuned_model, warmup_model = swav.fine_tune(train_ds,test_ds, pretrain_models, outshape, fine_tune_params)
+    fine_tuned_model, warmup_model = swav.fine_tune(train_ds, test_ds, pretrain_models, outshape, fine_tune_params)
     return fine_tuned_model, warmup_model
 
 

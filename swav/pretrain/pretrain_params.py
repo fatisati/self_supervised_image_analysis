@@ -2,7 +2,7 @@ import swav.utils.multicrop_dataset as multicrop_dataset
 import swav.utils.architecture as architecture
 
 import tensorflow as tf
-import tensorflow_datasets as tfds
+# import tensorflow_datasets as tfds
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,7 +16,7 @@ from tqdm import tqdm
 tf.random.set_seed(666)
 np.random.seed(666)
 
-tfds.disable_progress_bar()
+# tfds.disable_progress_bar()
 
 
 # Experimental options
@@ -28,8 +28,8 @@ options.experimental_deterministic = False
 options.experimental_threading.max_intra_op_parallelism = 1
 
 # Configs
-BS = 32
-SIZE_CROPS = [224, 96]
+# BS = 32
+# SIZE_CROPS = [224, 96]
 NUM_CROPS = [2, 3]
 MIN_SCALE = [0.14, 0.05]
 MAX_SCALE = [1., 0.14]

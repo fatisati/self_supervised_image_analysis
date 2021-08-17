@@ -148,9 +148,9 @@ def continue_train(trainloaders_zipped, models, epochs):
     return epoch_wise_loss, models
 
 
-def visualize_training(epoch_wise_loss):
-    plt.plot(epoch_wise_loss)
-    plt.show()
+# def visualize_training(epoch_wise_loss):
+#     plt.plot(epoch_wise_loss)
+#     plt.show()
 
 
 def save_models(models, feature_path,

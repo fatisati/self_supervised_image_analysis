@@ -10,10 +10,10 @@ def get_flower_ds():
     return train_ds, validation_ds
 
 
-def prepare_data(train_ds):
+def prepare_data(train_ds, size_crops, batch_size):
     # Get multiple data loaders
     trainloaders = multicrop_dataset.get_multires_dataset(train_ds,
-                                                          size_crops=SIZE_CROPS,
+                                                          size_crops=size_crops,
                                                           num_crops=NUM_CROPS,
                                                           min_scale=MIN_SCALE,
                                                           max_scale=MAX_SCALE,
@@ -29,7 +29,7 @@ def prepare_data(train_ds):
     # Final trainloader
     trainloaders_zipped = (
         trainloaders_zipped
-            .batch(BS)
+            .batch(batch_size)
             .prefetch(AUTO)
     )
 

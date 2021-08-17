@@ -21,11 +21,11 @@ tf.random.set_seed(666)
 np.random.seed(666)
 
 AUTO = tf.data.experimental.AUTOTUNE
-BATCH_SIZE = 64
-EPOCHS = 35
+# BATCH_SIZE = 64
+# EPOCHS = 35
 
 # Configs
-CROP_SIZE = 224
+# CROP_SIZE = 224
 MIN_SCALE = 0.5
 MAX_SCALE = 1.
 

@@ -63,8 +63,8 @@ class FineTune:
         # train
         history = full_trainable_model.fit(training_ds,
                                            validation_data=(testing_ds),
-                                           epochs=epochs,
-                                           callbacks=[get_early_stopper()])
+                                           epochs=epochs
+                                           ,callbacks=[get_early_stopper()])
 
         return full_trainable_model, history
 

@@ -2,7 +2,7 @@ from my_dataset import *
 from barlow import barlow_model
 from model_eval import *
 
-model_path = '../../models/twins/'
+model_path = '../models/twins/'
 barlow_pretrain_path = 'pretrain_imgsize{0}bs{1}e{2}proj_dim{3}'
 barlow_fine_tune_path = 'fine_tune_e{0}bs{1}'
 
@@ -16,7 +16,7 @@ barlow_fine_tune_bs = [3]  # [32, 64, 128]
 
 if __name__ == '__main__':
 
-    ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
                    image_col='image', image_folder='resized256/', balanced=True, data_size=15)
 
     res = open(model_path + 'results.txt', 'w')
@@ -27,17 +27,17 @@ if __name__ == '__main__':
 
                     pretrain_params = barlow_model.PretrainParams(bs, epoch, project_dim, crop_to, model_path)
                     pretrain_path = model_path + barlow_pretrain_path.format(crop_to, bs, epoch, project_dim)
-                    #
-                    # try:
-                    #     barlow_model.run_pretrain_barlow(ds, pretrain_path, pretrain_params)
-                    #
-                    # except Exception as e:
-                    #     print('err pretrain: epoch: {0}, batch size: {1}, image size: {2}, projection dim: {3}'.format(
-                    #         epoch, bs,
-                    #         crop_to,
-                    #         project_dim))
-                    #     print('error: ', e)
-                    #     print('------------')
+
+                    try:
+                        barlow_model.run_pretrain_barlow(ds, pretrain_path, pretrain_params)
+
+                    except Exception as e:
+                        print('err pretrain: epoch: {0}, batch size: {1}, image size: {2}, projection dim: {3}'.format(
+                            epoch, bs,
+                            crop_to,
+                            project_dim))
+                        print('error: ', e)
+                        print('------------')
 
                     for fine_tune_epoch in barlow_fine_tune_epochs:
                         for fine_tune_bs in barlow_fine_tune_bs:

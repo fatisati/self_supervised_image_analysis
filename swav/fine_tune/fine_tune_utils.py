@@ -44,7 +44,7 @@ def load_pretrained_weights():
 
 
 def get_early_stopper():
-    early_stopper = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=2, verbose=2,
+    early_stopper = tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=2, verbose=2,
                                                      restore_best_weights=True)
     return early_stopper
 

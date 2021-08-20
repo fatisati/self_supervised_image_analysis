@@ -103,7 +103,12 @@ def pretrain(encoder, opt, ssl_ds, params):
     print('pretraining...')
     barlow_twins = BarlowTwins(encoder)
     barlow_twins.compile(optimizer=opt)
-    history = barlow_twins.fit(ssl_ds, epochs=params.epochs)
+
+    epoch_cnt = 0
+    while epoch_cnt < params.epochs:
+        epoch_cnt += 5
+        history = barlow_twins.fit(ssl_ds, epochs=5)
+        barlow_twins.save(params.model_path + 'pretrain_tmp_e{0}_{1}'.format(epoch_cnt, params.get_summary()))
     # Visualize the training progress of the model.
     plt.plot(history.history["loss"])
     plt.grid()

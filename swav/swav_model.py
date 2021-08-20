@@ -86,16 +86,19 @@ class SwAVModel(SelfSupervisedModel):
         super().evaluate()
 
 
-def run_pretrain(ds: MyDataset, model_path, params):
+def run_pretrain(ds: MyDataset, model_path, params: PretrainParams):
+    print('pretraining: ', params.get_summary())
     train_ds, test_ds = ds.get_x_train_test_ds()
     swav = SwAVModel(model_path)
     # epochs, size_crops, batch_size = 2, [32, 64], 32
     # params = PretrainParams(epochs, size_crops, batch_size)
     pretrain_models = swav.pretrain(train_ds, params)
+    print('--------done---------')
     return pretrain_models
 
 
-def run_fine_tune(ds: MyDataset, pretrain_params: PretrainParams, fine_tune_params):
+def run_fine_tune(ds: MyDataset, pretrain_params: PretrainParams, fine_tune_params: FineTuneParams):
+    print('fine tuning: ', fine_tune_params.get_summary())
     swav = SwAVModel(pretrain_params.model_path)
 
     train_ds, test_ds = ds.get_supervised_ds()

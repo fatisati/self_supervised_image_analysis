@@ -1,4 +1,4 @@
-from barlow.barlow_model import *
+from barlow_pretrain.barlow_model import *
 
 from my_dataset import *
 

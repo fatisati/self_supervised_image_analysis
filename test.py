@@ -1,10 +1,7 @@
 import numpy as np
+a = 'hi'
 
-def class_weights(y):
-    class_counts = np.bincount(y)
-    sum_ = sum(class_counts)
-    weights = sum_ / class_counts
-    return weights, 1/ weights
-
-arr = np.array([1,1,1,0])
-print(class_weights(arr))
+if a is None:
+    print('none')
+else:
+    print(a)

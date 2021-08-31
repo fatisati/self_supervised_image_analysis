@@ -1,4 +1,4 @@
-from barlow.setup import *
+from barlow_pretrain.setup import *
 
 def off_diagonal(x):
     n = tf.shape(x)[0]

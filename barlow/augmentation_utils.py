@@ -1,16 +1,16 @@
-from barlow.setup import *
+import tensorflow as tf
+
+
+# CROP_TO = 32
 
 
 def random_resize_crop(image, scale=[0.75, 1.0], crop_size=32):
-    # if crop_size == 32:
-    #     image_shape = 48
-    #     image = tf.image.resize(image, (image_shape, image_shape))
-    # else:
-    #     image_shape = 24
-    image_shape = int(4 * crop_size / 3)
-
-    image = tf.image.resize(image, (image_shape, image_shape))
-
+    if crop_size == 32:
+        image_shape = 48
+        image = tf.image.resize(image, (image_shape, image_shape))
+    else:
+        image_shape = int(1.5 * crop_size)
+        image = tf.image.resize(image, (image_shape, image_shape))
     size = tf.random.uniform(
         shape=(1,),
         minval=scale[0] * image_shape,
@@ -19,18 +19,14 @@ def random_resize_crop(image, scale=[0.75, 1.0], crop_size=32):
     )
     size = tf.cast(size, tf.int32)[0]
     crop = tf.image.random_crop(image, (size, size, 3))
-    crop_resize = resize(crop, crop_size)
+    crop_resize = tf.image.resize(crop, (crop_size, crop_size))
     return crop_resize
 
 
-def flip_random_crop(image, CROP_TO):
+def flip_random_crop(image, crop_to):
     image = tf.image.random_flip_left_right(image)
-    image = random_resize_crop(image, crop_size=CROP_TO)
+    image = random_resize_crop(image, crop_size=crop_to)
     return image
-
-
-def resize(image, CROP_TO):
-    return tf.image.resize(image, (CROP_TO, CROP_TO))
 
 
 @tf.function

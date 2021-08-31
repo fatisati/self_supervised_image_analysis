@@ -3,7 +3,7 @@ import random
 import numpy as np
 
 import swav.utils.architecture as swav_architecture
-import barlow.resnet20 as barlow_architecture
+import barlow_pretrain.resnet20 as barlow_architecture
 from embeddings_.config import *
 
 from my_dataset import *

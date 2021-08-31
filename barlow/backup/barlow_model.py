@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 
-from barlow.augmentation import *
-from barlow.barlow_loss import *
+from barlow_pretrain.augmentation import *
+from barlow_pretrain.barlow_loss import *
 from self_supervised_model import *
-import barlow.setup as setup
+import barlow_pretrain.setup as setup
 
 import keras.backend as K
 

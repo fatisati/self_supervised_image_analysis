@@ -70,7 +70,9 @@ class MyDataset:
         file_names = self.label_df[image_col]
         labels = self.label_df.drop([image_col], axis=1).values
         class_weights = calculating_class_weights(labels)
+        self.weighted_loss = get_weighted_loss(class_weights)
         print('class weights', class_weights)
+
         if balanced:
             print('balancing data...')
             file_names, labels = balance_data(np.array(file_names).reshape(-1, 1), np.array(labels))

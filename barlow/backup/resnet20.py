@@ -238,12 +238,12 @@ def prediction_head(x, hidden_dim=128, mx=4):
 # ResNet1001 | 111 |
 
 
-def get_network(in_shape, n=2, hidden_dim=128, use_pred=False, return_before_head=True):
+def get_network(input_shape=(32, 32, 3), n=2, hidden_dim=128, use_pred=False, return_before_head=True):
     depth = n * 9 + 2
     n_blocks = ((depth - 2) // 9) - 1
 
     # The input tensor
-    inputs = Input(shape=(in_shape, in_shape, 3))
+    inputs = Input(input_shape)
     x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
 
     # The Stem Convolution Group

@@ -30,7 +30,7 @@ if __name__ == '__main__':
                     pretrain_params = PretrainParams(crop_to, bs, project_dim, epoch, model_path)
 
                     # try:
-                    barlow_encoder = run_pretrain(ds, pretrain_params)
+                    barlow_encoder = None #run_pretrain(ds, pretrain_params)
 
                     # except Exception as e:
                     #     print('err pretrain: epoch: {0}, batch size: {1}, image size: {2}, projection dim: {3}'.format(
@@ -42,21 +42,21 @@ if __name__ == '__main__':
 
                     for fine_tune_epoch in barlow_fine_tune_epochs:
                         for fine_tune_bs in barlow_fine_tune_bs:
-                            try:
-                                fine_tune_params = FineTuneParams(fine_tune_epoch, fine_tune_bs, crop_to,
-                                                                  pretrain_params)
-                                model = run_fine_tune(ds, fine_tune_params, barlow_encoder, ds.weighted_loss)
-                                res.write(pretrain_params.get_report() + '\n')
-                                res.write(fine_tune_params.get_report() + '\n')
-                                eval_model(model, ds, res.write, fine_tune_bs)
-                                res.write('-------------------------------')
+                            # try:
+                            fine_tune_params = FineTuneParams(fine_tune_epoch, fine_tune_bs, crop_to,
+                                                              pretrain_params)
+                            model = run_fine_tune(ds, fine_tune_params, barlow_encoder, ds.weighted_loss)
+                            res.write(pretrain_params.get_report() + '\n')
+                            res.write(fine_tune_params.get_report() + '\n')
+                            eval_model(model, ds, res.write, fine_tune_bs)
+                            res.write('-------------------------------')
 
 
-                            except Exception as e:
-                                print(
-                                    'fine tune err: epoch: {0}, batch size: {1}'.format(fine_tune_epoch, fine_tune_bs))
-                                print('error: ', e)
-                                print(traceback.print_exc())
-                                print('------------')
+                            # except Exception as e:
+                            #     print(
+                            #         'fine tune err: epoch: {0}, batch size: {1}'.format(fine_tune_epoch, fine_tune_bs))
+                            #     print('error: ', e)
+                            #     print(traceback.print_exc())
+                            #     print('------------')
 
     res.close()

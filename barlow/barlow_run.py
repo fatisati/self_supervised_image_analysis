@@ -59,6 +59,7 @@ def run_pretrain(ds, params: PretrainParams):
 def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None, loss=None):
     outshape = ds.train_labels.shape[-1]
     train_ds, test_ds = ds.get_supervised_ds()
+    train_ds, test_ds = prepare_supervised_data_loader(train_ds, test_ds, params.batch_size, params.crop_to)
     if barlow_enc is None:
         barlow_enc = tf.keras.models.load_model(params.pretrain_params.get_model_path())
     if loss is None:
@@ -74,7 +75,7 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None, loss=None):
         optimizer=tf.keras.optimizers.SGD(cosine_lr, momentum=0.9),
     )
     history = linear_model.fit(
-        train_ds, validation_data=test_ds, epochs=epochs
+        train_ds, validation_data=test_ds, epochs=params.epochs
     )
     _, test_acc = linear_model.evaluate(test_ds)
     print("Test accuracy: {:.2f}%".format(test_acc * 100))

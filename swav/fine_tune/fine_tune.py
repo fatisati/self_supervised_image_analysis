@@ -20,7 +20,7 @@ class FineTune:
 
         return linear_model
 
-    def warm_up(self, training_ds, inshape, outshape, epochs):
+    def warm_up(self, training_ds, inshape, outshape, epochs, fine_tune_loss):
 
         tf.keras.backend.clear_session()
 
@@ -54,7 +54,7 @@ class FineTune:
 
         return linear_model
 
-    def fine_tune_model(self, training_ds, testing_ds, inshape, epochs, warmup_model):
+    def fine_tune_model(self, training_ds, testing_ds, inshape, epochs, warmup_model, fine_tune_loss):
         # get model and compile
         tf.keras.backend.clear_session()
         full_trainable_model = self.get_fine_tune_classifier(inshape, warmup_model)

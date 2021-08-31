@@ -5,6 +5,7 @@ from barlow.barlow_loss import *
 from self_supervised_model import *
 import barlow.setup as setup
 
+import keras.backend as K
 
 class FineTuneParams:
     def __init__(self, bs, epochs, pretrain_crop_to, model_path):
@@ -134,7 +135,7 @@ def prepare_fine_tune_data(train_ds, test_ds, params: FineTuneParams):
     return train_ds, test_ds
 
 
-def get_linear_model(barlow_encoder, outshape, params: FineTuneParams, weight_path=''):
+def get_linear_model(barlow_encoder, outshape, params: FineTuneParams):
     backbone = tf.keras.Model(
         barlow_encoder.input, barlow_encoder.layers[-8].output
     )
@@ -144,17 +145,17 @@ def get_linear_model(barlow_encoder, outshape, params: FineTuneParams, weight_pa
     inputs = tf.keras.layers.Input((params.pretrain_crop_to, params.pretrain_crop_to, 3))
     x = backbone(inputs, training=False)
     outputs = tf.keras.layers.Dense(outshape, activation="softmax")(x)
-    linear_model = tf.keras.Model(inputs, outputs, name="linear_model")
-    if len(weight_path) > 0:
-        linear_model.load_weights(weight_path)
-    return linear_model
+
+    linear_model = tf.keras.Model(inputs, x, name="linear_model")
+
+    return barlow_encoder
 
 
 def fine_tune(train_ds, test_ds, loss, lr, outshape,
-              barlow_encoder, params: FineTuneParams, weight_path=''):
+              barlow_encoder, params: FineTuneParams):
     print('fine-tuning...')
     train_ds, test_ds = prepare_fine_tune_data(train_ds, test_ds, params)
-    linear_model = get_linear_model(barlow_encoder, outshape, params, weight_path)
+    linear_model = get_linear_model(barlow_encoder, outshape, params)
 
     # Cosine decay for linear evaluation.
 
@@ -163,7 +164,11 @@ def fine_tune(train_ds, test_ds, loss, lr, outshape,
         loss=loss,
         metrics=["accuracy"],
         optimizer=tf.keras.optimizers.SGD(lr, momentum=0.9),
+        run_eagerly=True
     )
+    sample_out = linear_model.predict(train_ds)
+    print('sample out', sample_out)
+
     history = linear_model.fit(
         train_ds, validation_data=test_ds, epochs=params.epochs
     )
@@ -192,6 +197,7 @@ def run_pretrain_barlow(ds, pretrain_path, params: PretrainParams):
     resnet_enc = resnet20.get_network(input_shape=(params.crop_to, params.crop_to, 3),
                                       hidden_dim=params.project_dim, use_pred=False,
                                       return_before_head=False)
+
     optimizer = tf.keras.optimizers.SGD(learning_rate=lr_decayed_fn, momentum=0.9)
 
     barlow = pretrain(resnet_enc, optimizer, ssl_ds, params)
@@ -207,7 +213,7 @@ def run_fine_tune(ds, pretrain_path, save_path, params: FineTuneParams):
 
     STEPS_PER_EPOCH = len(train_ds) // params.batch_size
     cosine_lr = tf.keras.experimental.CosineDecay(
-        initial_learning_rate=0.3, decay_steps=params.epochs * STEPS_PER_EPOCH
+        initial_learning_rate=0.1, decay_steps=params.epochs * STEPS_PER_EPOCH
     )
     linear_model, history = fine_tune(train_ds, test_ds,
                                       'binary_crossentropy', cosine_lr,

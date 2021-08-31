@@ -8,6 +8,8 @@ from swav.fine_tune.fine_tune import *
 from swav.config_ import *
 from my_dataset import MyDataset
 
+from my_dataset import *
+
 
 class PretrainParams:
     def __init__(self, epochs, size_crops, batch_size, model_path):
@@ -60,16 +62,16 @@ class SwAVModel(SelfSupervisedModel):
         # pretrain_model.visualize_training(epoch_wise_loss)
         return models
 
-    def fine_tune(self, train_ds, test_ds, pretrain_models, outshape, params: FineTuneParams):
+    def fine_tune(self, train_ds, test_ds, pretrain_models, outshape, params: FineTuneParams, loss):
         # warmup_epochs, fine_tune_epochs = epochs
         training_ds = prepare_fine_tune_data(train_ds, params.batch_size, params.crop_to)
         testing_ds = test_ds.batch(params.batch_size)
 
         feature_backbone, prot = pretrain_models
         ft = FineTune(feature_backbone)
-        warmup_model, history = ft.warm_up(training_ds, params.crop_to, outshape, params.warmup_epochs)
+        warmup_model, history = ft.warm_up(training_ds, params.crop_to, outshape, params.warmup_epochs, loss)
         fine_tuned_model, history = ft.fine_tune_model(training_ds, testing_ds, params.crop_to, params.fine_tune_epochs,
-                                                       warmup_model)
+                                                       warmup_model, loss)
 
         plt.plot(history.history['loss'])
         plt.title('fine-tune loss')
@@ -105,7 +107,10 @@ def run_fine_tune(ds: MyDataset, pretrain_params: PretrainParams, fine_tune_para
     fpath, ppath = pretrain_params.get_model_path()
     pretrain_models = pretrain_model.load_models(fpath, ppath)
     outshape = ds.train_labels.shape[-1]
-    fine_tuned_model, warmup_model = swav.fine_tune(train_ds, test_ds, pretrain_models, outshape, fine_tune_params)
+    weights = calculating_class_weights(ds.train_labels)
+    loss = get_weighted_loss(weights)
+    fine_tuned_model, warmup_model = swav.fine_tune(train_ds, test_ds, pretrain_models, outshape, fine_tune_params,
+                                                    loss)
     return fine_tuned_model, warmup_model
 
 

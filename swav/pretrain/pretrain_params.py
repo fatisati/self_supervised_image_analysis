@@ -22,7 +22,7 @@ np.random.seed(666)
 # Experimental options
 options = tf.data.Options()
 options.experimental_optimization.noop_elimination = True
-options.experimental_optimization.map_vectorization.enabled = True
+# options.experimental_optimization.map_vectorization.enabled = True
 options.experimental_optimization.apply_default_optimizations = True
 options.experimental_deterministic = False
 options.experimental_threading.max_intra_op_parallelism = 1

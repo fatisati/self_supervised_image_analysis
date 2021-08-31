@@ -13,6 +13,9 @@ from PIL import Image
 
 # from skimage.transform import resize
 from imblearn.over_sampling import RandomOverSampler
+from sklearn.utils import class_weight
+from sklearn.utils.class_weight import compute_class_weight
+import keras.backend as K
 
 AUTO = tf.data.experimental.AUTOTUNE
 AUTOTUNE = tf.data.AUTOTUNE
@@ -23,6 +26,33 @@ def balance_data(x, y):
     X_res, y_res = over_sampler.fit_resample(x, y)
     return X_res, y_res
 
+
+def class_weights(y):
+    y = y.astype(np.int)
+    class_counts = np.bincount(y)
+    sum_ = sum(class_counts)
+    weights = sum_ / class_counts
+    return weights
+
+
+def calculating_class_weights(y_true):
+    number_dim = np.shape(y_true)[1]
+    weights = np.empty([number_dim, 2])
+    for i in range(number_dim):
+        weights[i] = class_weights(y_true[:, i])
+    return weights
+
+
+def get_weighted_loss(weights):
+    def weighted_loss(y_true, y_pred):
+        return K.mean(
+            (weights[:, 0] ** (1 - y_true)) * (weights[:, 1] ** (y_true)) * K.binary_crossentropy(y_true, y_pred),
+            axis=-1)
+
+    return weighted_loss
+
+
+# model.compile(optimizer=Adam(), loss=get_weighted_loss(class_weights))
 
 class MyDataset:
 
@@ -39,12 +69,12 @@ class MyDataset:
 
         file_names = self.label_df[image_col]
         labels = self.label_df.drop([image_col], axis=1).values
-
+        class_weights = calculating_class_weights(labels)
+        print('class weights', class_weights)
         if balanced:
             print('balancing data...')
             file_names, labels = balance_data(np.array(file_names).reshape(-1, 1), np.array(labels))
             file_names = file_names.flatten()
-
 
         if data_size != -1:
             file_names = file_names[:data_size]
@@ -117,4 +147,4 @@ class MyDataset:
 if __name__ == '__main__':
     ds = MyDataset(data_path='../data/ISIC/ham10000/', image_folder='resized256/',
                    label_filename='disease_labels.csv', image_col='image', balanced=True)
-    print(np.array(ds.train_labels.shape[-1]))
+    # print(np.array(ds.train_labels.shape[-1]))

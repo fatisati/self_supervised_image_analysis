@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from my_dataset import *
+from ham_dataset import *
 
 
 def get_linear_model(barlow_encoder, crop_to, y_shape):

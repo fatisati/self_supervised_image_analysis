@@ -1,4 +1,4 @@
-from augmentation_utils import *
+from barlow.augmentation_utils import *
 
 AUTO = tf.data.AUTOTUNE
 SEED = 42

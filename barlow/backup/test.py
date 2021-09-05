@@ -1,6 +1,6 @@
 from barlow_pretrain.barlow_model import *
 
-from my_dataset import *
+from ham_dataset import *
 
 ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
                image_col='image', image_folder='resized256/', balanced=True, data_size=15)

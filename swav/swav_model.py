@@ -6,9 +6,9 @@ from swav.pretrain import pretrain_utils, pretrain_model
 from swav.fine_tune.fine_tune import *
 
 from swav.config_ import *
-from my_dataset import MyDataset
+from ham_dataset import MyDataset
 
-from my_dataset import *
+from ham_dataset import *
 
 
 class PretrainParams:

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
-from barlow_pretrain import *
-from barlow_finetune import *
+from barlow.barlow_pretrain import *
+from barlow.barlow_finetune import *
 
 
 class PretrainParams:

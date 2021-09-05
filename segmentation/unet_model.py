@@ -1,6 +1,7 @@
 from tensorflow.keras import layers
 import keras
 
+
 def get_model(img_size, num_classes):
     inputs = keras.Input(shape=img_size + (3,))
 

@@ -1,8 +1,8 @@
-import resnet20
-import lr_scheduler
+import barlow.resnet20 as resnet20
+import barlow.lr_scheduler as lr_scheduler
 
-from data_utils import *
-from my_dataset import *
+from barlow.data_utils import *
+from ham_dataset import *
 
 AUTO = tf.data.AUTOTUNE
 

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn import svm, datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_confusion_matrix
-from my_dataset import MyDataset
+from ham_dataset import MyDataset
 
 
 def eval_model(model, ds: MyDataset, report_func, bs):

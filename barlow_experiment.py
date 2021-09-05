@@ -30,7 +30,7 @@ if __name__ == '__main__':
                     pretrain_params = PretrainParams(crop_to, bs, project_dim, epoch, model_path)
 
                     # try:
-                    barlow_encoder = None #run_pretrain(ds, pretrain_params)
+                    barlow_encoder = run_pretrain(ds, pretrain_params)
 
                     # except Exception as e:
                     #     print('err pretrain: epoch: {0}, batch size: {1}, image size: {2}, projection dim: {3}'.format(

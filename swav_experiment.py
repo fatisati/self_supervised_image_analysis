@@ -14,15 +14,17 @@ fine_tune_bs = [16, 32, 128, 256]
 fine_tune_img_size = [128, 256]
 
 if __name__ == '__main__':
-    # my_test()
+
     ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+                   image_col='image', image_folder='resized256/', data_size=30)
     res = open(model_path + 'results.txt', 'w')
+
     for epoch in pretrain_epochs:
         for size_crops in pretrain_size_crops:
             for bs in pretrain_batch_sizes:
                 pretrain_params = PretrainParams(epoch, size_crops, bs, model_path)
-                # run_pretrain(ds, model_path, pretrain_params)
+
+                run_pretrain(ds, model_path, pretrain_params)
 
                 for warmup_epoch in fine_tune_warmup_epochs:
                     for fine_tune_epoch in fine_tune_epochs:

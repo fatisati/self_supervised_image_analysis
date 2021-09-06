@@ -4,19 +4,19 @@ from model_eval import *
 
 model_path = '../models/swav/'
 
-pretrain_epochs = [2]  # [25, 50]
-pretrain_size_crops = [[32, 64]]  # , [128, 256]]
-pretrain_batch_sizes = [32]  # , 64, 16]
+pretrain_epochs = [25, 50]
+pretrain_size_crops = [[32, 64] , [128, 256]]
+pretrain_batch_sizes = [32, 64, 16]
 
-fine_tune_warmup_epochs = [5, 50, 100]
-fine_tune_epochs = [3, 50, 100]
+fine_tune_warmup_epochs = [25, 50, 100]
+fine_tune_epochs = [25, 50, 100]
 fine_tune_bs = [16, 32, 128, 256]
 fine_tune_img_size = [128, 256]
 
 if __name__ == '__main__':
 
     ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/', data_size=30)
+                   image_col='image', image_folder='resized256/')
     res = open(model_path + 'results.txt', 'w')
 
     for epoch in pretrain_epochs:

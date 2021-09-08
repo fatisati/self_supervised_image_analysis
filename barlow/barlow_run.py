@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from barlow.barlow_pretrain import *
 from barlow.barlow_finetune import *
 
+from utils.model_utils import *
+
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, epochs, save_path):
@@ -13,7 +15,8 @@ class PretrainParams:
         self.save_path = save_path
 
     def get_summary(self):
-        return 'pretrain_{0}e_{1}projdim_{2}bs_{3}ct'.format(self.epochs, self.project_dim, self.batch_size, self.crop_to)
+        return 'pretrain_{0}e_{1}projdim_{2}bs_{3}ct'.format(self.epochs, self.project_dim, self.batch_size,
+                                                             self.crop_to)
 
     def get_model_path(self):
         return self.save_path + self.get_summary()
@@ -21,6 +24,7 @@ class PretrainParams:
     def get_report(self):
         return 'pretrain params: epochs {0}, bs {1}, image size {2}, project dim{3}' \
             .format(self.epochs, self.batch_size, self.crop_to, self.project_dim)
+
 
 class FineTuneParams:
     def __init__(self, epochs, batch_size, crop_to, pretrain_params: PretrainParams):
@@ -43,13 +47,16 @@ def run_pretrain(ds, params: PretrainParams):
     x_train, x_test = ds.get_x_train_test_ds()
 
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size)
+    val_ds = prepare_data_loader(x_test, params.crop_to, params.batch_size)
     lr_decayed_fn = get_lr(x_train, params.batch_size, params.epochs)
 
     resnet_enc = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                       return_before_head=False)
     optimizer = tf.keras.optimizers.SGD(learning_rate=lr_decayed_fn, momentum=0.9)
+
     model = get_model(resnet_enc, optimizer)
-    history = model.fit(ssl_ds, epochs=params.epochs)
+    save_callback = get_checkpoint_callback(params.save_path + 'checkpoints')
+    history = model.fit(ssl_ds, validation_data=val_ds, epochs=params.epochs, callbacks=[save_callback])
     plt.plot(history.history["loss"])
     plt.savefig('{0}figures/{1}.png'.format(params.save_path, params.get_summary()))
     model.encoder.save(params.get_model_path())

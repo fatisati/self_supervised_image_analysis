@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from self_supervised_model import *
+# from self_supervised_model import *
 from swav.pretrain import pretrain_utils, pretrain_model
 
 from swav.fine_tune.fine_tune import *
@@ -37,7 +37,7 @@ class FineTuneParams:
         return 'we{0}_e{1}_imgsize{2}'.format(self.warmup_epochs, self.fine_tune_epochs, self.crop_to)
 
 
-class SwAVModel(SelfSupervisedModel):
+class SwAVModel():
     def __init__(self, model_path):
         super().__init__(model_path)
         self.feature_name = 'features_'
@@ -49,11 +49,14 @@ class SwAVModel(SelfSupervisedModel):
         return self.model_path + self.feature_name + end, \
                self.model_path + self.prototypes_name + end
 
-    def pretrain(self, train_ds, params: PretrainParams):
+    def pretrain(self, ds, params: PretrainParams):
         print('preparing data...')
+        train_ds, test_ds = ds.get_x_train_test_ds()
+
         trainloaders_zipped = pretrain_utils.prepare_data(train_ds, params.size_crops, params.batch_size)
+        testloaders = pretrain_utils.prepare_data(test_ds, params.size_crops, params.batch_size)
         print('done.')
-        epoch_wise_loss, models = pretrain_model.fit_swav(trainloaders_zipped, params.epochs)
+        epoch_wise_loss, models = pretrain_model.fit_swav(trainloaders_zipped, testloaders, params.epochs)
         fpath, ppath = params.get_model_path()  # self.get_models_path(params.epochs, pretrain_end_name)
 
         pretrain_model.save_models(models, fpath, ppath)
@@ -90,11 +93,11 @@ class SwAVModel(SelfSupervisedModel):
 
 def run_pretrain(ds: MyDataset, model_path, params: PretrainParams):
     print('pretraining: ', params.get_summary())
-    train_ds, test_ds = ds.get_x_train_test_ds()
+
     swav = SwAVModel(model_path)
     # epochs, size_crops, batch_size = 2, [32, 64], 32
     # params = PretrainParams(epochs, size_crops, batch_size)
-    pretrain_models = swav.pretrain(train_ds, params)
+    pretrain_models = swav.pretrain(ds, params)
     print('--------done---------')
     return pretrain_models
 

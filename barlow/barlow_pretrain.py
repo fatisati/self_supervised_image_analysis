@@ -103,6 +103,7 @@ if __name__ == '__main__':
     x_train, x_test = ds.get_x_train_test_ds()
 
     ssl_ds = prepare_data_loader(x_train, crop_to, batch_size)
+    val_ssl_ds = prepare_data_loader(x_test, crop_to, batch_size)
     lr_decayed_fn = get_lr(x_train, batch_size, epochs)
 
     resnet_enc = resnet20.get_network(crop_to, hidden_dim=project_dim, use_pred=False,

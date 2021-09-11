@@ -1,7 +1,6 @@
 import numpy as np
-a = 'hi'
 
-if a is None:
-    print('none')
-else:
-    print(a)
+a = [1,2]
+b = [2,3]
+c = a + b
+print(c)

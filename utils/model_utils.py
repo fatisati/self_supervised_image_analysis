@@ -2,7 +2,8 @@ import tensorflow as tf
 import os
 
 def get_checkpoint_callback(checkpoint_path):
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_best_only=True,
+    #save_best_only=True,
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                      save_weights_only=False, verbose=1)
     return cp_callback
 

@@ -20,42 +20,25 @@ if __name__ == '__main__':
 
     ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
                    image_col='image', image_folder='resized256/', data_size=30)
-    res = open(model_path + 'results.txt', 'w')
 
     for epoch in barlow_pretrain_epochs:
         for bs in barlow_batch_sizes:
             for crop_to in barlow_crop_to:
                 for project_dim in barlow_project_dim:
-
                     pretrain_params = PretrainParams(crop_to, bs, project_dim, epoch, model_path)
+                    barlow_encoder = run_pretrain(ds, pretrain_params)
 
-                    try:
-                        barlow_encoder = run_pretrain(ds, pretrain_params)
 
-                    except Exception as e:
-                        print('err pretrain: epoch: {0}, batch size: {1}, image size: {2}, projection dim: {3}'.format(
-                            epoch, bs,
-                            crop_to,
-                            project_dim))
-                        print('error: ', e)
-                        print('------------')
+def fine_tune():
+    res = open(model_path + 'results.txt', 'w')
 
-                    for fine_tune_epoch in barlow_fine_tune_epochs:
-                        for fine_tune_bs in barlow_fine_tune_bs:
-                            try:
-                                fine_tune_params = FineTuneParams(fine_tune_epoch, fine_tune_bs, crop_to,
-                                                                  pretrain_params)
-                                model = run_fine_tune(ds, fine_tune_params, barlow_encoder, ds.weighted_loss)
-                                res.write(pretrain_params.get_report() + '\n')
-                                res.write(fine_tune_params.get_report() + '\n')
-                                eval_model(model, ds, res.write, fine_tune_bs)
-                                res.write('-------------------------------')
-
-                            except Exception as e:
-                                print(
-                                    'fine tune err: epoch: {0}, batch size: {1}'.format(fine_tune_epoch, fine_tune_bs))
-                                print('error: ', e)
-                                print(traceback.print_exc())
-                                print('------------')
-
+    for fine_tune_epoch in barlow_fine_tune_epochs:
+        for fine_tune_bs in barlow_fine_tune_bs:
+            fine_tune_params = FineTuneParams(fine_tune_epoch, fine_tune_bs, crop_to,
+                                              pretrain_params)
+            model = run_fine_tune(ds, fine_tune_params, barlow_encoder, ds.weighted_loss)
+            res.write(pretrain_params.get_report() + '\n')
+            res.write(fine_tune_params.get_report() + '\n')
+            eval_model(model, ds, res.write, fine_tune_bs)
+            res.write('-------------------------------')
     res.close()

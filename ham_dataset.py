@@ -17,6 +17,8 @@ from sklearn.utils import class_weight
 from sklearn.utils.class_weight import compute_class_weight
 import keras.backend as K
 
+from sklearn.utils import shuffle
+
 AUTO = tf.data.experimental.AUTOTUNE
 AUTOTUNE = tf.data.AUTOTUNE
 
@@ -54,6 +56,12 @@ def get_weighted_loss(weights):
 
 # model.compile(optimizer=Adam(), loss=get_weighted_loss(class_weights))
 
+def label_report(labels):
+    for i in range(labels.shape[1]):
+        print(sum(labels[:, i]), end=',')
+    print()
+
+
 class MyDataset:
 
     def __init__(self, data_path='data/', image_folder='ISIC2018_Task1-2_Training_Input_resized/',
@@ -64,19 +72,28 @@ class MyDataset:
         self.data_size = data_size
         self.data_path = data_path
         self.image_folder = image_folder
+        self.balanced = balanced
 
         self.label_df = self.read_label_df(data_path + label_filename)
 
         file_names = self.label_df[image_col]
         labels = self.label_df.drop([image_col], axis=1).values
-        class_weights = calculating_class_weights(labels)
-        self.weighted_loss = get_weighted_loss(class_weights)
-        print('class weights', class_weights)
 
         if balanced:
-            print('balancing data...')
+
             file_names, labels = balance_data(np.array(file_names).reshape(-1, 1), np.array(labels))
             file_names = file_names.flatten()
+
+            data_dic = {'filenames': file_names}
+
+            for i in range(labels.shape[1]):
+                data_dic[i] = labels[:, i]
+            pd.DataFrame(data_dic).to_excel(data_path + 'balanced.xlsx')
+
+        file_names, labels = shuffle(file_names, labels)
+        class_weights = calculating_class_weights(labels)
+        self.weighted_loss = get_weighted_loss(class_weights)
+        # print('class weights', class_weights)
 
         if data_size != -1:
             file_names = file_names[:data_size]
@@ -91,6 +108,12 @@ class MyDataset:
 
         self.train_labels = labels[:train_size]
         self.test_labels = labels[train_size:]
+
+        print('train label report')
+        label_report(self.train_labels)
+        print('test label report')
+        label_report(self.test_labels)
+
 
         self.train_names_ds = tf.data.Dataset.from_tensor_slices(self.train_names)
         self.test_names_ds = tf.data.Dataset.from_tensor_slices(self.test_names)

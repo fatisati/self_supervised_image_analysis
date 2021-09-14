@@ -7,7 +7,6 @@ def get_linear_model(barlow_encoder, crop_to, y_shape):
     backbone = tf.keras.Model(
         barlow_encoder.input, barlow_encoder.layers[-8].output
     )
-
     # We then create our linear classifier and train it.
     backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))

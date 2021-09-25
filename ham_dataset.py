@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
@@ -155,6 +156,7 @@ class MyDataset:
         # convert the compressed string to a 3D uint8 tensor
         img = tf.image.decode_jpeg(img, channels=3)
         # img = tf.image.per_image_standardization(img)
+        # img = tf.divide(img, 255)
         return img
 
     def read_tf_image(self, file_path):
@@ -172,4 +174,8 @@ class MyDataset:
 if __name__ == '__main__':
     ds = MyDataset(data_path='../data/ISIC/ham10000/', image_folder='resized256/',
                    label_filename='disease_labels.csv', image_col='image', balanced=True)
-    # print(np.array(ds.train_labels.shape[-1]))
+    x_train, x_test = ds.get_x_train_test_ds()
+
+    sample_img = list(x_train.take(1))[0]
+    plt.imshow(sample_img)
+    plt.show()

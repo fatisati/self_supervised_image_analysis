@@ -11,15 +11,16 @@ from utils.model_utils import *
 
 
 class PretrainParams:
-    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path):
+    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name):
         self.crop_to = crop_to
         self.batch_size = batch_size
         self.project_dim = project_dim
         self.checkpoints = checkpoints
         self.save_path = save_path
+        self.name = name
 
     def get_summary(self):
-        return f'pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
+        return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
 
     def get_model_path(self):
         return self.save_path + self.get_summary()
@@ -30,11 +31,12 @@ class PretrainParams:
 
 
 class FineTuneParams:
-    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, loss = None):
+    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, pretrain_epoch, loss=None):
         self.checkpoints = checkpoints
         self.batch_size = batch_size
         self.crop_to = pretrain_params.crop_to
         self.pretrain_params = pretrain_params
+        self.pretrain_epoch = pretrain_epoch
         if loss is None:
             self.loss = "binary_crossentropy"
             self.loss_name = 'normal'
@@ -79,33 +81,28 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
     train_ds, test_ds = prepare_supervised_data_loader(train_ds, test_ds, params.batch_size, params.crop_to)
 
     if barlow_enc is None:
-        barlow_enc = tf.keras.models.load_model(params.pretrain_params.get_model_path()+'_e50')
+        barlow_enc = tf.keras.models.load_model(params.pretrain_params.get_model_path() + f'_e{params.pretrain_epoch}')
 
-    cosine_lr = get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
+    cosine_lr = 0.01  # get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
     linear_model = get_linear_model(barlow_enc, params.crop_to, outshape)
     # Compile model and start training.
 
     linear_model.compile(
         loss=params.loss,
         metrics=["accuracy"],
-        optimizer=tf.keras.optimizers.SGD(cosine_lr, momentum=0.9),
+        optimizer=tf.keras.optimizers.Adam()
     )
 
     print(linear_model.predict(train_ds))
     print('-----------test res-------------')
     print(linear_model.predict(test_ds))
 
-
     # history = linear_model.fit(
     #     train_ds, validation_data=test_ds, epochs=params.epochs
     # )
 
-    train_model(linear_model, train_ds, params.checkpoints, params.pretrain_params.save_path, params.get_summary(), test_ds)
-
-    print('after train')
-    print(linear_model.predict(train_ds))
-    print('-----------test res-------------')
-    print(linear_model.predict(test_ds))
+    train_model(linear_model, train_ds, params.checkpoints, params.pretrain_params.save_path, params.get_summary(),
+                test_ds)
 
     _, test_acc = linear_model.evaluate(test_ds)
     print("Test accuracy: {:.2f}%".format(test_acc * 100))

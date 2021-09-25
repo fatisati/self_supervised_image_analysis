@@ -31,6 +31,8 @@ from tensorflow.keras.layers import (
 from tensorflow.keras.layers import AveragePooling2D, GlobalAvgPool2D, Dropout
 from tensorflow.keras.layers import experimental
 from tensorflow.keras.regularizers import l2
+from tensorflow.keras.layers import BatchNormalization
+
 
 WEIGHT_DECAY = 5e-4
 
@@ -244,7 +246,10 @@ def get_network(in_shape, n=2, hidden_dim=128, use_pred=False, return_before_hea
 
     # The input tensor
     inputs = Input(shape=(in_shape, in_shape, 3))
-    x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
+
+    #I don't know the reson for original rescaling
+    # x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
+    x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0)(inputs)
 
     # The Stem Convolution Group
     x = stem(x)

@@ -28,12 +28,13 @@ def pretrain(ds):
 
 
 def fine_tune(ds):
-    checkpoints = [2 ]#[25, 50, 75, 100]
+    checkpoints = [2, 5]#[25, 50, 75, 100]
     batch_sizes = [32, 64, 128, 256]
-    pretrain_params = PretrainParams(128, 16, 2048, [], model_path)
+    pretrain_params = PretrainParams(128, 16, 2048, [], model_path, 'adama')
 
     for batch_size in batch_sizes:
-        params = FineTuneParams(checkpoints, batch_size, pretrain_params)
+        params = FineTuneParams(checkpoints, batch_size, pretrain_params, 50)
+        params.loss = 'categorical_crossentropy'
         run_fine_tune(ds, params)
 
 

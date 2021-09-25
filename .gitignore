@@ -2,3 +2,6 @@
 __pycache__
 .pytest_cache
 deepset/data/
+
+barlow/__pycache__
+

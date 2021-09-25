@@ -34,7 +34,7 @@ def fine_tune(ds):
 
     for batch_size in batch_sizes:
         params = FineTuneParams(checkpoints, batch_size, pretrain_params, 50)
-        params.loss = 'categorical_crossentropy'
+        params.loss = ds.weighted_loss #'categorical_crossentropy'
         run_fine_tune(ds, params)
 
 

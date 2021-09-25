@@ -93,14 +93,6 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
         optimizer=tf.keras.optimizers.Adam()
     )
 
-    print(linear_model.predict(train_ds))
-    print('-----------test res-------------')
-    print(linear_model.predict(test_ds))
-
-    # history = linear_model.fit(
-    #     train_ds, validation_data=test_ds, epochs=params.epochs
-    # )
-
     train_model(linear_model, train_ds, params.checkpoints, params.pretrain_params.save_path, params.get_summary(),
                 test_ds)
 

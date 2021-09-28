@@ -249,8 +249,8 @@ def get_network(in_shape, n=2, hidden_dim=128, use_pred=False, return_before_hea
     inputs = Input(shape=(in_shape, in_shape, 3))
 
     #I don't know the reson for original rescaling
-    # x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
-    x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0)(inputs)
+    x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
+    # x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0)(inputs)
 
     # The Stem Convolution Group
     x = stem(x)

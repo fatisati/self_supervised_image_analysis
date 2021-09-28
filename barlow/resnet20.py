@@ -137,6 +137,7 @@ def identity_block(x, n_filters, n=2):
 
     # Add the identity link (input) to the output of the residual block
     x = Add()([x, shortcut])
+
     return x
 
 

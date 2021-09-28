@@ -11,8 +11,8 @@ def get_linear_model(barlow_encoder, crop_to, y_shape):
     backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
     x = backbone(inputs, training=False)
-    batch_out = tf.keras.layers.BatchNormalization()(x)
-    outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(batch_out)
+    # batch_out = tf.keras.layers.BatchNormalization()(x)
+    outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)
     linear_model = tf.keras.Model(inputs, outputs, name="linear_model")
     return linear_model
 

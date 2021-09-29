@@ -52,6 +52,7 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
         if model_exist(path, f'{name}_e{current_epoch}'):
             print(f'model {name}_e{current_epoch} existed in {path}')
             model = load_model(path+name + f'_e{current_epoch}')
+            model.compile(optimizer=tf.keras.optimizers.Adam())
             continue
 
         hist = model.fit(data, epochs=change, validation_data=test_ds)

@@ -61,5 +61,9 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
 
         save_checkpoint(model, history, path, name + f'_e{current_epoch}')
 
-        print(model.predict(data))
+        try:
+
+            print(model.encoder.predict(data))
+        except:
+            print(model.predict(data))
     return model, history

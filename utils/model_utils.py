@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def load_model(path):
+    return tf.keras.models.load_model(path)
+
+
 def get_checkpoint_callback(checkpoint_path):
     cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_best_only=True,
 
@@ -11,8 +15,8 @@ def get_checkpoint_callback(checkpoint_path):
     return cp_callback
 
 
-def model_exist(params):
-    if params.get_summary() in os.listdir(params.save_path):
+def model_exist(path, name):
+    if name in os.listdir(path):
         return True
     return False
 
@@ -43,10 +47,15 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
     current_epoch = 0
 
     for change in epoch_change:
+
+        current_epoch += change
+        if model_exist(path, f'_e{current_epoch}'):
+            model = load_model(path+name + f'_e{current_epoch}')
+            continue
+
         hist = model.fit(data, epochs=change, validation_data=test_ds)
         history.append(hist)
 
-        current_epoch += change
         save_checkpoint(model, history, path, name + f'_e{current_epoch}')
 
         print(model.predict(data))

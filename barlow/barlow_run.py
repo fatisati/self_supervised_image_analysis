@@ -11,13 +11,16 @@ from utils.model_utils import *
 
 
 class PretrainParams:
-    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name):
+    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
+                 optimizer=tf.keras.optimizers.Adam()):
         self.crop_to = crop_to
         self.batch_size = batch_size
         self.project_dim = project_dim
         self.checkpoints = checkpoints
         self.save_path = save_path
         self.name = name
+
+        self.optimizer = optimizer
 
     def get_summary(self):
         return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
@@ -57,11 +60,10 @@ def run_pretrain(ds, params: PretrainParams):
 
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size)
 
-    lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
-
     resnet_enc = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                       return_before_head=False)
-    optimizer = tf.keras.optimizers.SGD(learning_rate=lr_decayed_fn, momentum=0.9)
+    # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
+    optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
 
     model = get_model(resnet_enc, optimizer)
 

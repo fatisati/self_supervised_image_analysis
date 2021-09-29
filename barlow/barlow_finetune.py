@@ -1,12 +1,18 @@
 import matplotlib.pyplot as plt
 from ham_dataset import *
 
-# from tf.keras.layers import BatchNormalization
-def get_linear_model(barlow_encoder, crop_to, y_shape):
-    # Extract the backbone ResNet20.
+
+def get_backbone(barlow_encoder):
     backbone = tf.keras.Model(
         barlow_encoder.input, barlow_encoder.layers[-8].output
     )
+    return backbone
+
+
+# from tf.keras.layers import BatchNormalization
+def get_linear_model(barlow_encoder, crop_to, y_shape):
+    # Extract the backbone ResNet20.
+    backbone = get_backbone(barlow_encoder)
     # We then create our linear classifier and train it.
     backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))

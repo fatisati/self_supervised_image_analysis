@@ -23,9 +23,14 @@ class PretrainParams:
         self.optimizer = optimizer
 
     def get_summary(self):
-        return f'{self.name}_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
+        return f'{self.name}_ct{self.crop_to}_bs{self.batch_size}'
+
+    def get_old_summary(self):
+        return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
 
     def get_model_path(self):
+        if 'old' in self.save_path:
+            return self.save_path + self.get_old_summary()
         return self.save_path + self.get_summary()
 
     def get_report(self):
@@ -50,7 +55,11 @@ class FineTuneParams:
 
     def get_summary(self):
 
-        return f'bs{self.batch_size}_ct{self.crop_to}_loss_{self.loss_name}'
+        return f'ct{self.crop_to} _bs{self.batch_size}_loss_{self.loss_name}'
+
+    def get_old_summary(self):
+
+        return f'finetune_bs{self.batch_size}_ct{self.crop_to}_loss_{self.loss_name}'
 
     def get_model_path(self):
         return self.save_path + self.get_summary()

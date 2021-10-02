@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from ham_dataset import *
-
+from utils.model_utils import *
 
 def get_backbone(barlow_encoder):
     backbone = tf.keras.Model(
@@ -55,7 +55,7 @@ if __name__ == '__main__':
         loss = "binary_crossentropy"
     linear_model.compile(
         loss=loss,
-        metrics=["accuracy"],
+        metrics=get_metrics(),#["accuracy"],
         optimizer=tf.keras.optimizers.SGD(cosine_lr, momentum=0.9),
     )
     history = linear_model.fit(

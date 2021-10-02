@@ -2,6 +2,7 @@ import tensorflow as tf
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import keras
 
 
 def load_model(path):
@@ -53,26 +54,42 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
 
     epoch_change = np.insert(epoch_change, 0, checkpoints[0])
     current_epoch = 0
+    try:
+        for change in epoch_change:
 
-    for change in epoch_change:
+            current_epoch += change
+            print(f'epoch {current_epoch}')
 
-        current_epoch += change
-        print(f'epoch {current_epoch}')
+            # if model_exist(path, f'{name}_e{current_epoch}'):
+            #     print(f'model {name}_e{current_epoch} existed in {path}')
+            #     model = load_model(path+name + f'_e{current_epoch}')
+            #     model.compile(optimizer=tf.keras.optimizers.Adam())
+            #     continue
+            hist = model.fit(data, epochs=change, validation_data=test_ds)
+            history.append(hist)
 
-        # if model_exist(path, f'{name}_e{current_epoch}'):
-        #     print(f'model {name}_e{current_epoch} existed in {path}')
-        #     model = load_model(path+name + f'_e{current_epoch}')
-        #     model.compile(optimizer=tf.keras.optimizers.Adam())
-        #     continue
+            save_checkpoint(model, history, path, name, current_epoch)
 
-        hist = model.fit(data, epochs=change, validation_data=test_ds)
-        history.append(hist)
+            try:
 
-        save_checkpoint(model, history, path, name, current_epoch)
-
-        try:
-
-            print(model.encoder.predict(data))
-        except:
-            print(model.predict(data))
+                print(model.encoder.predict(data))
+            except:
+                print(model.predict(data))
+    except Exception as e:
+        print(f'cant train model. exception {e}')
     return model, history
+
+
+def get_metrics():
+    METRICS = [
+        keras.metrics.TruePositives(name='tp'),
+        keras.metrics.FalsePositives(name='fp'),
+        keras.metrics.TrueNegatives(name='tn'),
+        keras.metrics.FalseNegatives(name='fn'),
+        keras.metrics.BinaryAccuracy(name='accuracy'),
+        keras.metrics.Precision(name='precision'),
+        keras.metrics.Recall(name='recall'),
+        keras.metrics.AUC(name='auc'),
+        keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
+    ]
+    return METRICS

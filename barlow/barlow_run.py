@@ -17,13 +17,13 @@ class PretrainParams:
         self.batch_size = batch_size
         self.project_dim = project_dim
         self.checkpoints = checkpoints
-        self.save_path = save_path
+        self.save_path = save_path + 'pretrain/'
         self.name = name
 
         self.optimizer = optimizer
 
     def get_summary(self):
-        return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
+        return f'{self.name}_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
 
     def get_model_path(self):
         return self.save_path + self.get_summary()
@@ -34,12 +34,13 @@ class PretrainParams:
 
 
 class FineTuneParams:
-    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, pretrain_epoch, loss=None):
+    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, pretrain_epoch, save_path, loss=None):
         self.checkpoints = checkpoints
         self.batch_size = batch_size
         self.crop_to = pretrain_params.crop_to
         self.pretrain_params = pretrain_params
         self.pretrain_epoch = pretrain_epoch
+        self.save_path = save_path + 'finetune/'
         if loss is None:
             self.loss = "binary_crossentropy"
             self.loss_name = 'normal'
@@ -49,10 +50,10 @@ class FineTuneParams:
 
     def get_summary(self):
 
-        return f'finetune_bs{self.batch_size}_ct{self.crop_to}_loss_{self.loss_name}'
+        return f'bs{self.batch_size}_ct{self.crop_to}_loss_{self.loss_name}'
 
     def get_model_path(self):
-        return self.pretrain_params.save_path + self.get_summary()
+        return self.save_path + self.get_summary()
 
 
 def run_pretrain(ds, params: PretrainParams):
@@ -83,7 +84,7 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
     train_ds, test_ds = prepare_supervised_data_loader(train_ds, test_ds, params.batch_size, params.crop_to)
 
     if barlow_enc is None:
-        barlow_enc = tf.keras.models.load_model(params.pretrain_params.get_model_path() + f'_e{params.pretrain_epoch}')
+        barlow_enc = tf.keras.models.load_model(params.pretrain_params.get_model_path() + f'/e{params.pretrain_epoch}')
 
     cosine_lr = 0.01  # get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
     linear_model = get_linear_model(barlow_enc, params.crop_to, outshape)
@@ -95,7 +96,7 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
         optimizer=tf.keras.optimizers.Adam()
     )
 
-    train_model(linear_model, train_ds, params.checkpoints, params.pretrain_params.save_path, params.get_summary(),
+    train_model(linear_model, train_ds, params.checkpoints, params.save_path, params.get_summary(),
                 test_ds)
 
     _, test_acc = linear_model.evaluate(test_ds)

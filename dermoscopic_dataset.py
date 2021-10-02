@@ -18,19 +18,23 @@ def split_train_test(input_img_paths, target_img_paths):
     return train_input_img_paths, train_target_img_paths, val_input_img_paths, val_target_img_paths
 
 
+def get_img_path(data_path, image_folder, mask_folder, train_size):
+    targets = []
+    for file in os.listdir(data_path + mask_folder):
+        if 'streaks' in file:
+            targets.append(data_path + mask_folder + file)
+
+    def append_image_folder(img): return data_path + image_folder + img
+
+    input_imgs = [append_image_folder(img) for img in os.listdir(data_path + image_folder)]
+    return sorted(input_imgs)[:train_size], sorted(targets)[:train_size], \
+           sorted(input_imgs)[train_size:], sorted(targets)[train_size:]
+
+
 class DermoscopicImage(keras.utils.Sequence):
     """Helper to iterate over the data (as Numpy arrays)."""
 
-    def __init__(self, batch_size, img_size, data_path, image_folder, mask_folder):
-        input_img_paths = list(os.listdir(data_path + image_folder))
-        target_img_paths = []
-        for filename in os.listdir(data_path + mask_folder):
-            if 'streaks' in filename:
-                target_img_paths.append(filename)
-
-        input_img_paths = sorted(input_img_paths)
-        target_img_paths = sorted(target_img_paths)
-
+    def __init__(self, batch_size, img_size, input_img_paths, target_img_paths):
         self.batch_size = batch_size
         self.img_size = img_size
         self.input_img_paths = input_img_paths

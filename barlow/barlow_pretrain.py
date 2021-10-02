@@ -7,7 +7,6 @@ from ham_dataset import *
 AUTO = tf.data.AUTOTUNE
 
 
-
 def off_diagonal(x):
     n = tf.shape(x)[0]
     flattened = tf.reshape(x, [-1])[:-1]
@@ -91,10 +90,14 @@ def get_model(encoder, opt):
     return barlow_twins
 
 
+def prepare_x(x_ds, bs, crop_to):
+    return x_ds.map(lambda x: tf.image.resize(x, (crop_to, crop_to))).batch(bs)
+
+
 if __name__ == '__main__':
     crop_to = 128
     batch_size = 16
-    project_dim =2048
+    project_dim = 2048
     epochs = 5
 
     # (x_train, y_train), (x_test, y_test) = get_cfar_data()

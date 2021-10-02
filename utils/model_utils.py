@@ -21,11 +21,18 @@ def model_exist(path, name):
     return False
 
 
-def save_checkpoint(model, epoch_loss_list, path, name):
+def check_folder(path, folder):
+    if not folder in os.listdir(path):
+        os.mkdir(path + folder)
+
+
+def save_checkpoint(model, epoch_loss_list, path, name, epoch):
+    check_folder(path, name)
     try:
-        model.encoder.save(path + name)
+        model.encoder.save(path + name + '/' + f'e{epoch}')
     except:
-        model.save(path + name)
+        model.save(path + name + '/' + f'e{epoch}')
+
     epoch_loss = []
     for hist in epoch_loss_list:
         epoch_loss += list(hist.history['loss'])
@@ -34,7 +41,8 @@ def save_checkpoint(model, epoch_loss_list, path, name):
     plt.xlabel('epochs')
     plt.ylabel('loss')
 
-    plt.savefig(f'{path}/figures/{name}.png')
+    check_folder(path + name + '/', 'figures')
+    plt.savefig(f'{path + name}/figures/{name}.png')
 
 
 def train_model(model, data, checkpoints, path, name, test_ds=None):
@@ -50,6 +58,7 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
 
         current_epoch += change
         print(f'epoch {current_epoch}')
+
         # if model_exist(path, f'{name}_e{current_epoch}'):
         #     print(f'model {name}_e{current_epoch} existed in {path}')
         #     model = load_model(path+name + f'_e{current_epoch}')
@@ -59,7 +68,7 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
         hist = model.fit(data, epochs=change, validation_data=test_ds)
         history.append(hist)
 
-        save_checkpoint(model, history, path, name + f'_e{current_epoch}')
+        save_checkpoint(model, history, path, name, current_epoch)
 
         try:
 

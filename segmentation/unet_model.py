@@ -59,12 +59,13 @@ def get_model(img_size, num_classes):
     model = keras.Model(inputs, outputs)
     return model
 
+if __name__ == '__main__':
 
-# Free up RAM in case the model definition cells were run multiple times
-keras.backend.clear_session()
+    # Free up RAM in case the model definition cells were run multiple times
+    keras.backend.clear_session()
 
-# Build model
-img_size = (256, 256)
-num_classes = 8
-model = get_model(img_size, num_classes)
-model.summary()
+    # Build model
+    img_size = (256, 256)
+    num_classes = 8
+    model = get_model(img_size, num_classes)
+    model.summary()

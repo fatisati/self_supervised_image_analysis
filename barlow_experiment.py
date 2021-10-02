@@ -12,10 +12,10 @@ model_path = '../models/twins/'
 # barlow_fine_tune_path = 'fine_tune_e{0}bs{1}'
 
 
-barlow_pretrain_checkpoints = [5, 10, 15, 20, 25, 30, 40, 50, 75, 100]  # [25, 50]
+barlow_pretrain_checkpoints = [2]#,5, 10, 15, 20, 25, 30, 40, 50, 75, 100]  # [25, 50]
 
 barlow_batch_sizes = [16]  # [16, 32, 64]
-barlow_crop_to = [128]  # [128, 256]
+barlow_crop_to = [16]  # [128, 256]
 barlow_project_dim = [2048]  # [2048, 1024]
 
 
@@ -30,11 +30,11 @@ def pretrain(ds):
 def fine_tune(ds):
     checkpoints = [2, 5]#[25, 50, 75, 100]
     batch_sizes = [32, 64, 128, 256]
-    pretrain_params = PretrainParams(128, 16, 2048, [], model_path, 'adama')
+    pretrain_params = PretrainParams(16, 16, 2048, [], model_path)
 
     for batch_size in batch_sizes:
-        params = FineTuneParams(checkpoints, batch_size, pretrain_params, 50)
-        params.loss = ds.weighted_loss #'categorical_crossentropy'
+        params = FineTuneParams(checkpoints, batch_size, pretrain_params, 2, model_path)
+        # params.loss = ds.weighted_loss #'categorical_crossentropy'
         run_fine_tune(ds, params)
 
 

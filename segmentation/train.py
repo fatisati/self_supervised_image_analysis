@@ -9,19 +9,18 @@ from unet_model import *
 batch_size, img_size = 32, (128, 128)
 data_path = '../../data/ISIC/dermoscopic/'
 image_path = 'resized255/'
-mask_path = 'ISIC2018_Task2_Validation_GroundTruth/'
+mask_path = 'ISIC2018_Task2_Training_GroundTruth_v3/'
 
 if __name__ == '__main__':
 
 
     x_size = len(os.listdir(data_path + image_path))
-    x_train, y_train, x_test, y_test = get_img_path(data_path, image_path, mask_path, int(0.8 * x_size))
+    x_train, x_test = get_img_path(data_path, image_path, int(0.8 * x_size))
 
+    train_gen = DermoscopicImage(batch_size, img_size, x_train, data_path + mask_path)
+    val_gen = DermoscopicImage(batch_size, img_size, x_test, mask_path)
 
-    train_gen = DermoscopicImage(batch_size, img_size, x_train, y_train)
-    val_gen = DermoscopicImage(batch_size, img_size, x_test, y_test)
-
-    model = get_model(img_size, 2)
+    model = get_model(img_size, len(train_gen.target_class_names))
     # print(model.summary())
     # Configure the model for training.
     # We use the "sparse" version of categorical_crossentropy

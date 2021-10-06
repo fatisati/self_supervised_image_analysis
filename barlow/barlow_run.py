@@ -107,7 +107,7 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
 
     linear_model.compile(
         loss=params.loss,
-        metrics=["accuracy"],
+        metrics=get_metrics(),
         optimizer=tf.keras.optimizers.Adam()
     )
 

@@ -138,6 +138,8 @@ def identity_block(x, n_filters, n=2):
     # Add the identity link (input) to the output of the residual block
     x = Add()([x, shortcut])
 
+    x = BatchNormalization()(x)
+
     return x
 
 
@@ -197,6 +199,7 @@ def projection_block(x, n_filters, strides=(2, 2), n=2):
 
     # Add the projection shortcut to the output of the residual block
     x = Add()([shortcut, x])
+    x = BatchNormalization()(x)
     return x
 
 

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     x_train, x_test = get_img_path(data_path, image_path, int(0.8 * x_size))
 
     train_gen = DermoscopicImage(batch_size, img_size, x_train, data_path + mask_path)
-    val_gen = DermoscopicImage(batch_size, img_size, x_test, mask_path)
+    val_gen = DermoscopicImage(batch_size, img_size, x_test, data_path + mask_path)
 
     model = get_model(img_size, len(train_gen.target_class_names))
     # print(model.summary())

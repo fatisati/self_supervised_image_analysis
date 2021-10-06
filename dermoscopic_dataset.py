@@ -35,7 +35,7 @@ class DermoscopicImage(keras.utils.Sequence):
         self.input_img_paths = input_img_paths
         # self.target_img_paths = target_img_paths
         self.target_img_folder = target_img_folder
-        self.target_class_names = ['globules', 'milia_like_cyst', 'negative_network', 'pigment_network', 'streaks']
+        self.target_class_names = ['globules']#, 'milia_like_cyst', 'negative_network', 'pigment_network', 'streaks']
 
     def __len__(self):
         return len(self.input_img_paths) // self.batch_size

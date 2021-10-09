@@ -49,7 +49,7 @@ def calculating_class_weights(y_true):
 def get_weighted_loss(weights):
     def weighted_loss(y_true, y_pred):
         loss = (weights[:, 0] ** (1 - y_true)) * (weights[:, 1] ** (y_true)) * K.binary_crossentropy(y_true, y_pred)
-        return loss / weights.sum() #K.mean(loss, xis=-1)
+        return loss / weights.sum()  # K.mean(loss, xis=-1)
 
     return weighted_loss
 
@@ -76,44 +76,31 @@ class MyDataset:
 
         self.label_df = self.read_label_df(data_path + label_filename)
 
+        if data_size != -1:
+            self.label_df = self.label_df[:data_size]
+
         file_names = self.label_df[image_col]
         labels = self.label_df.drop([image_col], axis=1).values
 
-        if balanced:
-
-            file_names, labels = balance_data(np.array(file_names).reshape(-1, 1), np.array(labels))
-            file_names = file_names.flatten()
-
-            data_dic = {'filenames': file_names}
-
-            for i in range(labels.shape[1]):
-                data_dic[i] = labels[:, i]
-            pd.DataFrame(data_dic).to_excel(data_path + 'balanced.xlsx')
-
-        file_names, labels = shuffle(file_names, labels)
         class_weights = calculating_class_weights(labels)
         self.weighted_loss = get_weighted_loss(class_weights)
-        # print('class weights', class_weights)
 
-        if data_size != -1:
-            file_names = file_names[:data_size]
-            labels = labels[:data_size]
+        train_idx = self.label_df['is_train'] == 1
 
-        test_size = int(0.1 * 0.8 * len(file_names))
-        train_size = len(file_names) - test_size
-        print('train size: ', train_size, ' test size:', len(file_names) - train_size)
+        train_size = len(self.label_df[train_idx])
+        test_size = len(file_names) - train_size
+        print(f'train size: {train_size}, test size: {test_size}')
 
-        self.train_names = file_names[:train_size]
-        self.test_names = file_names[train_size:]
+        self.train_names = file_names[train_idx]
+        self.test_names = file_names[~train_idx]
 
-        self.train_labels = labels[:train_size]
-        self.test_labels = labels[train_size:]
+        self.train_labels = labels[train_idx]
+        self.test_labels = labels[~train_idx]
 
         print('train label report')
         label_report(self.train_labels)
         print('test label report')
         label_report(self.test_labels)
-
 
         self.train_names_ds = tf.data.Dataset.from_tensor_slices(self.train_names)
         self.test_names_ds = tf.data.Dataset.from_tensor_slices(self.test_names)
@@ -170,11 +157,19 @@ class MyDataset:
         return img, label
 
 
+def fix_validation_data(df, train_size, save_path):
+    train_idxs = [0] * len(df)
+    train_idxs[:train_size] = [1] * train_size
+    train_idxs = shuffle(train_idxs)
+    df['is_train'] = train_idxs
+    df.to_csv(save_path)
+
+
 if __name__ == '__main__':
     ds = MyDataset(data_path='../data/ISIC/ham10000/', image_folder='resized256/',
-                   label_filename='disease_labels.csv', image_col='image', balanced=True)
-    x_train, x_test = ds.get_x_train_test_ds()
-
-    sample_img = list(x_train.take(1))[0]
-    plt.imshow(sample_img)
-    plt.show()
+                   label_filename='disease_labels.csv', image_col='image')
+    # x_train, x_test = ds.get_x_train_test_ds()
+    #
+    # sample_img = list(x_train.take(1))[0]
+    # plt.imshow(sample_img)
+    # plt.show()

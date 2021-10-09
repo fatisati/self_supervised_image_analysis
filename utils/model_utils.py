@@ -82,10 +82,10 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
 
 def get_metrics():
     METRICS = [
-        keras.metrics.TruePositives(name='tp'),
-        keras.metrics.FalsePositives(name='fp'),
-        keras.metrics.TrueNegatives(name='tn'),
-        keras.metrics.FalseNegatives(name='fn'),
+        # keras.metrics.TruePositives(name='tp'),
+        # keras.metrics.FalsePositives(name='fp'),
+        # keras.metrics.TrueNegatives(name='tn'),
+        # keras.metrics.FalseNegatives(name='fn'),
         keras.metrics.BinaryAccuracy(name='accuracy'),
         keras.metrics.Precision(name='precision'),
         keras.metrics.Recall(name='recall'),

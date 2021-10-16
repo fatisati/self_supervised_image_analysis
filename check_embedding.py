@@ -18,7 +18,7 @@ if __name__ == '__main__':
         # pretrain_params.save_path = model_path + 'pretrain-old/'
         encoder = load_model(pretrain_params.get_model_path() + f'/e{epoch}')
 
-        backbone = get_backbone(encoder)
+        backbone = get_resnet_encoder(encoder)
 
         input_x = prepare_x(x_train, batch_size, crop_to)
         backbone_out = backbone.predict(input_x)

@@ -12,7 +12,7 @@ from utils.model_utils import *
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
-                 optimizer=tf.keras.optimizers.Adam()):
+                 optimizer=tf.keras.optimizers.Adam(), backbone = 'resnet'):
         self.crop_to = crop_to
         self.batch_size = batch_size
         self.project_dim = project_dim
@@ -20,6 +20,7 @@ class PretrainParams:
         self.save_path = save_path + 'pretrain/'
         self.name = name
 
+        self.backbone = backbone
         self.optimizer = optimizer
 
     def get_summary(self):
@@ -65,17 +66,17 @@ class FineTuneParams:
         return self.save_path + self.get_summary()
 
 
-def run_pretrain(ds, params: PretrainParams):
+def run_pretrain(ds, params: PretrainParams, backbone='resnet'):
     x_train, x_test = ds.get_x_train_test_ds()
 
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size)
 
-    resnet_enc = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
-                                      return_before_head=False)
+    backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
+                                    return_before_head=False)
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
 
-    model = get_model(resnet_enc, optimizer)
+    model = get_model(backbone, optimizer)
 
     # history = model.fit(ssl_ds, epochs=params.epochs)
     # plt.plot(history.history["loss"])

@@ -2,9 +2,10 @@ import matplotlib.pyplot as plt
 from ham_dataset import *
 from utils.model_utils import *
 
-def get_backbone(barlow_encoder):
+
+def get_resnet_encoder(resnet_backbone):
     backbone = tf.keras.Model(
-        barlow_encoder.input, barlow_encoder.layers[-8].output
+        resnet_backbone.input, resnet_backbone.layers[-8].output
     )
     return backbone
 
@@ -12,7 +13,7 @@ def get_backbone(barlow_encoder):
 # from tf.keras.layers import BatchNormalization
 def get_linear_model(barlow_encoder, crop_to, y_shape):
     # Extract the backbone ResNet20.
-    backbone = get_backbone(barlow_encoder)
+    backbone = get_resnet_encoder(barlow_encoder)
     # We then create our linear classifier and train it.
     backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
@@ -55,7 +56,7 @@ if __name__ == '__main__':
         loss = "binary_crossentropy"
     linear_model.compile(
         loss=loss,
-        metrics=get_metrics(),#["accuracy"],
+        metrics=get_metrics(),  # ["accuracy"],
         optimizer=tf.keras.optimizers.SGD(cosine_lr, momentum=0.9),
     )
     history = linear_model.fit(

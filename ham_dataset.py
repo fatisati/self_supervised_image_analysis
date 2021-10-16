@@ -80,7 +80,7 @@ class MyDataset:
             self.label_df = self.label_df[:data_size]
 
         file_names = self.label_df[image_col]
-        labels = self.label_df.drop([image_col], axis=1).values
+        labels = self.label_df.drop([image_col, 'is_train'], axis=1).values
 
         class_weights = calculating_class_weights(labels)
         self.weighted_loss = get_weighted_loss(class_weights)

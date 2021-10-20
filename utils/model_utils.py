@@ -59,7 +59,7 @@ def find_latest_model(path, name):
     files = os.listdir(path + name)
     model_files = []
     for file in files:
-        if '.' not in file:
+        if '.' not in file and file[0] == 'e' :
             model_files.append(file)
     if len(model_files) == 0:
         return -1, -1

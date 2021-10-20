@@ -52,7 +52,7 @@ class FineTuneParams:
             self.loss_name = 'normal'
         else:
             self.loss = loss
-            self.loss_name = 'weighted'
+            # self.loss_name = 'weighted'
         self.name = name
 
     def get_summary(self):
@@ -116,8 +116,10 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
     train_model(linear_model, train_ds, params.checkpoints, params.save_path, params.get_summary(),
                 test_ds)
 
-    _, test_acc = linear_model.evaluate(test_ds)
-    print("Test accuracy: {:.2f}%".format(test_acc * 100))
+    test_acc = linear_model.evaluate(test_ds)
+    print(f'test acc {test_acc}')
+    # _, test_acc = linear_model.evaluate(test_ds)
+    # print("Test accuracy: {:.2f}%".format(test_acc * 100))
 
     # linear_model.save(params.get_model_path())
     # plt.plot(history.history['loss'])

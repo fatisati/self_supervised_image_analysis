@@ -28,17 +28,17 @@ def pretrain(ds):
 
 
 def fine_tune(ds):
-    checkpoints = [2, 5]#[25, 50, 75, 100]
+    checkpoints = [1,3,5]#[25, 50, 75, 100]
     batch_sizes = [32, 64, 128, 256]
-    pretrain_params = PretrainParams(16, 16, 2048, [], model_path)
+    pretrain_params = PretrainParams(256, 16, 2048, [], model_path)
 
     for batch_size in batch_sizes:
-        params = FineTuneParams(checkpoints, batch_size, pretrain_params, 2, model_path)
+        params = FineTuneParams(checkpoints, batch_size, pretrain_params, 10, model_path, 'test')
         # params.loss = ds.weighted_loss #'categorical_crossentropy'
         run_fine_tune(ds, params)
 
 
 if __name__ == '__main__':
     ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/', data_size=100, balanced=True)
+                   image_col='image', image_folder='resized256/', data_size=100)
     fine_tune(ds)

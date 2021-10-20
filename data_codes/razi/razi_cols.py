@@ -1,0 +1,6 @@
+pid = 'PatientStudy'
+img_type = 'ImageTypeText'
+micro_type = 'DYNAMIC MICRO'
+study = 'Study'
+img_path = 'ImagePath'
+img_name = 'ImageName'

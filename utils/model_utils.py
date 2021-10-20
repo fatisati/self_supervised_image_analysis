@@ -60,14 +60,14 @@ def find_latest_model(path, name):
     model_files = []
     for file in files:
         if ('.' not in file) and (file[0] == 'e'):
-            model_files.append(file)
+            model_files.append(int(file[1:]))
     if len(model_files) == 0:
         return -1, -1
     model_files = sorted(model_files)
-    model = load_model(f'{path}{name}/{model_files[-1]}')
+    print(model_files)
+    model = load_model(f'{path}{name}/e{model_files[-1]}')
     print(f'best founded model {model_files[-1]}')
-    return model, int(model_files[-1][1:])
-
+    return model, int(model_files[-1])
 
 def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_model=True):
     history = []

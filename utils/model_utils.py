@@ -59,7 +59,7 @@ def find_latest_model(path, name):
     files = os.listdir(path + name)
     model_files = []
     for file in files:
-        if ('.' not in file) and (file[0] == 'e') :
+        if ('.' not in file) and (file[0] == 'e'):
             model_files.append(file)
     if len(model_files) == 0:
         return -1, -1
@@ -69,12 +69,13 @@ def find_latest_model(path, name):
     return model, int(model_files[-1][1:])
 
 
-def train_model(model, data, checkpoints, path, name, test_ds=None):
+def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_model=True):
     history = []
     checkpoints = np.array(checkpoints)
 
     latest_model, latest_epoch = find_latest_model(path, name)
-    if latest_model != -1:
+
+    if (latest_model != -1) and load_latest_model:
         model = latest_model
         checkpoints = checkpoints[checkpoints > latest_epoch]
         checkpoints = np.insert(checkpoints, 0, latest_epoch)
@@ -82,7 +83,7 @@ def train_model(model, data, checkpoints, path, name, test_ds=None):
         checkpoints = np.insert(checkpoints, 0, 0)
 
     epoch_change = np.diff(checkpoints)
-    current_epoch = 0
+    current_epoch = checkpoints[0]
 
     for change in epoch_change:
 

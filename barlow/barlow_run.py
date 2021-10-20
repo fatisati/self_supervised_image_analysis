@@ -84,7 +84,7 @@ def run_pretrain(ds, params: PretrainParams, backbone='resnet'):
     # plt.savefig('{0}figures'.format(params.save_path, params.get_summary()))
     # model.encoder.save(params.get_model_path())
 
-    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary())
+    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=False)
 
     return model.encoder
 

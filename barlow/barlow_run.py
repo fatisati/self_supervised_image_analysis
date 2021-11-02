@@ -8,11 +8,12 @@ from barlow.barlow_finetune import *
 from utils.model_utils import *
 
 from utils.model_utils import *
-import inception_v3
+import barlow.inception_v3 as inception_v3
+
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
-                 optimizer=tf.keras.optimizers.Adam(), backbone = 'resnet'):
+                 optimizer=tf.keras.optimizers.Adam(), backbone='resnet'):
         self.crop_to = crop_to
         self.batch_size = batch_size
         self.project_dim = project_dim
@@ -21,10 +22,12 @@ class PretrainParams:
         self.name = name
 
         self.backbone = backbone
+        if backbone == 'inception':
+            self.crop_to = 299
         self.optimizer = optimizer
 
     def get_summary(self):
-        return f'{self.name}_ct{self.crop_to}_bs{self.batch_size}'
+        return f'{self.name}_ct{self.crop_to}_bs{self.batch_size}_{self.backbone}'
 
     def get_old_summary(self):
         return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
@@ -40,7 +43,8 @@ class PretrainParams:
 
 
 class FineTuneParams:
-    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, pretrain_epoch, save_path, name, loss=None):
+    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, pretrain_epoch, save_path, name,
+                 loss=None):
         self.checkpoints = checkpoints
         self.batch_size = batch_size
         self.crop_to = pretrain_params.crop_to
@@ -67,14 +71,12 @@ class FineTuneParams:
         return self.save_path + self.get_summary()
 
 
-def run_pretrain(ds, params: PretrainParams, backbone='resnet'):
-
-    if backbone == 'resnet':
+def run_pretrain(ds, params: PretrainParams):
+    if params.backbone == 'resnet':
         backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                         return_before_head=False)
     else:
         backbone = inception_v3.get_model()
-        params.crop_to = 299
 
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size)

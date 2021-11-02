@@ -1,4 +1,4 @@
-import conf
+import barlow.conf as conf
 from utils.model_utils import load_model
 
 

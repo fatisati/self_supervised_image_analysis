@@ -84,7 +84,7 @@ def get_lr(x_train, batch_size, epochs):
     return lr_decayed_fn
 
 
-def get_model(encoder, opt):
+def compile_barlow(encoder, opt):
     barlow_twins = BarlowTwins(encoder)
     barlow_twins.compile(optimizer=opt)
     return barlow_twins
@@ -112,5 +112,5 @@ if __name__ == '__main__':
     resnet_enc = resnet20.get_network(crop_to, hidden_dim=project_dim, use_pred=False,
                                       return_before_head=False)
     optimizer = tf.keras.optimizers.SGD(learning_rate=lr_decayed_fn, momentum=0.9)
-    model = get_model(resnet_enc, optimizer)
+    model = compile_barlow(resnet_enc, optimizer)
     history = model.fit(ssl_ds, epochs=epochs)

@@ -8,7 +8,7 @@ from barlow.barlow_finetune import *
 from utils.model_utils import *
 
 from utils.model_utils import *
-
+import inception_v3
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
@@ -68,21 +68,20 @@ class FineTuneParams:
 
 
 def run_pretrain(ds, params: PretrainParams, backbone='resnet'):
-    x_train, x_test = ds.get_x_train_test_ds()
 
+    if backbone == 'resnet':
+        backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
+                                        return_before_head=False)
+    else:
+        backbone = inception_v3.get_model()
+        params.crop_to = 299
+
+    x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size)
 
-    backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
-                                    return_before_head=False)
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
-
-    model = get_model(backbone, optimizer)
-
-    # history = model.fit(ssl_ds, epochs=params.epochs)
-    # plt.plot(history.history["loss"])
-    # plt.savefig('{0}figures'.format(params.save_path, params.get_summary()))
-    # model.encoder.save(params.get_model_path())
+    model = compile_barlow(backbone, optimizer)
 
     train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=False)
 

@@ -69,6 +69,7 @@ def find_latest_model(path, name):
     print(f'best founded model {model_files[-1]}')
     return model, int(model_files[-1])
 
+
 def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_model=True):
     history = []
     checkpoints = np.array(checkpoints)

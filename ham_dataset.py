@@ -35,7 +35,7 @@ def class_weights(y):
     class_counts = np.bincount(y)
     sum_ = sum(class_counts)
     weights = sum_ / class_counts
-    return weights
+    return weights / weights.sum()
 
 
 def calculating_class_weights(y_true):
@@ -43,6 +43,8 @@ def calculating_class_weights(y_true):
     weights = np.empty([number_dim, 2])
     for i in range(number_dim):
         weights[i] = class_weights(y_true[:, i])
+    # weights = weights / weights.sum()
+    # print(weights,weights.sum())
     return weights
 
 

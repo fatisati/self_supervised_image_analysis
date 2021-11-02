@@ -12,11 +12,17 @@ model_path = '../models/twins/'
 # barlow_fine_tune_path = 'fine_tune_e{0}bs{1}'
 
 
-barlow_pretrain_checkpoints = [2]#,5, 10, 15, 20, 25, 30, 40, 50, 75, 100]  # [25, 50]
+barlow_pretrain_checkpoints = [2]  # ,5, 10, 15, 20, 25, 30, 40, 50, 75, 100]  # [25, 50]
 
 barlow_batch_sizes = [16]  # [16, 32, 64]
 barlow_crop_to = [16]  # [128, 256]
 barlow_project_dim = [2048]  # [2048, 1024]
+
+
+def pretrain_inception(ds):
+    for bs in barlow_batch_sizes:
+        pretrain_params = PretrainParams(-1, bs, project_dim, barlow_pretrain_checkpoints, model_path)
+        run_pretrain(ds, pretrain_params, backbone='inception')
 
 
 def pretrain(ds):
@@ -28,7 +34,7 @@ def pretrain(ds):
 
 
 def fine_tune(ds):
-    checkpoints = [1,3,5]#[25, 50, 75, 100]
+    checkpoints = [1, 3, 5]  # [25, 50, 75, 100]
     batch_sizes = [32, 64, 128, 256]
     pretrain_params = PretrainParams(256, 16, 2048, [], model_path)
 

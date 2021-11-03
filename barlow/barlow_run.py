@@ -27,7 +27,10 @@ class PretrainParams:
         self.optimizer = optimizer
 
     def get_summary(self):
-        return f'{self.name}_ct{self.crop_to}_bs{self.batch_size}_{self.backbone}'
+        summary = f'{self.name}_ct{self.crop_to}_bs{self.batch_size}'
+        if self.backbone == 'resnet':
+            return summary
+        return summary + f'_{self.backbone}'
 
     def get_old_summary(self):
         return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
@@ -71,7 +74,7 @@ class FineTuneParams:
         return self.save_path + self.get_summary()
 
 
-def run_pretrain(ds, params: PretrainParams):
+def run_pretrain(ds, params: PretrainParams, debug=False):
     if params.backbone == 'resnet':
         backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                         return_before_head=False)
@@ -85,7 +88,7 @@ def run_pretrain(ds, params: PretrainParams):
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
     model = compile_barlow(backbone, optimizer)
 
-    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=False)
+    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=False, debug=debug)
 
     return model.encoder
 

@@ -44,7 +44,7 @@ def calculating_class_weights(y_true):
     for i in range(number_dim):
         weights[i] = class_weights(y_true[:, i])
     # weights = weights / weights.sum()
-    # print(weights,weights.sum())
+    print(weights[:, 0], weights[:, 1])
     return weights
 
 
@@ -61,7 +61,6 @@ def get_weighted_loss(weights):
 def label_report(labels):
     for i in range(labels.shape[1]):
         print(sum(labels[:, i]), end=',')
-    print()
 
 
 class MyDataset:

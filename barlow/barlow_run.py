@@ -59,7 +59,7 @@ class FineTuneParams:
             self.loss_name = 'normal'
         else:
             self.loss = loss
-            # self.loss_name = 'weighted'
+            self.loss_name = 'weighted'
         self.name = name
 
     def get_summary(self):
@@ -107,7 +107,7 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
 
         barlow_enc = tf.keras.models.load_model(pretrain_path)
 
-    cosine_lr = 0.01  # get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
+    # cosine_lr = 0.01  # get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
     linear_model = get_linear_model(barlow_enc, params.crop_to, outshape)
     # Compile model and start training.
 
@@ -120,8 +120,8 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
     train_model(linear_model, train_ds, params.checkpoints, params.save_path, params.get_summary(),
                 test_ds)
 
-    test_acc = linear_model.evaluate(test_ds)
-    print(f'test acc {test_acc}')
+    # test_acc = linear_model.evaluate(test_ds)
+    # print(f'test acc {test_acc}')
     # _, test_acc = linear_model.evaluate(test_ds)
     # print("Test accuracy: {:.2f}%".format(test_acc * 100))
 

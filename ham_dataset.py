@@ -142,7 +142,7 @@ class MyDataset:
     def decode_img(self, img):
         # convert the compressed string to a 3D uint8 tensor
         img = tf.image.decode_jpeg(img, channels=3)
-        img = tf.image.per_image_standardization(img)
+        # img = tf.image.per_image_standardization(img)
         # img = tf.divide(img, 255)
         return img
 

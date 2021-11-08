@@ -22,8 +22,12 @@ class PretrainParams:
         self.name = name
 
         self.backbone = backbone
+
         if backbone == 'inception':
             self.crop_to = 299
+            self.normalized = True
+        else:
+            self.normalized = False
         self.optimizer = optimizer
 
     def get_summary(self):
@@ -82,7 +86,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
         backbone = inception_v3.get_model()
 
     x_train, x_test = ds.get_x_train_test_ds()
-    ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size)
+    ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size, params.normalized)
 
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)

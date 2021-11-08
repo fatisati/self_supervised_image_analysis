@@ -53,14 +53,15 @@ def get_model(img_size, num_classes):
         previous_block_activation = x  # Set aside next residual
 
     # Add a per-pixel classification layer
-    outputs = layers.Conv2D(num_classes, 3, activation="softmax", padding="same")(x)
+    # default: softamx - sigmoid for multi label
+    outputs = layers.Conv2D(num_classes, 3, activation="sigmoid", padding="same")(x)
 
     # Define the model
     model = keras.Model(inputs, outputs)
     return model
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # Free up RAM in case the model definition cells were run multiple times
     keras.backend.clear_session()
 

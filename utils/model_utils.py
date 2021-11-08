@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import keras
 from keras.callbacks import CSVLogger
-
+from barlow.barlow_pretrain import compute_loss
 
 def load_model(path):
     return tf.keras.models.load_model(path)
@@ -70,7 +70,7 @@ def find_latest_model(path, name):
     return model, int(model_files[-1])
 
 
-def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_model=True):
+def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_model=True, debug=False):
     history = []
     checkpoints = np.array(checkpoints)
 
@@ -88,21 +88,24 @@ def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_
 
     for change in epoch_change:
 
+        print(f'current-epoch {current_epoch}-{current_epoch+change}, epoch-change: {change}')
         current_epoch += change
-        print(f'current-epoch {current_epoch}, epoch-change: {change}')
 
         check_folder(path, name)
         csv_logger = CSVLogger(path + name + '/log.csv', append=True, separator=',')
+
+        if debug:
+            print('backbone out before train')
+            try:
+                print(model.encoder.predict(data))
+            except:
+                print(model.predict(data))
 
         hist = model.fit(data, epochs=change, validation_data=test_ds, callbacks=[csv_logger])
         history.append(hist)
 
         save_checkpoint(model, history, path, name, current_epoch)
 
-        try:
-            print(model.encoder.predict(data))
-        except:
-            print(model.predict(data))
     # except Exception as e:
     #     print(f'cant train model. exception {e}')
     return model, history
@@ -121,3 +124,4 @@ def get_metrics():
         keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
     ]
     return METRICS
+

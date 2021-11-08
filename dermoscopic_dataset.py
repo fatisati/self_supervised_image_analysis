@@ -7,15 +7,13 @@ from tensorflow.keras.preprocessing.image import load_img
 import random
 
 
-def split_train_test(input_img_paths, target_img_paths):
-    val_samples = 1000
-    random.Random(1337).shuffle(input_img_paths)
-    random.Random(1337).shuffle(target_img_paths)
-    train_input_img_paths = input_img_paths[:-val_samples]
-    train_target_img_paths = target_img_paths[:-val_samples]
-    val_input_img_paths = input_img_paths[-val_samples:]
-    val_target_img_paths = target_img_paths[-val_samples:]
-    return train_input_img_paths, train_target_img_paths, val_input_img_paths, val_target_img_paths
+def split_train_test(input_img_path, val_ratio = 0.2):
+    input_img_files = list(os.listdir(input_img_path))
+    val_samples = int(val_ratio * len(input_img_files))
+    random.Random(1337).shuffle(input_img_files)
+    train_input_img_paths = input_img_files[:-val_samples]
+    val_input_img_paths = input_img_files[-val_samples:]
+    return train_input_img_paths, val_input_img_paths
 
 
 def get_img_path(data_path, image_folder, train_size):
@@ -34,7 +32,7 @@ class DermoscopicImage(keras.utils.Sequence):
         self.img_size = img_size
         self.input_img_paths = input_img_paths
         self.target_img_folder = target_img_folder
-        self.target_class_names = ['globules', 'milia_like_cyst']#, 'milia_like_cyst', 'negative_network', 'pigment_network', 'streaks']
+        self.target_class_names = ['globules', 'milia_like_cyst', 'negative_network', 'pigment_network', 'streaks']
         self.num_classes = len(self.target_class_names)
 
     def __len__(self):
@@ -69,12 +67,12 @@ class DermoscopicImage(keras.utils.Sequence):
             mask = load_img(mask_path, target_size=self.img_size, color_mode="grayscale")
             mask = np.array(mask)
             mask = np.array(mask) // 255
-            mask = np.expand_dims(mask, axis=2)
-            y[idx]  = mask
+            y[:, :, idx]  = mask
         return y
 
 
 if __name__ == '__main__':
+    train_input_img_paths, val_input_img_paths = split_train_test('../data/ISIC/dermoscopic/resized255/')
     ds = DermoscopicImage(10, (250, 250), [], '../data/ISIC/dermoscopic/ISIC2018_Task2_Training_GroundTruth_v3/')
     mask = ds.load_mask('ISIC_0011345.jpg')
     print(mask.shape)

@@ -46,3 +46,7 @@ def prepare_supervised_data_loader(train_ds, test_ds, batch_size, crop_to):
     )
     test_ds = test_ds.batch(batch_size).prefetch(AUTO)
     return train_ds, test_ds
+
+
+def prepare_input_data(x_ds, crop_to, batch_size):
+    return x_ds.map(lambda x: tf.image.resize(x, (crop_to, crop_to))).batch(batch_size)

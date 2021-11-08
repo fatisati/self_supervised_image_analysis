@@ -34,8 +34,10 @@ def compute_loss(z_a, z_b, lambd):
     # Loss.
     on_diag = tf.linalg.diag_part(c) + (-1)
     on_diag = tf.reduce_sum(tf.pow(on_diag, 2))
+
     off_diag = off_diagonal(c)
     off_diag = tf.reduce_sum(tf.pow(off_diag, 2))
+
     loss = on_diag + (lambd * off_diag)
     return loss
 

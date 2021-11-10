@@ -1,5 +1,6 @@
 from tensorflow.keras import layers
 import keras
+from dermoscopic_dataset import *
 
 
 def get_model(img_size, num_classes):
@@ -66,7 +67,18 @@ if __name__ == '__main__':
     keras.backend.clear_session()
 
     # Build model
-    img_size = (256, 256)
-    num_classes = 8
+    img_size = (255, 255)
+    num_classes = 5
     model = get_model(img_size, num_classes)
-    model.summary()
+    input_img_folder = '../../data/ISIC/dermoscopic/resized255/'
+    target_img_folder = '../../data/ISIC/dermoscopic/ISIC2018_Task2_Training_GroundTruth_v3/'
+    train_input_img_paths, val_input_img_paths = split_train_test(input_img_folder)
+    print('model loaded.')
+
+    ds = DermoscopicImage(10, img_size, val_input_img_paths[:20],
+                          target_img_folder)
+    print(f'dataset generated. val size {len(val_input_img_paths)}')
+
+    predicted_masks = model.predict(ds)
+    print(predicted_masks.shape)
+    print(predicted_masks)

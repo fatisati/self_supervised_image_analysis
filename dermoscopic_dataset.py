@@ -11,8 +11,8 @@ def split_train_test(input_img_path, val_ratio = 0.2):
     input_img_files = list(os.listdir(input_img_path))
     val_samples = int(val_ratio * len(input_img_files))
     random.Random(1337).shuffle(input_img_files)
-    train_input_img_paths = input_img_files[:-val_samples]
-    val_input_img_paths = input_img_files[-val_samples:]
+    train_input_img_paths = [input_img_path + img_name for img_name in input_img_files[:-val_samples]]
+    val_input_img_paths = [input_img_path + img_name for img_name in input_img_files[-val_samples:]]
     return train_input_img_paths, val_input_img_paths
 
 
@@ -27,7 +27,8 @@ def get_img_path(data_path, image_folder, train_size):
 class DermoscopicImage(keras.utils.Sequence):
     """Helper to iterate over the data (as Numpy arrays)."""
 
-    def __init__(self, batch_size, img_size, input_img_paths, target_img_folder):
+    def __init__(self, batch_size, img_size, input_img_paths,
+                 target_img_folder):
         self.batch_size = batch_size
         self.img_size = img_size
         self.input_img_paths = input_img_paths

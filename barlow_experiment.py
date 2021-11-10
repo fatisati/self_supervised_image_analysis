@@ -21,8 +21,8 @@ barlow_project_dim = [2048]  # [2048, 1024]
 
 def pretrain_inception(ds):
     for bs in barlow_batch_sizes:
-        pretrain_params = PretrainParams(-1, bs, project_dim, barlow_pretrain_checkpoints, model_path)
-        run_pretrain(ds, pretrain_params, backbone='inception')
+        pretrain_params = PretrainParams(-1, bs, -1, barlow_pretrain_checkpoints, model_path, backbone='inception')
+        run_pretrain(ds, pretrain_params, debug=True)
 
 
 def pretrain(ds):
@@ -47,4 +47,4 @@ def fine_tune(ds):
 if __name__ == '__main__':
     ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
                    image_col='image', image_folder='resized256/', data_size=100)
-    fine_tune(ds)
+    pretrain_inception(ds)

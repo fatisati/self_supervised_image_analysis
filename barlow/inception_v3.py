@@ -10,10 +10,10 @@ def load_inception():
 
 def get_network():
     inputs = Input(shape=(299, 299, 3))
-    x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0, )(inputs)
+    x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0)(inputs)
     inception = load_inception()
     out = inception(x)
-    return Model(x, out)
+    return Model(inputs, out)
 
 
 if __name__ == '__main__':

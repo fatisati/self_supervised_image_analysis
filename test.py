@@ -1,3 +1,2 @@
-a = (1,2)
-b = (3,)
-print(a+b)
+from utils.check_model import *
+check_inception()

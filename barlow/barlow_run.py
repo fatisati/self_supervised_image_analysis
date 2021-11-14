@@ -83,7 +83,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
         backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                         return_before_head=False)
     else:
-        backbone = inception_v3.get_model()
+        backbone = inception_v3.get_network()
 
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size, params.normalized)

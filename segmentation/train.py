@@ -1,5 +1,6 @@
 from dermoscopic_dataset import *
 from unet_model import *
+from utils.model_utils import *
 
 batch_size, img_size = 5, (32, 32)
 data_path = '../../data/ISIC/dermoscopic/'
@@ -28,4 +29,6 @@ if __name__ == '__main__':
 
     # Train the model, doing validation at the end of each epoch.
     epochs = 5
+    train_model(model, train_gen, [5,10,20,30,40,50], model_path, model_name,
+                test_ds=val_gen)
     model.fit(train_gen, epochs=epochs, validation_data=val_gen, callbacks=callbacks)

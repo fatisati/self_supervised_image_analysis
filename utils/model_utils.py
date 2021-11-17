@@ -108,7 +108,7 @@ def train_model(model, data, checkpoints, path, name,
 
         save_checkpoint(model, history, path, name, current_epoch)
         if checkpoint_function:
-            checkpoint_function(model, path + name)
+            checkpoint_function(model, f'{path}/{name}/e{current_epoch}')
     # except Exception as e:
     #     print(f'cant train model. exception {e}')
     return model, history

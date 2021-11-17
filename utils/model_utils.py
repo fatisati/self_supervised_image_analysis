@@ -6,6 +6,7 @@ import keras
 from keras.callbacks import CSVLogger
 from barlow.barlow_pretrain import compute_loss
 
+
 def load_model(path):
     return tf.keras.models.load_model(path)
 
@@ -70,7 +71,8 @@ def find_latest_model(path, name):
     return model, int(model_files[-1])
 
 
-def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_model=True, debug=False):
+def train_model(model, data, checkpoints, path, name,
+                test_ds=None, load_latest_model=True, debug=False, checkpoint_function = None):
     history = []
     checkpoints = np.array(checkpoints)
 
@@ -88,7 +90,7 @@ def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_
 
     for change in epoch_change:
 
-        print(f'current-epoch {current_epoch}-{current_epoch+change}, epoch-change: {change}')
+        print(f'current-epoch {current_epoch}-{current_epoch + change}, epoch-change: {change}')
         current_epoch += change
 
         check_folder(path, name)
@@ -105,7 +107,8 @@ def train_model(model, data, checkpoints, path, name, test_ds=None, load_latest_
         history.append(hist)
 
         save_checkpoint(model, history, path, name, current_epoch)
-
+        if checkpoint_function:
+            checkpoint_function(model, path + name)
     # except Exception as e:
     #     print(f'cant train model. exception {e}')
     return model, history
@@ -124,4 +127,3 @@ def get_metrics():
         keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
     ]
     return METRICS
-

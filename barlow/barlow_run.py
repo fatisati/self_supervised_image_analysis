@@ -86,7 +86,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
         backbone = inception_v3.get_network()
 
     elif params.backbone == 'unet':
-        backbone = unet_model.get_unet_backbone(params.crop_to)
+        backbone = unet_model.get_unet_backbone((params.crop_to, params.crop_to))
 
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size, params.normalized)

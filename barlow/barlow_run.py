@@ -9,7 +9,7 @@ from utils.model_utils import *
 
 from utils.model_utils import *
 import barlow.inception_v3 as inception_v3
-
+import segmentation.unet_model as unet_model
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
@@ -82,8 +82,11 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
     if params.backbone == 'resnet':
         backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                         return_before_head=False)
-    else:
+    elif params.backbone == 'inception':
         backbone = inception_v3.get_network()
+
+    elif params.backbone == 'unet':
+        backbone = unet_model.get_unet_backbone(params.crop_to)
 
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size, params.normalized)

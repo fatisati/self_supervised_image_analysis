@@ -3,7 +3,7 @@ import keras
 from dermoscopic_dataset import *
 
 
-def get_model(img_size, num_classes):
+def get_unet_backbone(img_size):
     inputs = keras.Input(shape=img_size + (3,))
 
     ### [First half of the network: downsampling inputs] ###
@@ -52,7 +52,14 @@ def get_model(img_size, num_classes):
         residual = layers.Conv2D(filters, 1, padding="same")(residual)
         x = layers.add([x, residual])  # Add back residual
         previous_block_activation = x  # Set aside next residual
+    model = keras.Model(inputs, x)
+    return model
 
+
+def get_model(img_size, num_classes):
+    inputs = keras.Input(shape=img_size + (3,))
+    backbone = get_unet_backbone(img_size)
+    x = backbone(inputs)
     # Add a per-pixel classification layer
     # default: softamx - sigmoid for multi label
     outputs = layers.Conv2D(num_classes, 3, activation="sigmoid", padding="same")(x)

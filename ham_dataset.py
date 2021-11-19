@@ -129,6 +129,7 @@ class MyDataset:
                self.test_names_ds.map(self.read_tf_image)
 
     def get_supervised_ds(self):
+        print(f'train size: {len(self.train_zip_sample)}')
         supervised_train_ds = (self.train_zip_sample
                                .map(self.process_path, num_parallel_calls=AUTOTUNE)
                                )

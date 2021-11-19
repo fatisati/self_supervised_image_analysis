@@ -61,6 +61,7 @@ def get_weighted_loss(weights):
 def label_report(labels):
     for i in range(labels.shape[1]):
         print(sum(labels[:, i]), end=',')
+    print()
 
 
 class MyDataset:

@@ -110,6 +110,9 @@ class MyDataset:
 
         self.train_labels_ds_sample = tf.data.Dataset.from_tensor_slices\
             (self.train_labels[:self.supervised_train_size])
+        print('sample-train label report')
+        label_report(self.train_labels[:self.supervised_train_size])
+
         self.test_labels_ds = tf.data.Dataset.from_tensor_slices(self.test_labels)
 
         self.train_zip_sample = tf.data.Dataset.zip((self.train_names_ds_sample, self.train_labels_ds_sample))

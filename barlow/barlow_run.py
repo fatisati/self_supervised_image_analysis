@@ -113,6 +113,8 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
             pretrain_path += f'/e{params.pretrain_epoch}'
 
         barlow_enc = tf.keras.models.load_model(pretrain_path)
+    else:
+        print('not loading backbone. using function inputs.')
 
     # cosine_lr = 0.01  # get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
     linear_model = get_linear_model(barlow_enc, params.crop_to, outshape)

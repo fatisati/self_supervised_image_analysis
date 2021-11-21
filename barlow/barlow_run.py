@@ -101,6 +101,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
 
 
 def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
+    print('running-finetune')
     outshape = ds.train_labels.shape[-1]
     train_ds, test_ds = ds.get_supervised_ds()
     train_ds, test_ds = prepare_supervised_data_loader(train_ds, test_ds, params.batch_size, params.crop_to)

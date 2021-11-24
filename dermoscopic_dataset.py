@@ -44,8 +44,8 @@ class DermoscopicImage(keras.utils.Sequence):
         i = idx * self.batch_size
         batch_input_img_paths = self.input_img_paths[i: i + self.batch_size]
         # batch_target_img_paths = self.target_img_paths[i: i + self.batch_size]
-        x = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="float32")
-        y = np.zeros((self.batch_size,) + self.img_size + (self.num_classes,))  # , dtype="uint8")
+        x = np.zeros((self.batch_size,) + self.img_size + (3,), dtype="uint8")
+        y = np.zeros((self.batch_size,) + self.img_size + (self.num_classes,) , dtype="uint8")
 
         for j, path in enumerate(batch_input_img_paths):
             img = load_img(path, target_size=self.img_size)
@@ -74,6 +74,8 @@ class DermoscopicImage(keras.utils.Sequence):
 
 if __name__ == '__main__':
     train_input_img_paths, val_input_img_paths = split_train_test('../data/ISIC/dermoscopic/resized255/')
-    ds = DermoscopicImage(10, (250, 250), [], '../data/ISIC/dermoscopic/ISIC2018_Task2_Training_GroundTruth_v3/')
+    ds = DermoscopicImage(10, (160, 160), [], '../data/ISIC/dermoscopic/ISIC2018_Task2_Training_GroundTruth_v3/')
+
     mask = ds.load_mask('ISIC_0011345.jpg')
-    print(mask.shape)
+
+

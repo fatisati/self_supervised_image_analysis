@@ -17,6 +17,6 @@ def check_inception():
     out = inception.predict(ds_one)
 
     print('prediction done')
-    print(f'normalized min:{min(normalized_out)}, max: {max(normalized_out)}')
-    print(f'inception out min: {min(out)}, max: {max(out)}')
+    print(f'normalized min:{normalized_out.min()}, max: {normalized_out.min()}')
+    print(f'inception out min: {out.min()}, max: {out.max()}')
 

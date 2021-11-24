@@ -7,7 +7,7 @@ from config_ import *
 
 def get_img_array(img_path, size):
     # `img` is a PIL image of size 299x299
-    img = keras.preprocessing.image.load_img(img_path, target_size=size)
+    img = keras.preprocessing.image.cv2_load_img(img_path, target_size=size)
     # `array` is a float32 Numpy array of shape (299, 299, 3)
     array = keras.preprocessing.image.img_to_array(img)
     # We add a dimension to transform our array into a "batch"
@@ -53,7 +53,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 
 def save_and_display_gradcam(img_path, heatmap, cam_path="cam.jpg", alpha=0.4):
     # Load the original image
-    img = keras.preprocessing.image.load_img(img_path)
+    img = keras.preprocessing.image.cv2_load_img(img_path)
     img = keras.preprocessing.image.img_to_array(img)
 
     # Rescale heatmap to a range 0-255

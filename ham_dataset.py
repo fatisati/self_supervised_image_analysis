@@ -104,20 +104,20 @@ class MyDataset:
         print('test label report')
         label_report(self.test_labels)
 
-        self.supervised_train_size = int(0.1*len(self.train_names))
-        self.train_names_ds_sample = tf.data.Dataset.from_tensor_slices\
-            (self.train_names[:self.supervised_train_size])
+        self.supervised_train_size = int(0.1 * len(self.train_names))
+        self.train_names_ds_sample = tf.data.Dataset.from_tensor_slices(self.train_names[:self.supervised_train_size])
+        self.train_names_ds = tf.data.Dataset.from_tensor_slices(self.train_names)
         self.test_names_ds = tf.data.Dataset.from_tensor_slices(self.test_names)
 
-        self.train_labels_ds_sample = tf.data.Dataset.from_tensor_slices\
+        self.train_labels_ds_sample = tf.data.Dataset.from_tensor_slices \
             (self.train_labels[:self.supervised_train_size])
-        print('sample-train label report')
+        self.train_labels_ds = tf.data.Dataset.from_tensor_slices(self.train_labels)
+
         label_report(self.train_labels[:self.supervised_train_size])
-
         self.test_labels_ds = tf.data.Dataset.from_tensor_slices(self.test_labels)
-
-        self.train_zip_sample = tf.data.Dataset.zip((self.train_names_ds_sample, self.train_labels_ds_sample))
+        self.train_zip = tf.data.Dataset.zip((self.train_names_ds, self.train_labels_ds))
         self.test_zip = tf.data.Dataset.zip((self.test_names_ds, self.test_labels_ds))
+        self.train_zip_sample = tf.data.Dataset.zip((self.train_names_ds_sample, self.train_labels_ds_sample))
 
     def get_image_path(self):
         return self.data_path + self.image_folder
@@ -129,10 +129,21 @@ class MyDataset:
         return pd.read_excel(df_name, index_col=0)
 
     def get_x_train_test_ds(self):
-        return self.train_names_ds_sample.map(self.read_tf_image), \
+        return self.train_names_ds.map(self.read_tf_image), \
                self.test_names_ds.map(self.read_tf_image)
 
     def get_supervised_ds(self):
+        print(f'train size: {len(self.train_zip)}')
+        supervised_train_ds = (self.train_zip
+                               .map(self.process_path, num_parallel_calls=AUTOTUNE)
+                               )
+
+        supervised_test_ds = (self.test_zip
+                              .map(self.process_path, num_parallel_calls=AUTOTUNE)
+                              )
+        return supervised_train_ds, supervised_test_ds
+
+    def get_supervised_ds_sample(self):
         print(f'train size: {len(self.train_zip_sample)}')
         supervised_train_ds = (self.train_zip_sample
                                .map(self.process_path, num_parallel_calls=AUTOTUNE)

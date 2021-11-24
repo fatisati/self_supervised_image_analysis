@@ -11,6 +11,7 @@ from utils.model_utils import *
 import barlow.inception_v3 as inception_v3
 import segmentation.unet_model as unet_model
 
+
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
                  optimizer=tf.keras.optimizers.Adam(), backbone='resnet'):
@@ -94,8 +95,9 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
     model = compile_barlow(backbone, optimizer)
-
-    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=False, debug=debug)
+    compile_function = lambda model: model.compile(optimizer=optimizer)
+    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=True,
+                debug=debug, compile_function=compile_function)
 
     return model.encoder
 

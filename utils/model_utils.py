@@ -72,7 +72,7 @@ def find_latest_model(path, name):
 
 
 def train_model(model, data, checkpoints, path, name,
-                test_ds=None, load_latest_model=True, debug=False, checkpoint_function = None):
+                test_ds=None, load_latest_model=True, debug=False, checkpoint_function = None, compile_function=None):
     history = []
     checkpoints = np.array(checkpoints)
 
@@ -103,6 +103,8 @@ def train_model(model, data, checkpoints, path, name,
             except:
                 print(model.predict(data))
 
+        if compile_function:
+            compile_function(model)
         hist = model.fit(data, epochs=change, validation_data=test_ds, callbacks=[csv_logger])
         history.append(hist)
 

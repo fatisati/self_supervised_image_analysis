@@ -74,7 +74,7 @@ def random_apply(func, x, p):
 def custom_augment(image, crop_to, normalized):
     image = tf.cast(image, tf.float32)
     image = flip_random_crop(image, crop_to)
-    image = random_apply(color_jitter, image, p=0.9)
-    image = random_apply(color_drop, image, p=0.3)
-    image = random_apply(solarize, image, p=0.3)
+    # image = random_apply(color_jitter, image, p=0.9)
+    # image = random_apply(color_drop, image, p=0.3)
+    # image = random_apply(solarize, image, p=0.3)
     return image

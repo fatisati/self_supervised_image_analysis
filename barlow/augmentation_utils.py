@@ -81,10 +81,10 @@ def custom_augment(image, crop_to):
 def get_tf_augment(crop_to):
     data_augmentation = tf.keras.Sequential([
         layers.RandomFlip("horizontal_and_vertical"),
-        layers.RandomRotation(0.2),
-        layers.RandomZoom((0, -0.3)),
+        layers.RandomRotation(0.25),
+        layers.RandomZoom((0, -0.4)),
+        layers.experimental.preprocessing.RandomContrast(0.3),
         layers.Resizing(crop_to, crop_to),
-        layers.experimental.preprocessing.RandomContrast(0.2),
         # layers.Rescaling(1. / 255)
     ])
     return data_augmentation

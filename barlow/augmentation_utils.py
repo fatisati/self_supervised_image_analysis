@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.keras import layers
 
 
 # CROP_TO = 32
@@ -71,10 +72,19 @@ def random_apply(func, x, p):
         return x
 
 
-def custom_augment(image, crop_to, normalized):
+def custom_augment(image, crop_to):
     image = tf.cast(image, tf.float32)
-    image = flip_random_crop(image, crop_to)
-    # image = random_apply(color_jitter, image, p=0.9)
-    # image = random_apply(color_drop, image, p=0.3)
-    # image = random_apply(solarize, image, p=0.3)
+    image = random_resize_crop(image, crop_size=crop_to)
     return image
+
+
+def get_tf_augment(crop_to):
+    data_augmentation = tf.keras.Sequential([
+        layers.RandomFlip("horizontal_and_vertical"),
+        layers.RandomRotation(0.2),
+        layers.RandomZoom((0, -0.3)),
+        layers.Resizing(crop_to, crop_to),
+        layers.experimental.preprocessing.RandomContrast(0.2),
+        # layers.Rescaling(1. / 255)
+    ])
+    return data_augmentation

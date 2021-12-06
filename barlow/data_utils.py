@@ -15,11 +15,11 @@ def get_cfar_data():
     return (x_train, y_train), (x_test, y_test)
 
 
-def prepare_data_loader(x_train, crop_to, batch_size, normalized):
+def prepare_data_loader(x_train, batch_size, augment_function):
     # ssl_ds_one = tf.data.Dataset.from_tensor_slices(x_train)
     ssl_ds_one = (
         x_train.shuffle(1024, seed=SEED)
-            .map(lambda x: custom_augment(x, crop_to, normalized), num_parallel_calls=AUTO)
+            .map(augment_function, num_parallel_calls=AUTO)
             .batch(batch_size)
             .prefetch(AUTO)
     )
@@ -27,7 +27,7 @@ def prepare_data_loader(x_train, crop_to, batch_size, normalized):
     # ssl_ds_two = tf.data.Dataset.from_tensor_slices(x_train)
     ssl_ds_two = (
         x_train.shuffle(1024, seed=SEED)
-            .map(lambda x: custom_augment(x, crop_to, normalized), num_parallel_calls=AUTO)
+            .map(augment_function, num_parallel_calls=AUTO)
             .batch(batch_size)
             .prefetch(AUTO)
     )

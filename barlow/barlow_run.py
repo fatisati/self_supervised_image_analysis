@@ -14,7 +14,7 @@ import segmentation.unet_model as unet_model
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
-                 optimizer=tf.keras.optimizers.Adam(), backbone='resnet'):
+                 optimizer=tf.keras.optimizers.Adam(), backbone='resnet', augment_func='basic'):
         self.crop_to = crop_to
         self.batch_size = batch_size
         self.project_dim = project_dim
@@ -30,12 +30,18 @@ class PretrainParams:
         else:
             self.normalized = False
         self.optimizer = optimizer
+        self.aug_name = augment_function
+
+        if augment_function == 'tf':
+            self.augment_function = get_tf_augment(crop_to)
+        else:
+            self.augment_function = lambda x: custom_augment(x, crop_to)
 
     def get_summary(self):
         summary = f'{self.name}_ct{self.crop_to}_bs{self.batch_size}'
         if self.backbone == 'resnet':
             return summary
-        return summary + f'_{self.backbone}'
+        return summary + f'_{self.backbone}_aug_{self.aug_name}'
 
     def get_old_summary(self):
         return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
@@ -90,7 +96,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
         backbone = unet_model.get_unet_backbone((params.crop_to, params.crop_to))
 
     x_train, x_test = ds.get_x_train_test_ds()
-    ssl_ds = prepare_data_loader(x_train, params.crop_to, params.batch_size, params.normalized)
+    ssl_ds = prepare_data_loader(x_train, params.batch_size, params.augment_function)
 
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
@@ -105,7 +111,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
 def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
     print('running-finetune')
     outshape = ds.train_labels.shape[-1]
-    train_ds, test_ds = ds.get_supervised_ds()
+    train_ds, test_ds = ds.get_supervised_ds_sample()
     train_ds, test_ds = prepare_supervised_data_loader(train_ds, test_ds, params.batch_size, params.crop_to)
 
     if barlow_enc is None:

@@ -38,10 +38,10 @@ class PretrainParams:
             self.augment_function = lambda x: custom_augment(x, crop_to)
 
     def get_summary(self):
-        summary = f'{self.name}_ct{self.crop_to}_bs{self.batch_size}'
+        summary = f'{self.name}_ct{self.crop_to}_bs{self.batch_size}_aug_{self.aug_name}'
         if self.backbone == 'resnet':
             return summary
-        return summary + f'_{self.backbone}_aug_{self.aug_name}'
+        return summary + f'_{self.backbone}'
 
     def get_old_summary(self):
         return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'

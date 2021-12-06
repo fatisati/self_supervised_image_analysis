@@ -1,5 +1,5 @@
 from barlow.augmentation_utils import *
-
+import visualization.visual_augmentations as vis
 AUTO = tf.data.AUTOTUNE
 SEED = 42
 
@@ -14,6 +14,13 @@ def get_cfar_data():
     print(f"Total test examples: {len(x_test)}")
     return (x_train, y_train), (x_test, y_test)
 
+
+def show_sample(ds, cnt):
+    samples = next(iter(ds))
+    samples = samples[:cnt]
+    samples = [vis.get_showable_img(img) for img in samples]
+    all = vis.concat_all(samples)
+    vis.cv2_imshow(all)
 
 def prepare_data_loader(x_train, batch_size, augment_function):
     # ssl_ds_one = tf.data.Dataset.from_tensor_slices(x_train)
@@ -32,6 +39,8 @@ def prepare_data_loader(x_train, batch_size, augment_function):
             .prefetch(AUTO)
     )
 
+    show_sample(ssl_ds_one, 3)
+    show_sample(ssl_ds_two, 3)
     # We then zip both of these datasets.
     ssl_ds = tf.data.Dataset.zip((ssl_ds_one, ssl_ds_two))
     return ssl_ds

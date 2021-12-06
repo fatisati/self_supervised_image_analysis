@@ -1,5 +1,4 @@
 from ham_dataset import MyDataset
-from barlow.data_utils import prepare_data_loader
 from barlow.augmentation_utils import custom_augment
 from google.colab.patches import cv2_imshow
 import numpy as np

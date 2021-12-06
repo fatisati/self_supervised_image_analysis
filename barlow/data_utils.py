@@ -39,8 +39,8 @@ def prepare_data_loader(x_train, batch_size, augment_function):
             .prefetch(AUTO)
     )
 
-    show_sample(ssl_ds_one, 3)
-    show_sample(ssl_ds_two, 3)
+    show_sample(ssl_ds_one, 5)
+    show_sample(ssl_ds_two, 5)
     # We then zip both of these datasets.
     ssl_ds = tf.data.Dataset.zip((ssl_ds_one, ssl_ds_two))
     return ssl_ds

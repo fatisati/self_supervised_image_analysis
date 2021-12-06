@@ -28,8 +28,11 @@ def pretrain_inception(ds):
 def pretrain(ds):
     for bs in barlow_batch_sizes:
         for crop_to in barlow_crop_to:
+            augment_func = get_tf_augment(crop_to)
+
             for project_dim in barlow_project_dim:
-                pretrain_params = PretrainParams(crop_to, bs, project_dim, barlow_pretrain_checkpoints, model_path)
+                pretrain_params = PretrainParams(crop_to, bs, project_dim, barlow_pretrain_checkpoints, model_path,
+                                                 augment_func)
                 run_pretrain(ds, pretrain_params)
 
 

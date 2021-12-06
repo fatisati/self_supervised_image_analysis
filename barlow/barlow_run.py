@@ -30,9 +30,9 @@ class PretrainParams:
         else:
             self.normalized = False
         self.optimizer = optimizer
-        self.aug_name = augment_function
+        self.aug_name = augment_func
 
-        if augment_function == 'tf':
+        if augment_func == 'tf':
             self.augment_function = get_tf_augment(crop_to)
         else:
             self.augment_function = lambda x: custom_augment(x, crop_to)

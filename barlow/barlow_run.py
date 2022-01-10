@@ -85,7 +85,7 @@ class FineTuneParams:
         return self.save_path + self.get_summary()
 
 
-def run_pretrain(ds, params: PretrainParams, debug=False):
+def get_backbone(params):
     if params.backbone == 'resnet':
         backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
                                         return_before_head=False)
@@ -94,7 +94,11 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
 
     elif params.backbone == 'unet':
         backbone = unet_model.get_unet_backbone((params.crop_to, params.crop_to))
+    return backbone
 
+
+def run_pretrain(ds, params: PretrainParams, debug=False):
+    backbone = get_backbone(params)
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.batch_size, params.augment_function)
 
@@ -112,6 +116,7 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
     print('running-finetune')
     outshape = ds.train_labels.shape[-1]
     train_ds, test_ds = ds.get_supervised_ds_sample()
+    print(f'training on {len(train_ds)} data...')
     train_ds, test_ds = prepare_supervised_data_loader(train_ds, test_ds, params.batch_size, params.crop_to)
 
     if barlow_enc is None:

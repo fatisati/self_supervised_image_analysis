@@ -87,6 +87,7 @@ def residual_group(x, n_filters, n_blocks, strides=(2, 2), n=2):
     # Identity residual blocks
     for _ in range(n_blocks):
         x = identity_block(x, n_filters, n)
+    # x = dropout(x)
     return x
 
 
@@ -248,7 +249,7 @@ def get_network(in_shape, n=2, hidden_dim=128, use_pred=False, return_before_hea
 
     # The input tensor
     inputs = Input(shape=(in_shape, in_shape, 3))
-
+    #add gaussian noise
     #I don't know the reson for original rescaling
     x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
     # x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0)(inputs)

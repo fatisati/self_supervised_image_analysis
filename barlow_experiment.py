@@ -31,20 +31,28 @@ def pretrain(ds):
 
             for project_dim in barlow_project_dim:
                 pretrain_params = PretrainParams(crop_to, bs, project_dim, barlow_pretrain_checkpoints, model_path,
-                                                 augment_func = 'tf')
+                                                 augment_func='tf')
                 run_pretrain(ds, pretrain_params)
 
 
+pretrain_crop_batch_epoch = [[128, 'no-pretrain', 'no-pretrain']]
+
+
 def fine_tune(ds):
-    checkpoints = [1, 3, 5]  # [25, 50, 75, 100]
-    batch_sizes = [32, 64, 128, 256]
-    pretrain_params = PretrainParams(256, 16, 2048, [], model_path)
-    backbone = resnet20.get_network(pretrain_params.crop_to, hidden_dim=pretrain_params.project_dim, use_pred=False,
-                                    return_before_head=False)
-    for batch_size in batch_sizes:
-        params = FineTuneParams(checkpoints, batch_size, pretrain_params, 10, model_path, 'test')
-        # params.loss = ds.weighted_loss #'categorical_crossentropy'
-        run_fine_tune(ds, params, backbone)
+    checkpoints = [10, 25, 50, 75, 100, 150, 200]
+    batch_sizes = [128]
+    for cr, bs, pretrain_epoch in pretrain_crop_batch_epoch:
+        pretrain_params = PretrainParams(cr, bs, 2048, -1, -1)
+        # print(pretrain_params.get_summary())
+        # pretrain_params.save_path = model_path + 'pretrain-old/'
+        backbone = resnet20.get_network(cr, hidden_dim=2048, use_pred=False,
+                                        return_before_head=False)
+        for batch_size in batch_sizes:
+            params = FineTuneParams(checkpoints, batch_size, pretrain_params, -1, model_path, f'10percent-no-pretrain')
+            # params.loss = ds.weighted_loss
+            print(params.get_model_path())
+            print('before run')
+            run_fine_tune(ds, params, backbone)
 
 
 if __name__ == '__main__':

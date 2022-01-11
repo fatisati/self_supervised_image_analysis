@@ -31,7 +31,7 @@ def pretrain(ds):
 
             for project_dim in barlow_project_dim:
                 pretrain_params = PretrainParams(crop_to, bs, project_dim, barlow_pretrain_checkpoints, model_path,
-                                                 augment_func='tf')
+                                                 aug_name='tf')
                 run_pretrain(ds, pretrain_params)
 
 

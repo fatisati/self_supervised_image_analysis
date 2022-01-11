@@ -12,9 +12,18 @@ import barlow.inception_v3 as inception_v3
 import segmentation.unet_model as unet_model
 
 
+def get_aug_function(aug_name, crop_to):
+    if aug_name == 'tf':
+        return get_tf_augment(crop_to)
+    elif aug_name == 'original':
+        return lambda x: custom_augment(x, crop_to)
+    else:
+        return 'no-augmentation function found'
+
+
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
-                 optimizer=tf.keras.optimizers.Adam(), backbone='resnet', augment_func='basic'):
+                 optimizer=tf.keras.optimizers.Adam(), backbone='resnet', aug_name='tf'):
         self.crop_to = crop_to
         self.batch_size = batch_size
         self.project_dim = project_dim
@@ -30,12 +39,9 @@ class PretrainParams:
         else:
             self.normalized = False
         self.optimizer = optimizer
-        self.aug_name = augment_func
+        self.aug_name = aug_name
 
-        if augment_func == 'tf':
-            self.augment_function = get_tf_augment(crop_to)
-        else:
-            self.augment_function = lambda x: custom_augment(x, crop_to)
+        self.augment_function = get_aug_function(aug_name, crop_to)
 
     def get_summary(self):
         summary = f'{self.name}_ct{self.crop_to}_bs{self.batch_size}_aug_{self.aug_name}'
@@ -75,7 +81,7 @@ class FineTuneParams:
 
     def get_summary(self):
 
-        return f'{self.name}_ct{self.crop_to} _bs{self.batch_size}_loss_{self.loss_name}'
+        return f'{self.name}_ct{self.crop_to} _bs{self.batch_size}_loss_{self.loss_name}_aug_{self.pretrain_params.aug_name}'
 
     def get_old_summary(self):
 

@@ -5,11 +5,19 @@ import matplotlib.pyplot as plt
 import keras
 from keras.callbacks import CSVLogger
 from barlow.barlow_pretrain import compute_loss
+import time
+
+
+def print_time(st):
+    print(f'done took {time.time() - st}')
 
 
 def load_model(path):
-    return tf.keras.models.load_model(path)
-
+    print(f'loading model in path: {path} ...')
+    st = time.time()
+    model = tf.keras.models.load_model(path)
+    print_time(st)
+    return model
 
 def get_checkpoint_callback(checkpoint_path):
     cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path, save_best_only=True,
@@ -72,7 +80,7 @@ def find_latest_model(path, name):
 
 
 def train_model(model, data, checkpoints, path, name,
-                test_ds=None, load_latest_model=True, debug=False, checkpoint_function = None, compile_function=None):
+                test_ds=None, load_latest_model=True, debug=False, checkpoint_function=None, compile_function=None):
     history = []
     checkpoints = np.array(checkpoints)
 
@@ -129,3 +137,10 @@ def get_metrics():
         keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
     ]
     return METRICS
+
+def load_custom_object_model(weighted_loss):
+    custom_objects = {"weighted_loss": weighted_loss}
+    with tf.keras.utils.custom_object_scope(custom_objects):
+        model = load_model('../../models/twins/finetune/ct64_bs128_loss_weighted/e100')
+    print('model loaded')
+    return model

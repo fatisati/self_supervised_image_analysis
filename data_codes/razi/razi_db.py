@@ -17,7 +17,7 @@ class RaziDb:
         self.image_path = 'D:\\Fatemeh\\razi data\\Backup\\Images\\Images\\'
         self.res_path = '../results/'
         self.useful_cols = ['ImagePath', 'ImageName', 'ImageTypeText', 'PatientRecordNumber',
-                            'MedReference', 'MedLevel', 'PatientStudy']
+                            'MedReference', 'MedLevel', 'PatientStudy', 'ShootingDate']
 
     def cast_image_path(self, path):
         return self.image_path + path.split('\\')[-1] + '/'
@@ -32,12 +32,12 @@ class RaziDb:
         self.cursor.execute(query)
         results = list(self.cursor)
         df = []
-        for path, name, type_text, pid, med_ref, med_level, study in results:
+        for path, name, type_text, pid, med_ref, med_level, study, shooting_date in results:
             df.append({razi_cols.img_path: self.cast_image_path(path),
                        razi_cols.img_name: name,
                        razi_cols.img_type: type_text,
                        razi_cols.pid: pid, 'med-ref': med_ref, 'med-level': med_level,
-                       razi_cols.study: study})
+                       razi_cols.study: study, razi_cols.shooting_date: shooting_date})
         df = pd.DataFrame(df)
 
         return df

@@ -1,24 +1,14 @@
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import os
 import tensorflow as tf
-# from skimage import io
-from numpy import asarray
-from PIL import Image
-from copy import deepcopy
 
-import zipfile
-from io import BytesIO
-from PIL import Image
-
-# from skimage.transform import resize
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.utils import class_weight
 from sklearn.utils.class_weight import compute_class_weight
 import keras.backend as K
 
 from sklearn.utils import shuffle
+from utils import tf_utils
 
 AUTO = tf.data.experimental.AUTOTUNE
 AUTOTUNE = tf.data.AUTOTUNE
@@ -44,7 +34,7 @@ def calculating_class_weights(y_true):
     for i in range(number_dim):
         weights[i] = class_weights(y_true[:, i])
     # weights = weights / weights.sum()
-    print(weights[:, 0], weights[:, 1])
+    # print(weights[:, 0], weights[:, 1])
     return weights
 
 
@@ -77,6 +67,7 @@ class MyDataset:
         self.balanced = balanced
 
         self.label_df = self.read_label_df(data_path + label_filename)
+        self.label_names = list(self.label_df.columns[2:-1])
 
         if data_size != -1:
             self.label_df = self.label_df[:data_size]
@@ -99,10 +90,10 @@ class MyDataset:
         self.train_labels = labels[train_idx]
         self.test_labels = labels[~train_idx]
 
-        print('train label report')
-        label_report(self.train_labels)
-        print('test label report')
-        label_report(self.test_labels)
+        # print('train label report')
+        # label_report(self.train_labels)
+        # print('test label report')
+        # label_report(self.test_labels)
 
         self.supervised_train_size = int(0.1 * len(self.train_names))
         self.train_names_ds_sample = tf.data.Dataset.from_tensor_slices(self.train_names[:self.supervised_train_size])
@@ -129,8 +120,8 @@ class MyDataset:
         return pd.read_excel(df_name, index_col=0)
 
     def get_x_train_test_ds(self):
-        return self.train_names_ds.map(self.read_tf_image), \
-               self.test_names_ds.map(self.read_tf_image)
+        return self.train_names_ds.map(self.load_img), \
+               self.test_names_ds.map(self.load_img)
 
     def get_supervised_ds(self):
         print(f'train size: {len(self.train_zip)}')
@@ -158,22 +149,12 @@ class MyDataset:
         train_ds, test_ds = self.get_supervised_ds()
         return train_ds.batch(batch_size), test_ds.batch(batch_size)
 
-    def decode_img(self, img):
-        # convert the compressed string to a 3D uint8 tensor
-        img = tf.image.decode_jpeg(img, channels=3)
-        # img = tf.image.per_image_standardization(img)
-        # img = tf.divide(img, 255)
-        return img
-
-    def read_tf_image(self, file_path):
+    def load_img(self, file_path):
         path = self.get_image_path() + file_path
-
-        img = tf.io.read_file(path)
-        img = self.decode_img(img)
-        return img
+        return tf_utils.read_tf_image(path)
 
     def process_path(self, file_path, label):
-        img = self.read_tf_image(file_path)
+        img = self.load_img(file_path)
         return img, label
 
 

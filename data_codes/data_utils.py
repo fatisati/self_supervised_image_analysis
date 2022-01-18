@@ -36,7 +36,6 @@ def read_zip_resize(src_path, dst_path):
             img = img.resize((256, 256))
             img.save(dst_path + get_name(file))
 
-
 if __name__ == '__main__':
     read_zip_resize('../../data/ISIC/ham10000/ISIC2018_Task3_Training_Input.zip',
                     '../../data/ISIC/ham10000/resized256/')

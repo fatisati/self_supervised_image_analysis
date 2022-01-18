@@ -14,7 +14,7 @@ def get_ham_ds():
 
 def get_barlow_dataset(sample_size):
     ds = get_ham_ds()
-    return [ds.read_tf_image(path) for path in ds.train_names[:sample_size]]
+    return [ds.load_img(path) for path in ds.train_names[:sample_size]]
 
 
 def show_augmented_img(img, crop_to=256, augment_cnt=5):

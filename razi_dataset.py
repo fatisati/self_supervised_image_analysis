@@ -1,12 +1,12 @@
 import random
 
 import pandas as pd
-import ast
 from utils import tf_utils
 import tensorflow as tf
 from utils.data_utils import get_train_test_idx
 
 from data_codes.razi.razi_utils import *
+import os
 
 AUTO = tf.data.AUTOTUNE
 
@@ -14,7 +14,7 @@ AUTO = tf.data.AUTOTUNE
 def augment_sample(samples, pid):
     row = samples.iloc[pid]
     img_names = row['img_names']
-    r = random.randint(0, len(img_names))
+    r = random.randint(0, len(img_names)-1)
     return img_names[r]
 
 
@@ -22,7 +22,7 @@ class RaziDataset:
 
     def __init__(self, data_folder, img_size):
         self.data_folder = data_folder
-        self.img_folder = data_folder + 'imgs/'
+        self.img_folder = self.data_folder + 'imgs/'
         self.img_size = img_size
         self.all_labels = None
         self.valid_names = list(os.listdir(self.img_folder))
@@ -35,7 +35,8 @@ class RaziDataset:
         return valid_imgs
 
     def get_pretrain_samples(self):
-        samples = pd.read_excel(self.data_folder + 'all_samples.csv')
+        samples = pd.read_excel(self.data_folder + 'all_samples.xlsx')
+        samples['img_names'] = [ast.literal_eval(names) for names in samples['img_names']]
         train = samples[samples['is_train'] == 1]
         test = samples[samples['is_train'] == 0]
         print(f'train-size: {len(train)}, test-size: {len(test)}')
@@ -47,6 +48,7 @@ class RaziDataset:
     def prepare_ssl_ds(self, samples, bs):
         ssl_one = [augment_sample(samples, i) for i in range(len(samples))]
         ssl_two = [augment_sample(samples, i) for i in range(len(samples))]
+
         ssl_ds_one = self.process_ssl_names(ssl_one, bs)
         ssl_ds_two = self.process_ssl_names(ssl_two, bs)
         ssl_ds = tf.data.Dataset.zip((ssl_ds_one, ssl_ds_two))

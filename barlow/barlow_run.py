@@ -1,7 +1,20 @@
 from barlow.barlow_pretrain import *
 from barlow.barlow_finetune import *
 from utils.model_utils import *
+from barlow import inception_v3
+from segmentation import unet_model
 
+def get_backbone(backbone_name, crop_to = None, project_dim = None):
+    backbone = None
+    if backbone_name == 'resnet':
+        backbone = resnet20.get_network(crop_to, hidden_dim=project_dim, use_pred=False,
+                                        return_before_head=False)
+    elif backbone_name == 'inception':
+        backbone = inception_v3.get_network()
+
+    elif backbone_name == 'unet':
+        backbone = unet_model.get_unet_backbone((crop_to, crop_to))
+    return backbone
 
 def get_aug_function(aug_name, crop_to):
     if aug_name == 'tf':

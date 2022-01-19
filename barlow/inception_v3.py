@@ -5,6 +5,7 @@ from tensorflow.keras.layers import experimental
 import tensorflow as tf
 from tensorflow.keras.layers import BatchNormalization
 
+
 def load_inception():
     return load_model(conf.model_path + 'inception')
 

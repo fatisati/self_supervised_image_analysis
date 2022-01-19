@@ -6,10 +6,6 @@ import keras
 from keras.callbacks import CSVLogger
 import time
 
-import barlow.inception_v3 as inception_v3
-import segmentation.unet_model as unet_model
-from barlow import resnet20
-
 
 def print_time(st):
     print(f'done took {time.time() - st}')
@@ -149,16 +145,3 @@ def load_custom_object_model(weighted_loss):
         model = load_model('../../models/twins/finetune/ct64_bs128_loss_weighted/e100')
     print('model loaded')
     return model
-
-
-def get_backbone(backbone_name, crop_to = None, project_dim = None):
-    backbone = None
-    if backbone_name == 'resnet':
-        backbone = resnet20.get_network(crop_to, hidden_dim=project_dim, use_pred=False,
-                                        return_before_head=False)
-    elif backbone_name == 'inception':
-        backbone = inception_v3.get_network()
-
-    elif backbone_name == 'unet':
-        backbone = unet_model.get_unet_backbone((crop_to, crop_to))
-    return backbone

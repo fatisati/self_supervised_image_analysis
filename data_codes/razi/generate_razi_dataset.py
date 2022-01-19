@@ -1,5 +1,6 @@
 import ast
 import enum
+import os
 import time
 
 from data_codes.razi.razi_db import RaziDb
@@ -7,8 +8,9 @@ import data_codes.razi.razi_cols as razi_cols
 import pandas as pd
 
 from utils import data_utils
+from data_codes.razi.razi_utils import *
 
-razi_folder = '../../data/razi/'
+razi_folder = '../../../data/razi/'
 
 
 class RaziSample:
@@ -114,11 +116,26 @@ def generate_supervised_samples():
     supervised_samples = pd.DataFrame(supervised_samples)
     is_train = data_utils.get_train_test_idx(len(supervised_samples), 0.2)
     supervised_samples['is_train'] = is_train
-    supervised_samples.to_csv(razi_folder + 'supervised_samples.csv')
+    supervised_samples.to_excel(razi_folder + 'supervised_samples.xlsx')
+
+
+def process_all_samples():
+    samples = pd.read_excel(razi_folder + 'all_samples.xlsx')
+    print(f'samples initial size: {len(samples)}')
+
+    valid_names = os.listdir(razi_folder + 'imgs/')
+    samples['img_names'] = get_samples_valid_img_names(samples, list(valid_names))
+    samples['valid_cnt'] = [len(img_names) for img_names in samples['img_names']]
+    samples = samples[samples['valid_cnt'] > 0]
+    print(f'valid samples size: {len(samples)}')
+
+    is_train = data_utils.get_train_test_idx(len(samples), 0.2)
+    samples['is_train'] = is_train
+    samples.to_excel(razi_folder + 'all_samples_processed.xlsx')
 
 
 if __name__ == '__main__':
-    generate_supervised_samples()
+    process_all_samples()
     # ds = RaziDataset('../../data/razi')
     # print('reading samples from db...')
     # st = time.time()

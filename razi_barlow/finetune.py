@@ -1,5 +1,4 @@
 from razi_dataset import RaziDataset
-from utils.data_utils import get_train_test_idx
 from barlow import resnet20
 from barlow.barlow_finetune import *
 

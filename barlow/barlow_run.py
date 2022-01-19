@@ -1,15 +1,6 @@
-import os
-
-import matplotlib.pyplot as plt
-import numpy as np
-
 from barlow.barlow_pretrain import *
 from barlow.barlow_finetune import *
 from utils.model_utils import *
-
-from utils.model_utils import *
-import barlow.inception_v3 as inception_v3
-import segmentation.unet_model as unet_model
 
 
 def get_aug_function(aug_name, crop_to):
@@ -91,20 +82,8 @@ class FineTuneParams:
         return self.save_path + self.get_summary()
 
 
-def get_backbone(params):
-    if params.backbone == 'resnet':
-        backbone = resnet20.get_network(params.crop_to, hidden_dim=params.project_dim, use_pred=False,
-                                        return_before_head=False)
-    elif params.backbone == 'inception':
-        backbone = inception_v3.get_network()
-
-    elif params.backbone == 'unet':
-        backbone = unet_model.get_unet_backbone((params.crop_to, params.crop_to))
-    return backbone
-
-
 def run_pretrain(ds, params: PretrainParams, debug=False):
-    backbone = get_backbone(params)
+    backbone = get_backbone(params.backbone, params.crop_to, params.project_dim)
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.batch_size, params.augment_function)
 

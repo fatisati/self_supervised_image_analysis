@@ -2,6 +2,7 @@ import ast
 import enum
 import os
 import time
+import shutil
 
 from data_codes.razi.razi_db import RaziDb
 import data_codes.razi.razi_cols as razi_cols
@@ -134,8 +135,27 @@ def process_all_samples():
     samples.to_excel(razi_folder + 'all_samples_processed.xlsx')
 
 
+def move_imgs_to_label_folders(root_folder):
+    os.mkdir(root_folder)
+    samples = pd.read_excel(razi_folder + 'all_samples.xlsx')
+    all_ids = list(set(samples['disease_id']))
+    all_ids = [x.replace('/', '_') for x in all_ids]
+    for id_ in all_ids:
+        try:
+            os.mkdir(root_folder + id_)
+        except:
+            print(id_)
+    for _, row in samples.iterrows():
+        names = ast.literal_eval(row['img_names'])
+        sample_id = row['disease_id'].replace('/', '_')
+        for name in names:
+            try:
+                shutil.copy(razi_folder + 'imgs/' + name, f'{root_folder}{sample_id}/{name}')
+            except:
+                print(sample_id)
+
 if __name__ == '__main__':
-    process_all_samples()
+    move_imgs_to_label_folders(razi_folder + 'grouped_imgs/')
     # ds = RaziDataset('../../data/razi')
     # print('reading samples from db...')
     # st = time.time()

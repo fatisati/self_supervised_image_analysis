@@ -20,9 +20,12 @@ def augment_sample(samples, pid):
 
 class RaziDataset:
 
-    def __init__(self, data_folder, img_size):
+    def __init__(self, data_folder, img_size, img_folder=None):
         self.data_folder = data_folder
-        self.img_folder = self.data_folder + 'imgs/'
+        if img_folder:
+            self.img_folder = img_folder
+        else:
+            self.img_folder = self.data_folder + 'imgs/'
         self.img_size = img_size
         self.all_labels = None
         self.valid_names = list(os.listdir(self.img_folder))

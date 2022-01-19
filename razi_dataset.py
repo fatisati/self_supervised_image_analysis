@@ -14,7 +14,7 @@ AUTO = tf.data.AUTOTUNE
 def augment_sample(samples, pid):
     row = samples.iloc[pid]
     img_names = row['img_names']
-    r = random.randint(0, len(img_names)-1)
+    r = random.randint(0, len(img_names) - 1)
     return img_names[r]
 
 
@@ -36,7 +36,9 @@ class RaziDataset:
 
     def get_pretrain_samples(self):
         samples = pd.read_excel(self.data_folder + 'all_samples.xlsx')
-        samples['img_names'] = [ast.literal_eval(names) for names in samples['img_names']]
+        samples['img_names'] = get_samples_valid_img_names(samples, list(os.listdir(self.img_folder)))
+        samples['img_cnt'] = [len(names) for names in samples['img_names']]
+        samples = samples[samples['img_cnt'] > 0]
         train = samples[samples['is_train'] == 1]
         test = samples[samples['is_train'] == 0]
         print(f'train-size: {len(train)}, test-size: {len(test)}')

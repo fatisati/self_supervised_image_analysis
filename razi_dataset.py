@@ -28,8 +28,11 @@ class RaziDataset:
             self.img_folder = self.data_folder + 'imgs/'
         self.img_size = img_size
         self.all_labels = None
-        self.valid_names = list(os.listdir(self.img_folder))
 
+        print('listing all valid img names...')
+        self.valid_names = list(os.listdir(self.img_folder))
+        print('done')
+        
     def remove_invalid_samples(self, img_names: []):
         valid_imgs = []
         for name in img_names:

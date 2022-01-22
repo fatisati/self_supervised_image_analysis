@@ -81,6 +81,8 @@ def auto_group_labels():
 def change_font(size):
     plt.rcParams.update({'font.size': size})
 
+def analyze_labels():
+    all_dis = pd.read_excel('../../')
 
 def class_count_report():
     df = pd.read_excel('./results/razi_processed_disease.xlsx').dropna()

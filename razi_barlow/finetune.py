@@ -21,8 +21,10 @@ if __name__ == '__main__':
     bs = 128
 
     ds = RaziDataset('../../data/razi/', img_size)
+
     train_ratio = 0.01
-    train_ds, test_ds = ds.get_supervised_ds(train_ratio)
+    groups = ['hair', 'nail', 'tumor', 'inflimatory']
+    train_ds, test_ds = ds.get_supervised_ds(train_ratio, groups[0])
     train_ds, test_ds = prepare_data(train_ds, test_ds, bs)
     outshape = len(ds.all_labels)
     print(f'train-ratio: {train_ratio}, train-size: {len(train_ds)}')

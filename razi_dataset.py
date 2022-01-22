@@ -11,7 +11,7 @@ import os
 AUTO = tf.data.AUTOTUNE
 
 
-def augment_sample(samples, pid):
+def get_random_instance(samples, pid):
     row = samples.iloc[pid]
     img_names = row['img_names']
     r = random.randint(0, len(img_names) - 1)
@@ -51,8 +51,8 @@ class RaziDataset:
         return tf_utils.tf_ds_from_arr(ssl_samples).map(self.load_img).batch(bs).prefetch(AUTO)
 
     def prepare_ssl_ds(self, samples, bs):
-        ssl_one = [augment_sample(samples, i) for i in range(len(samples))]
-        ssl_two = [augment_sample(samples, i) for i in range(len(samples))]
+        ssl_one = [get_random_instance(samples, i) for i in range(len(samples))]
+        ssl_two = [get_random_instance(samples, i) for i in range(len(samples))]
 
         ssl_ds_one = self.process_ssl_names(ssl_one, bs)
         ssl_ds_two = self.process_ssl_names(ssl_two, bs)
@@ -74,20 +74,21 @@ class RaziDataset:
         samples['img_name'] = [get_img_name(url) for url in samples['img_url']]
         return samples[samples['img_name'].isin(self.valid_names)]
 
-    def get_supervised_ds(self, train_ratio):
+    def get_supervised_ds(self, train_ratio, group):
         print('generating razi supervised ds...')
         samples = pd.read_excel(self.data_folder + 'supervised_samples.xlsx')
+        samples = samples[samples['group'] == group]
         print(f'all sample size: {len(samples)}')
 
         samples = self.filter_valid_samples(samples)
         print(f'valid sample size: {len(samples)}')
 
-        train = samples[samples['is_train'] == 1]
-        train_sample_idx = get_train_test_idx(len(train), 1 - train_ratio)
+        train_sample_idx = get_train_test_idx(len(samples), 1 - train_ratio)
         train_sample_idx = [idx == 1 for idx in train_sample_idx]
-        train = train[train_sample_idx]
+        train = samples[train_sample_idx]
 
-        test = samples[samples['is_train'] == 0]
+        test_idx = [not(x) for x in train_sample_idx]
+        test = samples[test_idx]
 
         self.all_labels = list(set(samples['label']))
         train_ds = self.make_zip_ds(train)

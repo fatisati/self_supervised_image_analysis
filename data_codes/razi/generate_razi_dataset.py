@@ -110,15 +110,16 @@ def generate_supervised_samples():
     samples = pd.read_excel(razi_folder + 'all_samples.xlsx')
     supervised_samples = []
     for _, row in samples.iterrows():
+        if row['label'] in ['unk', 'other']:
+            continue
         urls = ast.literal_eval(row['img_urls'])
         for url in urls:
-            supervised_samples.append({'label': row['label'], 'img_url': url})
+            supervised_samples.append({'label': row['label'], 'img_url': url, 'group': row['group']})
     print(f'supervised_samples cnt: {len(supervised_samples)}')
     supervised_samples = pd.DataFrame(supervised_samples)
-    is_train = data_utils.get_train_test_idx(len(supervised_samples), 0.2)
-    supervised_samples['is_train'] = is_train
-    supervised_samples.to_excel(razi_folder + 'supervised_samples.xlsx')
-
+    # is_train = data_utils.get_train_test_idx(len(supervised_samples), 0.2)
+    # supervised_samples['is_train'] = is_train
+    supervised_samples.to_excel(razi_folder + 'supervised_samples_grouped.xlsx')
 
 def process_all_samples():
     samples = pd.read_excel(razi_folder + 'all_samples.xlsx')
@@ -154,8 +155,37 @@ def move_imgs_to_label_folders(root_folder):
             except:
                 print(sample_id)
 
+
+def copy_remained_imgs():
+    samples = pd.read_excel(razi_folder + 'all_samples.xlsx')
+    labels = ['ev ', 'conderomatits ', 'trichotilomai ']
+    print(set(samples['disease_id']).intersection(set(labels)))
+    samples = samples[samples['disease_id'].isin(labels)]
+    print(len(samples))
+    for _, row in samples.iterrows():
+        names = ast.literal_eval(row['img_names'])
+        row_id = row['disease_id'].replace(' ', '')
+        for img in names:
+            try:
+                shutil.copy(razi_folder + 'imgs/' + img, razi_folder + f'grouped_imgs/{row_id}/{img}')
+            except Exception as e:
+                print(e, row_id)
+
+
+def set_sample_label_group(data_path):
+    all_samples = pd.read_excel(data_path + 'all_samples.xlsx')
+    label_set = pd.read_excel(data_path + 'label_set.xlsx')
+    all_samples['group'] = [-1]*len(all_samples)
+    for col in label_set.columns:
+        group_idx = all_samples['label'].isin(label_set[col])
+        print(group_idx.sum())
+        all_samples.loc[group_idx, 'group'] = [col]*group_idx.sum()
+    all_samples.to_excel(data_path + 'all_samples_grouped.xlsx')
+
 if __name__ == '__main__':
-    move_imgs_to_label_folders(razi_folder + 'grouped_imgs/')
+    generate_supervised_samples()
+    # set_sample_label_group('../../../data/razi/')
+    # copy_remained_imgs()
     # ds = RaziDataset('../../data/razi')
     # print('reading samples from db...')
     # st = time.time()

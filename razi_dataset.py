@@ -51,28 +51,28 @@ class RaziDataset:
         print(f'train-size: {len(train)}, test-size: {len(test)}')
         return train, test
 
-    def process_ssl_names(self, ssl_samples, bs):
-        return tf_utils.tf_ds_from_arr(ssl_samples).map(self.load_img).batch(bs).prefetch(AUTO)
+    def process_ssl_path(self, ssl_samples, bs):
+        return tf_utils.tf_ds_from_arr(ssl_samples).map(self.load_and_resize_img).batch(bs).prefetch(AUTO)
 
     def prepare_ssl_ds(self, samples, bs):
-        ssl_one = [get_random_instance(samples, i) for i in range(len(samples))]
-        ssl_two = [get_random_instance(samples, i) for i in range(len(samples))]
+        ssl_one = [self.img_folder + get_random_instance(samples, i) for i in range(len(samples))]
+        ssl_two = [self.img_folder + get_random_instance(samples, i) for i in range(len(samples))]
 
-        ssl_ds_one = self.process_ssl_names(ssl_one, bs)
-        ssl_ds_two = self.process_ssl_names(ssl_two, bs)
+        ssl_ds_one = self.process_ssl_path(ssl_one, bs)
+        ssl_ds_two = self.process_ssl_path(ssl_two, bs)
         ssl_ds = tf.data.Dataset.zip((ssl_ds_one, ssl_ds_two))
         return ssl_ds
 
-    def load_img(self, name):
-        img = tf_utils.read_tf_image(self.img_folder + name)
+    def load_and_resize_img(self, path):
+        img = tf_utils.read_tf_image(path)
         return tf.image.resize(img, (self.img_size, self.img_size))
 
     def make_zip_ds(self, df):
-        names = [get_img_name(url) for url in df['img_url']]
-        names_ds = tf_utils.tf_ds_from_arr(names)
+        all_path = [self.img_folder + get_img_name(url) for url in df['img_url']]
+        path_ds = tf_utils.tf_ds_from_arr(all_path)
         labels = [get_one_hot(label, self.all_labels) for label in df['label']]
         labels_ds = tf_utils.tf_ds_from_arr(labels)
-        return tf.data.Dataset.zip((names_ds.map(self.load_img), labels_ds))
+        return tf.data.Dataset.zip((path_ds.map(self.load_and_resize_img), labels_ds))
 
     def filter_valid_samples(self, samples):
         samples['img_name'] = [get_img_name(url) for url in samples['img_url']]

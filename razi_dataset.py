@@ -95,7 +95,9 @@ class RaziDataset:
         test = samples[test_idx]
 
         self.all_labels = list(set(samples['label']))
+
         train_ds = self.make_zip_ds(train)
         test_ds = self.make_zip_ds(test)
+
         print('done')
         return train_ds, test_ds

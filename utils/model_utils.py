@@ -35,9 +35,10 @@ def model_exist(path, name, epoch):
 
 
 def check_folder(path, folder):
+    print('generating model folder if not exist...')
     if not folder in os.listdir(path):
         os.mkdir(path + folder)
-
+    print('done')
 
 def get_save_path(path, name, epoch):
     return f'{path}{name}/e{epoch}'
@@ -113,8 +114,11 @@ def train_model(model, data, checkpoints, path, name,
 
         if compile_function:
             compile_function(model)
+
+        print('starting to fit model...')
         hist = model.fit(data, epochs=change, validation_data=test_ds, callbacks=[csv_logger])
         history.append(hist)
+        print('done')
 
         save_checkpoint(model, history, path, name, current_epoch)
         if checkpoint_function:

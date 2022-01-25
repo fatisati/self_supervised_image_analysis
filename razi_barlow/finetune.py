@@ -22,12 +22,13 @@ if __name__ == '__main__':
 
     ds = RaziDataset('../../data/razi/', img_size)
 
-    train_ratio = 0.01
+    train_ratio = 0.1
     groups = ['hair', 'nail', 'tumor', 'inflimatory']
     train_ds, test_ds = ds.get_supervised_ds(train_ratio, groups[0])
+    print(f'train-ratio: {train_ratio}, train-size: {len(train_ds)}, test-size: {len(test_ds)}')
+
     train_ds, test_ds = prepare_data(train_ds, test_ds, bs)
     outshape = len(ds.all_labels)
-    print(f'train-ratio: {train_ratio}, train-size: {len(train_ds)}')
 
     print('loading backbone...')
     backbone = resnet20.get_network(img_size, hidden_dim=2048, use_pred=False,

@@ -7,6 +7,7 @@ from utils.data_utils import get_train_test_idx
 
 from data_codes.razi.razi_utils import *
 import os
+from IRV2.data_utils import *
 
 AUTO = tf.data.AUTOTUNE
 
@@ -67,18 +68,22 @@ class RaziDataset:
         img = tf_utils.read_tf_image(path)
         return tf.image.resize(img, (self.img_size, self.img_size))
 
-    def make_zip_ds(self, df):
+    def prepare_imgs_labels(self, df):
         all_path = [self.img_folder + get_img_name(url) for url in df['img_url']]
         path_ds = tf_utils.tf_ds_from_arr(all_path)
         labels = [get_one_hot(label, self.all_labels) for label in df['label']]
         labels_ds = tf_utils.tf_ds_from_arr(labels)
+        return path_ds, labels_ds
+
+    def make_zip_ds(self, df):
+        path_ds, labels_ds = self.prepare_imgs_labels(df)
         return tf.data.Dataset.zip((path_ds.map(self.load_and_resize_img), labels_ds))
 
     def filter_valid_samples(self, samples):
         samples['img_name'] = [get_img_name(url) for url in samples['img_url']]
         return samples[samples['img_name'].isin(self.valid_names)]
 
-    def get_supervised_ds(self, train_ratio, group):
+    def prepare_supervised_data(self, train_ratio, group):
         print('generating razi supervised ds...')
         samples = pd.read_excel(self.data_folder + 'supervised_samples.xlsx')
         samples = samples[samples['group'] == group]
@@ -91,11 +96,30 @@ class RaziDataset:
         train_sample_idx = [idx == 1 for idx in train_sample_idx]
         train = samples[train_sample_idx]
 
-        test_idx = [not(x) for x in train_sample_idx]
+        test_idx = [not (x) for x in train_sample_idx]
         test = samples[test_idx]
 
         self.all_labels = list(set(samples['label']))
+        return train, test
 
+    def irv2_augmented_supervised_ds(self, train_ratio, group):
+        train, test = self.prepare_supervised_data(train_ratio, group)
+        aug_gen = get_aug_datagen()
+        preprocess_datagen = get_preprocessing_datagen()
+
+        # data = aug_gen.flow_from_dataframe(train, directory=self.img_folder,
+        #                                    x_col = 'img_name', y_col='label',
+        #                                    target_size = (32, 32),
+        #                                    batch_size = 16)
+
+        return preprocess_datagen.flow_from_dataframe(train, directory=self.img_folder,
+                                           x_col = 'img_name', y_col='label',
+                                           target_size = (32, 32),
+                                           batch_size = 16)
+
+    def get_supervised_ds(self, train_ratio, group):
+
+        train, test = self.prepare_supervised_data(train_ratio, group)
         train_ds = self.make_zip_ds(train)
         test_ds = self.make_zip_ds(test)
 

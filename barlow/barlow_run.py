@@ -3,18 +3,22 @@ from barlow.barlow_finetune import *
 from utils.model_utils import *
 from barlow import inception_v3
 from segmentation import unet_model
+from barlow import resnet20
 
-def get_backbone(backbone_name, crop_to = None, project_dim = None):
+
+def get_backbone(backbone_name, use_batchnorm=True, crop_to=None, project_dim=None):
     backbone = None
     if backbone_name == 'resnet':
-        backbone = resnet20.get_network(crop_to, hidden_dim=project_dim, use_pred=False,
-                                        return_before_head=False)
+        resnet = resnet20.ResNet(use_batchnorm=use_batchnorm)
+        backbone = resnet.get_network(crop_to, hidden_dim=project_dim, use_pred=False,
+                                      return_before_head=False)
     elif backbone_name == 'inception':
         backbone = inception_v3.get_network()
 
     elif backbone_name == 'unet':
         backbone = unet_model.get_unet_backbone((crop_to, crop_to))
     return backbone
+
 
 def get_aug_function(aug_name, crop_to):
     if aug_name == 'tf':
@@ -26,7 +30,7 @@ def get_aug_function(aug_name, crop_to):
 
 
 class PretrainParams:
-    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name='adam',
+    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name,
                  optimizer=tf.keras.optimizers.Adam(), backbone='resnet', aug_name='tf'):
         self.crop_to = crop_to
         self.batch_size = batch_size
@@ -57,9 +61,10 @@ class PretrainParams:
         return f'{self.name}_pretrain_projdim{self.project_dim}_bs{self.batch_size}_ct{self.crop_to}'
 
     def get_model_path(self):
-        if 'old' in self.save_path:
-            return self.save_path + self.get_old_summary()
-        return self.save_path + self.get_summary()
+        return self.save_path + self.name
+        # if 'old' in self.save_path:
+        #     return self.save_path + self.get_old_summary()
+        # return self.save_path + self.get_summary()
 
     def get_report(self):
         return 'pretrain params: epochs {0}, bs {1}, image size {2}, project dim{3}' \

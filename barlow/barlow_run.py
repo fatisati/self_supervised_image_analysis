@@ -115,7 +115,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
     model = compile_barlow(backbone, optimizer)
-    model.build((params.crop_to, params.crop_to, 3))
+
     compile_function = lambda model: model.compile(optimizer=optimizer)
     train_model(model, ssl_ds, params.checkpoints, params.save_path,
                 params.get_summary(), load_latest_model=True,

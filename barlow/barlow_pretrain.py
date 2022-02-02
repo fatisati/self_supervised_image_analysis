@@ -68,7 +68,7 @@ class BarlowTwins(tf.keras.Model):
 
         # Monitor loss.
         self.loss_tracker.update_state(loss)
-        return {"train_loss": self.loss_tracker.result()}
+        return {"loss": self.loss_tracker.result()}
 
 
 def get_lr(x_train, batch_size, epochs):

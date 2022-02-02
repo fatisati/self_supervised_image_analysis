@@ -46,12 +46,9 @@ def get_weighted_loss(weights):
     return weighted_loss
 
 
-# model.compile(optimizer=Adam(), loss=get_weighted_loss(class_weights))
-
 def label_report(labels):
-    for i in range(labels.shape[1]):
-        print(sum(labels[:, i]), end=',')
-    print()
+    labels_cnt = [str(int(sum(labels[:, i]))) for i in range(labels.shape[1])]
+    print('label report: ' + ', '.join(labels_cnt))
 
 
 class MyDataset:

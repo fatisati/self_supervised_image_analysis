@@ -104,22 +104,21 @@ class FineTuneParams:
 
 
 def run_pretrain(ds, params: PretrainParams, debug=False):
-    # es = EarlyStopping(monitor='train_loss', mode='min', verbose=1, patience=3)
-    # model_path = params.save_path + params.get_summary() + '/best_model'
-    # mc = ModelCheckpoint(model_path, monitor='train_loss', mode='min', save_best_only=True, verbose=1)
+    es = EarlyStopping(monitor='train_loss', mode='min', verbose=1, patience=3)
+    model_path = params.save_path + params.get_summary() + '/best_model'
+    mc = ModelCheckpoint(model_path, monitor='train_loss', mode='min', save_best_only=True, verbose=1)
     backbone = get_backbone(params.backbone, params.use_batchnorm,
                             params.crop_to, params.project_dim)
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.batch_size, params.augment_function)
-    ssl_ds_test = prepare_data_loader(x_test, params.batch_size, params.augment_function)
 
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
     model = compile_barlow(backbone, optimizer)
     compile_function = lambda model: model.compile(optimizer=optimizer)
     train_model(model, ssl_ds, params.checkpoints, params.save_path,
-                params.get_summary(), load_latest_model=True, test_ds=ssl_ds_test,
-                debug=debug, compile_function=compile_function)
+                params.get_summary(), load_latest_model=True,
+                debug=debug, compile_function=compile_function, callbacks=[es, mc])
 
     return model.encoder
 

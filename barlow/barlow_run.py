@@ -104,7 +104,7 @@ class FineTuneParams:
 
 
 def run_pretrain(ds, params: PretrainParams, debug=False):
-    es = EarlyStopping(monitor='loss', mode='min', verbose=1, patience=3)
+    es = EarlyStopping(monitor='loss', mode='min', verbose=1, min_delta=1)
     model_path = params.save_path + params.get_summary() + '/best_model'
     mc = ModelCheckpoint(model_path, monitor='loss', mode='min', save_best_only=True, verbose=1)
     backbone = get_backbone(params.backbone, params.use_batchnorm,

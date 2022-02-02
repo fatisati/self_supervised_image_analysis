@@ -4,6 +4,8 @@ from utils.model_utils import *
 from barlow import inception_v3
 from segmentation import unet_model
 from barlow import resnet20
+from keras.callbacks import EarlyStopping
+from keras.callbacks import ModelCheckpoint
 
 
 def get_backbone(backbone_name, use_batchnorm=True, crop_to=None, project_dim=None):
@@ -31,6 +33,7 @@ def get_aug_function(aug_name, crop_to):
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name,
+                 use_batchnorm=True,
                  optimizer=tf.keras.optimizers.Adam(), backbone='resnet', aug_name='tf'):
         self.crop_to = crop_to
         self.batch_size = batch_size
@@ -40,7 +43,7 @@ class PretrainParams:
         self.name = name
 
         self.backbone = backbone
-
+        self.use_batchnorm = use_batchnorm
         if backbone == 'inception':
             self.crop_to = 299
             self.normalized = True
@@ -101,16 +104,23 @@ class FineTuneParams:
 
 
 def run_pretrain(ds, params: PretrainParams, debug=False):
-    backbone = get_backbone(params.backbone, params.crop_to, params.project_dim)
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5)
+    model_path = params.save_path + params.get_summary() + '/best_model'
+    mc = ModelCheckpoint(model_path, monitor='val_loss', mode='min', save_best_only=True, verbose=1)
+
+    backbone = get_backbone(params.backbone, params.use_batchnorm,
+                            params.crop_to, params.project_dim)
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.batch_size, params.augment_function)
+    ssl_ds_test = prepare_data_loader(x_test, params.batch_size, params.augment_function)
 
     # lr_decayed_fn = get_lr(x_train, params.batch_size, params.checkpoints[-1])
     optimizer = params.optimizer  # .SGD(learning_rate=lr_decayed_fn, momentum=0.9)
     model = compile_barlow(backbone, optimizer)
     compile_function = lambda model: model.compile(optimizer=optimizer)
-    train_model(model, ssl_ds, params.checkpoints, params.save_path, params.get_summary(), load_latest_model=True,
-                debug=debug, compile_function=compile_function)
+    train_model(model, ssl_ds, params.checkpoints, params.save_path,
+                params.get_summary(), load_latest_model=True, test_ds=ssl_ds_test,
+                debug=debug, compile_function=compile_function, callbacks=[es, mc])
 
     return model.encoder
 

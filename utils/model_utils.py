@@ -40,6 +40,7 @@ def check_folder(path, folder):
         os.mkdir(path + folder)
     print('done')
 
+
 def get_save_path(path, name, epoch):
     return f'{path}{name}/e{epoch}'
 
@@ -81,7 +82,11 @@ def find_latest_model(path, name):
 
 
 def train_model(model, data, checkpoints, path, name,
-                test_ds=None, load_latest_model=True, debug=False, checkpoint_function=None, compile_function=None):
+                test_ds=None, load_latest_model=True,
+                debug=False, checkpoint_function=None,
+                compile_function=None, callbacks=None):
+    if callbacks is None:
+        callbacks = []
     history = []
     checkpoints = np.array(checkpoints)
 
@@ -104,7 +109,7 @@ def train_model(model, data, checkpoints, path, name,
 
         check_folder(path, name)
         csv_logger = CSVLogger(path + name + '/log.csv', append=True, separator=',')
-
+        callbacks.append(csv_logger)
         if debug:
             print('backbone out before train')
             try:
@@ -116,7 +121,8 @@ def train_model(model, data, checkpoints, path, name,
             compile_function(model)
 
         print('starting to fit model...')
-        hist = model.fit(data, epochs=change, validation_data=test_ds, callbacks=[csv_logger])
+        hist = model.fit(data, epochs=change,
+                         validation_data=test_ds, callbacks=callbacks)
         history.append(hist)
         print('done')
 

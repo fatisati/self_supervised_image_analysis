@@ -49,6 +49,9 @@ class BarlowTwins(tf.keras.Model):
         self.lambd = lambd
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
 
+    def call(self, x):
+        return self.encoder(x)
+
     @property
     def metrics(self):
         return [self.loss_tracker]

@@ -20,6 +20,11 @@ def normalize_repr(z):
 
 
 def compute_loss(z_a, z_b, lambd):
+    loss, on_diag, off_diag = compute_loss_detail(z_a, z_b, lambd)
+    return loss
+
+
+def compute_loss_detail(z_a, z_b, lambd):
     # Get batch size and representation dimension.
     batch_size = tf.cast(tf.shape(z_a)[0], z_a.dtype)
     repr_dim = tf.shape(z_a)[1]
@@ -39,7 +44,7 @@ def compute_loss(z_a, z_b, lambd):
     off_diag = tf.reduce_sum(tf.pow(off_diag, 2))
 
     loss = on_diag + (lambd * off_diag)
-    return loss
+    return loss, on_diag, off_diag
 
 
 class BarlowTwins(tf.keras.Model):

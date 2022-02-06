@@ -9,9 +9,10 @@ import pandas as pd
 
 
 def calc_val_loss(barlow_model, val_data):
-    ds_one, ds_two = val_data
-    z_a, z_b = barlow_model.encoder(ds_one), barlow_model.encoder(ds_two)
-    loss = barlow_pretrain.compute_loss(z_a, z_b, barlow_model.lambd)
+    ds_one = val_data.map(lambda a, b : a)
+    ds_two = val_data.map(lambda a, b : b)
+    z_a, z_b = barlow_model.predict(ds_one), barlow_model.predict(ds_two)
+    loss = barlow_pretrain.compute_loss(z_a, z_b, 5e-3)
     return loss
 
 

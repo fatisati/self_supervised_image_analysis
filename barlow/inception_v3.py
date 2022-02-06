@@ -6,8 +6,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import BatchNormalization
 
 
-def load_inception():
-    return load_model(conf.model_path + 'inception')
+def load_inception(model_path):
+    return load_model(model_path + 'inception')
 
 
 def get_network():

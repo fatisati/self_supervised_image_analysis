@@ -36,8 +36,10 @@ WEIGHT_DECAY = 5e-4
 
 
 class ResNet:
-    def __init__(self, use_batchnorm):
+    def __init__(self, use_batchnorm, use_dropout, dropout_rate):
         self.use_batchnorm = use_batchnorm
+        self.use_dropout = use_dropout
+        self.dropout_rate = dropout_rate
 
     def stem(self, inputs):
         """Construct Stem Convolutional Group
@@ -88,7 +90,9 @@ class ResNet:
         # Identity residual blocks
         for _ in range(n_blocks):
             x = self.identity_block(x, n_filters, n)
-        # x = dropout(x)
+
+        # if self.use_dropout:
+        #     x = Dropout(x, rate=self.dropout_rate)
         return x
 
     def identity_block(self, x, n_filters, n=2):
@@ -220,6 +224,8 @@ class ResNet:
                 x = BatchNormalization()(x)
             x = Activation("relu")(x)
         outputs = Dense(hidden_dim, name="projection_output")(x)
+        if self.use_dropout:
+            outputs = Dropout(outputs, rate=self.dropout_rate)
         return outputs
 
     def prediction_head(self, x, hidden_dim=128, mx=4):

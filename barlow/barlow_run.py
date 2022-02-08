@@ -8,10 +8,12 @@ from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
 
 
-def get_backbone(backbone_name, use_batchnorm=True, crop_to=None, project_dim=None):
+def get_backbone(backbone_name, use_batchnorm=True,
+                 use_dropout=False, dropout_rate=0.2,
+                 crop_to=None, project_dim=None):
     backbone = None
     if backbone_name == 'resnet':
-        resnet = resnet20.ResNet(use_batchnorm=use_batchnorm)
+        resnet = resnet20.ResNet(use_batchnorm, use_dropout, dropout_rate)
         backbone = resnet.get_network(crop_to, hidden_dim=project_dim, use_pred=False,
                                       return_before_head=False)
     elif backbone_name == 'inception':
@@ -33,7 +35,7 @@ def get_aug_function(aug_name, crop_to):
 
 class PretrainParams:
     def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name,
-                 use_batchnorm=True,
+                 use_batchnorm=True, use_dropout=False, dropout_rate=0.2,
                  optimizer=tf.keras.optimizers.Adam(), backbone='resnet', aug_name='tf'):
         self.crop_to = crop_to
         self.batch_size = batch_size
@@ -44,6 +46,9 @@ class PretrainParams:
 
         self.backbone = backbone
         self.use_batchnorm = use_batchnorm
+        self.use_dropout = use_dropout
+        self.dropout_rate = dropout_rate
+
         if backbone == 'inception':
             self.crop_to = 299
             self.normalized = True
@@ -108,6 +113,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
     model_path = params.save_path + params.get_summary() + '/best_model'
     mc = ModelCheckpoint(model_path, monitor='loss', mode='min', save_best_only=True, verbose=1)
     backbone = get_backbone(params.backbone, params.use_batchnorm,
+                            params.use_dropout, params.dropout_rate,
                             params.crop_to, params.project_dim)
     x_train, x_test = ds.get_x_train_test_ds()
     ssl_ds = prepare_data_loader(x_train, params.batch_size, params.augment_function)

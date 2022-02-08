@@ -92,7 +92,7 @@ class ResNet:
             x = self.identity_block(x, n_filters, n)
 
         # if self.use_dropout:
-        #     x = Dropout(x, rate=self.dropout_rate)
+        #     x = Dropout(rate=self.dropout_rate)(x)
         return x
 
     def identity_block(self, x, n_filters, n=2):
@@ -225,7 +225,7 @@ class ResNet:
             x = Activation("relu")(x)
         outputs = Dense(hidden_dim, name="projection_output")(x)
         if self.use_dropout:
-            outputs = Dropout(outputs, rate=self.dropout_rate)
+            outputs = Dropout(rate=self.dropout_rate)(outputs)
         return outputs
 
     def prediction_head(self, x, hidden_dim=128, mx=4):

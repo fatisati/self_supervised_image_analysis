@@ -107,6 +107,8 @@ class MyDataset:
         self.test_zip = tf.data.Dataset.zip((self.test_names_ds, self.test_labels_ds))
         self.train_zip_sample = tf.data.Dataset.zip((self.train_names_ds_sample, self.train_labels_ds_sample))
 
+        self.supervised_ds = None
+
     def get_image_path(self):
         return self.data_path + self.image_folder
 
@@ -121,6 +123,8 @@ class MyDataset:
                self.test_names_ds.map(self.load_img)
 
     def get_supervised_ds(self):
+        if self.supervised_ds:
+            return self.supervised_ds
         print(f'train size: {len(self.train_zip)}')
         supervised_train_ds = (self.train_zip
                                .map(self.process_path, num_parallel_calls=AUTOTUNE)
@@ -129,7 +133,9 @@ class MyDataset:
         supervised_test_ds = (self.test_zip
                               .map(self.process_path, num_parallel_calls=AUTOTUNE)
                               )
-        return supervised_train_ds, supervised_test_ds
+
+        self.supervised_ds = supervised_train_ds, supervised_test_ds
+        return self.supervised_ds
 
     def get_supervised_ds_sample(self):
         print(f'train size: {len(self.train_zip_sample)}')

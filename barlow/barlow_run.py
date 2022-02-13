@@ -80,7 +80,9 @@ class PretrainParams:
 
 
 class FineTuneParams:
-    def __init__(self, checkpoints, batch_size, pretrain_params: PretrainParams, pretrain_epoch, save_path, name,
+    def __init__(self, checkpoints, batch_size,
+                 pretrain_params: PretrainParams,
+                 pretrain_epoch, save_path, name, experiment_path,
                  loss=None):
         self.checkpoints = checkpoints
         self.batch_size = batch_size
@@ -95,10 +97,10 @@ class FineTuneParams:
             self.loss = loss
             self.loss_name = 'weighted'
         self.name = name
-
+        self.experiment_path = experiment_path
     def get_summary(self):
 
-        return f'{self.name}_ct{self.crop_to} _bs{self.batch_size}_loss_{self.loss_name}_aug_{self.pretrain_params.aug_name}'
+        return f'{self.name}_ct{self.crop_to}_bs{self.batch_size}_loss_{self.loss_name}_aug_{self.pretrain_params.aug_name}'
 
     def get_old_summary(self):
 

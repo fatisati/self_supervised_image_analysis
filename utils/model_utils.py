@@ -85,6 +85,7 @@ def train_model(model, data, checkpoints, path, name,
                 test_ds=None, load_latest_model=True,
                 debug=False, checkpoint_function=None,
                 compile_function=None, callbacks=None):
+    print(f'training model: {path}/{name} ...')
     if callbacks is None:
         callbacks = []
     history = []

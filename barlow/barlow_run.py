@@ -92,6 +92,10 @@ class FineTuneParams:
         self.pretrain_params = pretrain_params
         self.pretrain_epoch = pretrain_epoch
         self.save_path = save_path + 'finetune/'
+
+        if len(experiment_path) > 0:
+            self.save_path += experiment_path
+
         if loss is None:
             self.loss = "binary_crossentropy"
             self.loss_name = 'normal'
@@ -113,7 +117,7 @@ class FineTuneParams:
         return f'finetune_bs{self.batch_size}_ct{self.crop_to}_loss_{self.loss_name}'
 
     def get_model_path(self):
-        return self.save_path + self.experiment_path + self.get_summary()
+        return self.save_path + self.get_summary()
 
 
 def run_pretrain(ds, params: PretrainParams, debug=False):

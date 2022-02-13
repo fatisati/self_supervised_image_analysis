@@ -101,7 +101,7 @@ class FineTuneParams:
         self.experiment_path = experiment_path
 
     def get_summary(self):
-        summary = f'ct{self.crop_to}_bs{self.batch_size}_loss_{self.loss_name}_aug_{self.pretrain_params.aug_name}'
+        summary = self.pretrain_params.get_summary()
         if len(self.name) > 0:
             return f'{self.name}_{summary}'
         else:

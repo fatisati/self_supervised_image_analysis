@@ -82,7 +82,8 @@ class PretrainParams:
 class FineTuneParams:
     def __init__(self, checkpoints, batch_size,
                  pretrain_params: PretrainParams,
-                 pretrain_epoch, save_path, experiment_path,
+                 pretrain_epoch, save_path,
+                 experiment_path='',
                  name='', loss=None):
         self.checkpoints = checkpoints
         self.batch_size = batch_size
@@ -111,7 +112,7 @@ class FineTuneParams:
         return f'finetune_bs{self.batch_size}_ct{self.crop_to}_loss_{self.loss_name}'
 
     def get_model_path(self):
-        return self.save_path + self.get_summary()
+        return self.save_path + self.experiment_path + self.get_summary()
 
 
 def run_pretrain(ds, params: PretrainParams, debug=False):

@@ -16,18 +16,11 @@ def calc_val_loss(barlow_model, val_data):
     return loss, on_diog, off_diog
 
 
-if __name__ == '__main__':
-    bs, crop_to = 64, 128
-    aug_func = get_tf_augment(crop_to)
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+def model_val_loss(model_path, ds, bs, aug_func):
     x_train, x_test = ds.get_x_train_test_ds()
     val_ssl_ds = prepare_data_loader(x_test, bs, aug_func)
-
-    model_path = '../models/twins/pretrain/'
-    model_path = model_path + f'adam_ct{crop_to}_bs{bs}_aug_tf'
-
     res = []
+
     for epoch in os.listdir(model_path):
         try:
             model = load_model(model_path + f'/{epoch}')
@@ -40,3 +33,14 @@ if __name__ == '__main__':
         res.append(
             {'epoch': epoch, 'val_loss': val_loss.numpy(), 'on_diog': on_diog.numpy(), 'off_diog': off_diog.numpy()})
         pd.DataFrame(res).to_excel(model_path + '/val_loss.xlsx')
+
+
+if __name__ == '__main__':
+    bs, crop_to = 64, 128
+    aug_func = get_tf_augment(crop_to)
+    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                   image_col='image', image_folder='resized256/')
+
+    model_path = '../models/twins/pretrain/'
+    model_path = model_path + f'adam_ct{crop_to}_bs{bs}_aug_tf'
+    model_val_loss(model_path, ds, bs, aug_func)

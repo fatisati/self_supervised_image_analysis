@@ -160,7 +160,8 @@ def run_fine_tune(ds, params: FineTuneParams, barlow_enc=None):
         print('not loading backbone. using function inputs.')
 
     # cosine_lr = 0.01  # get_cosine_lr(params.checkpoints[-1], len(train_ds), params.batch_size)
-    linear_model = get_linear_model(barlow_enc, params.crop_to, outshape)
+    linear_model = get_linear_model(barlow_enc, params.crop_to, outshape,
+                                    params.pretrain_params.use_dropout)
     # Compile model and start training.
 
     linear_model.compile(

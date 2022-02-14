@@ -3,17 +3,22 @@ from ham_dataset import *
 from utils.model_utils import *
 
 
-def get_resnet_encoder(resnet_backbone):
+def get_resnet_encoder(resnet_backbone, use_dropout):
+    if use_dropout:
+        embed_idx = -9
+    else:
+        embed_idx = -8
+
     backbone = tf.keras.Model(
-        resnet_backbone.input, resnet_backbone.layers[-8].output
+        resnet_backbone.input, resnet_backbone.layers[embed_idx].output
     )
     return backbone
 
 
 # from tf.keras.layers import BatchNormalization
-def get_linear_model(barlow_encoder, crop_to, y_shape):
+def get_linear_model(barlow_encoder, crop_to, y_shape, use_dropout=False):
     # Extract the backbone ResNet20.
-    backbone = get_resnet_encoder(barlow_encoder)
+    backbone = get_resnet_encoder(barlow_encoder, use_dropout)
     # We then create our linear classifier and train it.
     backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))

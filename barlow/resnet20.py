@@ -37,8 +37,7 @@ WEIGHT_DECAY = 5e-4
 
 class ResNet:
     def __init__(self, use_batchnorm, use_dropout, dropout_rate):
-        self.use_batchnorm = use_batchnorm
-        self.use_dropout = use_dropout
+        self.use_batchnorm, self.use_dropout = use_batchnorm, use_dropout
         self.dropout_rate = dropout_rate
 
     def stem(self, inputs):
@@ -53,8 +52,7 @@ class ResNet:
             use_bias=False,
             kernel_regularizer=l2(WEIGHT_DECAY),
         )(inputs)
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         return x
 
@@ -90,9 +88,7 @@ class ResNet:
         # Identity residual blocks
         for _ in range(n_blocks):
             x = self.identity_block(x, n_filters, n)
-
-        # if self.use_dropout:
-        #     x = Dropout(rate=self.dropout_rate)(x)
+        # to_do: x = dropout(x)
         return x
 
     def identity_block(self, x, n_filters, n=2):
@@ -107,8 +103,7 @@ class ResNet:
         ## Construct the 1x1, 3x3, 1x1 residual block (fig 3c)
 
         # Dimensionality reduction
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         x = Conv2D(
             n_filters,
@@ -119,8 +114,7 @@ class ResNet:
         )(x)
 
         # Bottleneck layer
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         x = Conv2D(
             n_filters,
@@ -132,8 +126,7 @@ class ResNet:
         )(x)
 
         # Dimensionality restoration - increase the number of output filters by 2X or 4X
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         x = Conv2D(
             n_filters * n,
@@ -170,8 +163,7 @@ class ResNet:
         ## Construct the 1x1, 3x3, 1x1 convolution block
 
         # Dimensionality reduction
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         x = Conv2D(
             n_filters,
@@ -182,8 +174,7 @@ class ResNet:
         )(x)
 
         # Bottleneck layer - feature pooling when strides=(2, 2)
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         x = Conv2D(
             n_filters,
@@ -195,8 +186,7 @@ class ResNet:
         )(x)
 
         # Dimensionality restoration - increase the number of filters by 2X (or 4X)
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = ReLU()(x)
         x = Conv2D(
             n_filters * n,
@@ -220,31 +210,28 @@ class ResNet:
                 name=f"projection_layer_{i}",
                 kernel_regularizer=l2(WEIGHT_DECAY),
             )(x)
-            if self.use_batchnorm:
-                x = BatchNormalization()(x)
+            x = BatchNormalization()(x)
             x = Activation("relu")(x)
         outputs = Dense(hidden_dim, name="projection_output")(x)
-        if self.use_dropout:
-            outputs = Dropout(rate=self.dropout_rate)(outputs)
         return outputs
 
     def prediction_head(self, x, hidden_dim=128, mx=4):
         """Constructs the prediction head."""
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = Dense(
             hidden_dim // mx,
             name=f"prediction_layer_0",
             kernel_regularizer=l2(WEIGHT_DECAY),
         )(x)
-        if self.use_batchnorm:
-            x = BatchNormalization()(x)
+        x = BatchNormalization()(x)
         x = Activation("relu")(x)
         x = Dense(
             hidden_dim,
             name="prediction_output",
             kernel_regularizer=l2(WEIGHT_DECAY),
         )(x)
+        if self.use_dropout:
+            x = Dropout(self.dropout_rate)(x)
         return x
 
     # -------------------
@@ -261,10 +248,8 @@ class ResNet:
 
         # The input tensor
         inputs = Input(shape=(in_shape, in_shape, 3))
-        # add gaussian noise
-        # I don't know the reson for original rescaling
+        # to_do: add gaussian noise
         x = experimental.preprocessing.Rescaling(scale=1.0 / 127.5, offset=-1)(inputs)
-        # x = experimental.preprocessing.Rescaling(scale=1.0 / 255.0)(inputs)
 
         # The Stem Convolution Group
         x = self.stem(x)

@@ -123,6 +123,9 @@ class FineTuneParams:
         return self.save_path + self.get_summary()
 
 
+from barlow import eval_pretrain
+
+
 def run_pretrain(ds, params: PretrainParams, debug=False):
     # es = EarlyStopping(monitor='loss', mode='min', verbose=1, min_delta=1)
     model_path = params.save_path + params.get_summary() + '/best_model'
@@ -141,7 +144,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
     train_model(model, ssl_ds, params.checkpoints, params.save_path,
                 params.get_summary(), load_latest_model=True,
                 debug=debug, compile_function=compile_function)
-
+    eval_pretrain.model_val_loss(params.save_path, ds, 64, params.augment_function)
     return model.encoder
 
 

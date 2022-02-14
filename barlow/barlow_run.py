@@ -34,7 +34,8 @@ def get_aug_function(aug_name, crop_to):
 
 
 class PretrainParams:
-    def __init__(self, crop_to, batch_size, project_dim, checkpoints, save_path, name,
+    def __init__(self, crop_to, batch_size, project_dim, checkpoints,
+                 save_path, name, experiment_path='',
                  use_batchnorm=True, use_dropout=False, dropout_rate=0.2,
                  optimizer=tf.keras.optimizers.Adam(), backbone='resnet', aug_name='tf'):
         self.crop_to = crop_to
@@ -42,6 +43,8 @@ class PretrainParams:
         self.project_dim = project_dim
         self.checkpoints = checkpoints
         self.save_path = save_path + 'pretrain/'
+        if len(experiment_path) > 0:
+            self.save_path += experiment_path + '/'
         self.name = name
 
         self.backbone = backbone
@@ -94,7 +97,7 @@ class FineTuneParams:
         self.save_path = save_path + 'finetune/'
 
         if len(experiment_path) > 0:
-            self.save_path += experiment_path
+            self.save_path += experiment_path + '/'
 
         if loss is None:
             self.loss = "binary_crossentropy"

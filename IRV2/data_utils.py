@@ -33,7 +33,8 @@ class AugmentHam:
             test_img_ids = set([])
             for subdir in os.listdir(self.test_dir):
                 for img in os.listdir(self.test_dir + '/'+subdir):
-                    test_img_ids.add(img)
+                    dot_idx = img.find('.')
+                    test_img_ids.add(img[:dot_idx])
             print(f'test size: {len(test_img_ids)}')
             # split train and test in a way that no duplicate in test data
             data_pd['train_test_split'] = data_pd['image_id'].apply(lambda x: self.identify_trainOrtest(x, test_img_ids))

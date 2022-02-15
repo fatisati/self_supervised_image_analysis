@@ -48,6 +48,7 @@ def get_model(outshape):
     model.compile(optimizer=opt1,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
+    return model
 
 
 def train_model(model, train_batches, test_batches, train_size, test_size, class_weights, batch_size, save_path):

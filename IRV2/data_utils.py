@@ -124,7 +124,7 @@ class AugmentHam:
         print(f'augmenting class {img_class}')
         # creating temporary directories
         # creating a base directory
-        aug_dir = 'tmp_aug_dir'
+        aug_dir = '/content/tmp_aug_dir/'
         os.mkdir(aug_dir)
         # creating a subdirectory inside the base directory for images of the same class
         img_dir = os.path.join(aug_dir, 'img_dir')
@@ -147,7 +147,7 @@ class AugmentHam:
             images, labels = next(aug_datagen)
 
         # delete temporary directory
-        shutil.rmtree('aug_dir')
+        shutil.rmtree(aug_dir)
         print('done')
 
     def get_aug_datagen(self, src, dst, batch_size):

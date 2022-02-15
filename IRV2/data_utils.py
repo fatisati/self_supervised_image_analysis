@@ -47,10 +47,12 @@ class AugmentHam:
             data_pd['train_test_split'] = data_pd['image_id'].apply(
                 lambda x: self.identify_trainOrtest(x, set(test_df['image_id'])))
             train_df = data_pd[data_pd['train_test_split'] == 'train']
+            print(f'train size before sample: {len(train_df)}')
 
             train_size = int(len(train) * train_sample_ratio)
-            train_df = train_df[:train_size]
+            print(f'train sample size: {train_size}')
 
+            train_df = train_df[:train_size]
             self.test_list = list(test_df['image_id'])
 
         self.train_list = list(train_df['image_id'])

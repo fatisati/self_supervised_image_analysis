@@ -24,8 +24,8 @@ def duplicates(x, unique_df):
 class AugmentHam:
     def __init__(self, ham_folder, target_folder):
         self.ham_folder = ham_folder
-        self.train_dir = os.path.join(target_folder, 'train_dir')
-        self.test_dir = os.path.join(target_folder, 'test_dir')
+        self.train_dir = os.path.join(target_folder, 'train_dir/')
+        self.test_dir = os.path.join(target_folder, 'test_dir/')
 
         data_pd = pd.read_csv(ham_folder + 'HAM10000_metadata.csv')
         samples = self.get_unique_samples(data_pd)
@@ -43,8 +43,8 @@ class AugmentHam:
         self.data_pd = data_pd
 
         self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
-        self.generate_train_test_folders()
-        self.copy_imgs_to_train_test_folders()
+        # self.generate_train_test_folders()
+        # self.copy_imgs_to_train_test_folders()
 
     def copy_imgs_to_train_test_folders(self):
         self.copy_imgs_to_label_subdir(self.train_list, self.ham_folder, self.train_dir)

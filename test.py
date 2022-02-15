@@ -1,8 +1,7 @@
-from barlow.resnet20 import ResNet
+import pandas as pd
 
-resnet = ResNet(use_batchnorm=False, use_dropout=False)
-b_resnet = ResNet(use_batchnorm=True, use_dropout=False)
+df = pd.DataFrame([{'a':1}])
+df2 = pd.DataFrame([{'a': 2}])
+df.append(df2)
+print(df)
 
-
-resnet.get_network(32, use_pred=False, return_before_head=False).summary()
-b_resnet.get_network(32, use_pred=False, return_before_head=False).summary()

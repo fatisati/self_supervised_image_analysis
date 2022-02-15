@@ -19,20 +19,24 @@ def calc_val_loss(barlow_model, val_data):
 def model_val_loss(model_path, ds, bs, aug_func):
     x_train, x_test = ds.get_x_train_test_ds()
     val_ssl_ds = prepare_data_loader(x_test, bs, aug_func)
-    res = []
+    try:
+        res_df = pd.read_excel(model_path + '/val_loss.xlsx')
+    except:
+        res_df = pd.DataFrame([])
 
     for epoch in os.listdir(model_path):
-        try:
+
+        if epoch[0] == 'e':
             model = load_model(model_path + f'/{epoch}')
-        except:
+        else:
             continue
         print('calculating val loss...')
         val_loss, on_diog, off_diog = calc_val_loss(model, val_ssl_ds)
         print(f'done. loss: {val_loss}, on_diog: {on_diog}, off_diog: {off_diog}')
-
-        res.append(
+        row_df = pd.DataFrame(
             {'epoch': epoch, 'val_loss': val_loss.numpy(), 'on_diog': on_diog.numpy(), 'off_diog': off_diog.numpy()})
-        pd.DataFrame(res).to_excel(model_path + '/val_loss.xlsx')
+        res_df = res_df.append(row_df)
+        res_df.to_excel(model_path + '/val_loss.xlsx')
 
 
 if __name__ == '__main__':

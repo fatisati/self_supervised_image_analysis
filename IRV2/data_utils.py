@@ -49,7 +49,7 @@ class AugmentHam:
             train_df = data_pd[data_pd['train_test_split'] == 'train']
             print(f'train size before sample: {len(train_df)}')
 
-            train_size = int(len(train) * train_sample_ratio)
+            train_size = int(len(train_df) * train_sample_ratio)
             print(f'train sample size: {train_size}')
 
             train_df = train_df[:train_size]

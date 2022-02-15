@@ -22,34 +22,41 @@ def duplicates(x, unique_df):
 
 
 class AugmentHam:
-    def __init__(self, ham_folder, target_folder, from_test_folder):
+    def __init__(self, ham_folder, target_folder, from_test_folder, train_sample_ratio):
         self.ham_folder = ham_folder
         self.train_dir = os.path.join(target_folder, 'train_dir/')
         self.test_dir = os.path.join(target_folder, 'test_dir/')
 
         data_pd = pd.read_csv(ham_folder + 'HAM10000_metadata.csv')
+        self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
 
         if from_test_folder:
             test_img_ids = set([])
             for subdir in os.listdir(self.test_dir):
-                for img in os.listdir(self.test_dir + '/'+subdir):
+                for img in os.listdir(self.test_dir + '/' + subdir):
                     dot_idx = img.find('.')
                     test_img_ids.add(img[:dot_idx])
-            print(f'test size: {len(test_img_ids)}')
             # split train and test in a way that no duplicate in test data
-            data_pd['train_test_split'] = data_pd['image_id'].apply(lambda x: self.identify_trainOrtest(x, test_img_ids))
+            data_pd['train_test_split'] = data_pd['image_id'].apply(
+                lambda x: self.identify_trainOrtest(x, test_img_ids))
+            train_df = data_pd[data_pd['train_test_split'] == 'train']
+            self.test_list = list(test_img_ids)
+
+        else:
+            train, test_df = self.generate_random_train_test(data_pd)
+            data_pd['train_test_split'] = data_pd['image_id'].apply(
+                lambda x: self.identify_trainOrtest(x, set(test_df['image_id'])))
             train_df = data_pd[data_pd['train_test_split'] == 'train']
 
-            self.train_list = list(train_df['image_id'])
-            self.test_list = list(test_img_ids)
-            print(f'train size: {len(self.train_list)}, test size: {len(self.test_list)}')
+            train_size = int(len(train) * train_sample_ratio)
+            train_df = train_df[:train_size]
 
-            data_pd.set_index('image_id', inplace=True)
-            self.data_pd = data_pd
+            self.test_list = list(test_df['image_id'])
 
-            self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
-        else:
-            print('not implemented yet!')
+        self.train_list = list(train_df['image_id'])
+        print(f'train size: {len(self.train_list)}, test size: {len(self.test_list)}')
+        data_pd.set_index('image_id', inplace=True)
+        self.data_pd = data_pd
 
     def generate_random_train_test(self, data_pd):
         samples = self.get_unique_samples(data_pd)

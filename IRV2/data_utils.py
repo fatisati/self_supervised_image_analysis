@@ -22,29 +22,39 @@ def duplicates(x, unique_df):
 
 
 class AugmentHam:
-    def __init__(self, ham_folder, target_folder):
+    def __init__(self, ham_folder, target_folder, from_test_folder):
         self.ham_folder = ham_folder
         self.train_dir = os.path.join(target_folder, 'train_dir/')
         self.test_dir = os.path.join(target_folder, 'test_dir/')
 
         data_pd = pd.read_csv(ham_folder + 'HAM10000_metadata.csv')
+
+        if from_test_folder:
+            test_img_ids = set(os.listdir(self.test_dir))
+
+            # split train and test in a way that no duplicate in test data
+            data_pd['train_test_split'] = data_pd['image_id'].apply(lambda x: self.identify_trainOrtest(x, test_img_ids))
+            train_df = data_pd[data_pd['train_test_split'] == 'train']
+
+            self.train_list = list(train_df['image_id'])
+            self.test_list = list(test_img_ids)
+            print(f'train size: {len(self.train_list)}, test size: {len(self.test_list)}')
+
+            data_pd.set_index('image_id', inplace=True)
+            self.data_pd = data_pd
+
+            self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
+        else:
+            print('not implemented yet!')
+
+    def generate_random_train_test(self, data_pd):
         samples = self.get_unique_samples(data_pd)
-        self.train, self.test_df = train_test_split(samples, test_size=0.2, stratify=samples['dx'])
+        train, test_df = train_test_split(samples, test_size=0.2, stratify=samples['dx'])
+        return train, test_df
 
-        # split train and test in a way that no duplicate in test data
-        data_pd['train_test_split'] = data_pd['image_id'].apply(self.identify_trainOrtest)
-        train_df = data_pd[data_pd['train_test_split'] == 'train']
-
-        self.train_list = list(train_df['image_id'])
-        self.test_list = list(self.test_df['image_id'])
-        print(f'train size: {len(self.train_list)}, test size: {len(self.test_list)}')
-
-        data_pd.set_index('image_id', inplace=True)
-        self.data_pd = data_pd
-
-        self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
-        # self.generate_train_test_folders()
-        # self.copy_imgs_to_train_test_folders()
+    def copy_train_test_from_ham(self):
+        self.generate_train_test_folders()
+        self.copy_imgs_to_train_test_folders()
 
     def copy_imgs_to_train_test_folders(self):
         self.copy_imgs_to_label_subdir(self.train_list, self.ham_folder, self.train_dir)
@@ -75,9 +85,8 @@ class AugmentHam:
             os.mkdir(directory1)
             os.mkdir(directory2)
 
-    def identify_trainOrtest(self, x):
-        test_data = set(self.test_df['image_id'])
-        if str(x) in test_data:
+    def identify_trainOrtest(self, x, test_img_ids):
+        if str(x) in test_img_ids:
             return 'test'
         else:
             return 'train'
@@ -140,6 +149,7 @@ class AugmentHam:
         # delete temporary directory
         shutil.rmtree('aug_dir')
         print('done')
+
     def get_aug_datagen(self, src, dst, batch_size):
         # Creating Image Data Generator to augment images
         datagen = tf.keras.preprocessing.image.ImageDataGenerator(
@@ -157,6 +167,7 @@ class AugmentHam:
         aug_datagen = datagen.flow_from_directory(src, save_to_dir=dst, save_format='jpg',
                                                   target_size=(299, 299), batch_size=batch_size)
         return aug_datagen
+
 
 if __name__ == '__main__':
     ham_folder = ''

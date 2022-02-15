@@ -30,8 +30,11 @@ class AugmentHam:
         data_pd = pd.read_csv(ham_folder + 'HAM10000_metadata.csv')
 
         if from_test_folder:
-            test_img_ids = set(os.listdir(self.test_dir))
-
+            test_img_ids = set([])
+            for subdir in os.listdir(self.test_dir):
+                for img in os.listdir(self.test_dir + '/'+subdir):
+                    test_img_ids.add(img)
+            print(f'test size: {len(test_img_ids)}')
             # split train and test in a way that no duplicate in test data
             data_pd['train_test_split'] = data_pd['image_id'].apply(lambda x: self.identify_trainOrtest(x, test_img_ids))
             train_df = data_pd[data_pd['train_test_split'] == 'train']

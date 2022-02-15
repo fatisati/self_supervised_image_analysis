@@ -144,7 +144,7 @@ def run_pretrain(ds, params: PretrainParams, debug=False):
     train_model(model, ssl_ds, params.checkpoints, params.save_path,
                 params.get_summary(), load_latest_model=True,
                 debug=debug, compile_function=compile_function)
-    eval_pretrain.model_val_loss(params.save_path, ds, 64, params.augment_function)
+    eval_pretrain.model_val_loss(params.save_path + params.get_summary(), ds, 64, params.augment_function)
     return model.encoder
 
 

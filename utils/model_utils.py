@@ -48,11 +48,11 @@ def get_save_path(path, name, epoch):
 def save_checkpoint(model, epoch_loss_list, path, name, epoch):
     save_path = get_save_path(path, name, epoch)
     try:
-        print('saving model encoder.')
         model.encoder.save(save_path, save_format='tf')
+        print('saving model encoder.')
     except:
-        print('saving model itself')
         model.save(save_path, save_format='tf')
+        print('saving model itself')
 
     epoch_loss = []
     for hist in epoch_loss_list:

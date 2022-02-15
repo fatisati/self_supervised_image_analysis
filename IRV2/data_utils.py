@@ -52,7 +52,7 @@ class AugmentHam:
             train_size = int(len(train_df) * train_sample_ratio)
             print(f'train sample size: {train_size}')
 
-            train_df = train_df[:train_size]
+            _, train_df = train_test_split(train_df, test_size=train_sample_ratio, stratify=train_df['dx'])
             self.test_list = list(test_df['image_id'])
 
         self.train_list = list(train_df['image_id'])

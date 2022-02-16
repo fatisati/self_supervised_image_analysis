@@ -86,7 +86,8 @@ def find_latest_model(path, name):
 def train_model(model, data, checkpoints, path, name,
                 test_ds=None, load_latest_model=True,
                 debug=False, checkpoint_function=None,
-                compile_function=None, callbacks=None):
+                compile_function=None, callbacks=None,
+                steps_per_epoch=None, validation_steps=None, class_weight=None):
     print(f'training model: {path}/{name} ...')
     if callbacks is None:
         callbacks = []
@@ -125,7 +126,10 @@ def train_model(model, data, checkpoints, path, name,
 
         print('starting to fit model...')
         hist = model.fit(data, epochs=change,
-                         validation_data=test_ds, callbacks=callbacks)
+                         validation_data=test_ds, callbacks=callbacks,
+                         steps_per_epoch=steps_per_epoch,
+                         validation_steps=validation_steps,
+                         class_weight=class_weight)
         history.append(hist)
         print('done')
 

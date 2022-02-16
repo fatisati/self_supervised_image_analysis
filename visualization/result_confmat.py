@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     vis = BarlowResVis()
     labels = ds.label_names
-    best_model = load_model(vis.best_model_path + 'e150')
+    best_model = load_model(vis.model_path1 + 'e150')
 
     # plot_confusion_matrix(best_model, x_test, y_test, labels)
     # plt.title('best model confusion matrix for test data')

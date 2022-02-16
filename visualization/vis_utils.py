@@ -6,7 +6,7 @@ class VisUtils:
         self.save_path = save_path
 
     def save_with_format(self, name, frm):
-        plt.savefig(self.save_path + f'{frm}/{name}.{frm}')
+        plt.savefig(self.save_path + f'{name}.{frm}')
 
     def save_and_show(self, name):
         self.save_with_format(name, 'svg')

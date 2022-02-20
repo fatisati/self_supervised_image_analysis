@@ -9,6 +9,8 @@ from data_codes.razi.razi_utils import *
 import os
 from IRV2.data_utils import *
 
+from barlow import augmentation_utils
+
 AUTO = tf.data.AUTOTUNE
 
 
@@ -53,7 +55,7 @@ class RaziDataset:
         return train, test
 
     def process_ssl_path(self, ssl_samples, bs):
-        return tf_utils.tf_ds_from_arr(ssl_samples).map(self.load_and_resize_img).batch(bs).prefetch(AUTO)
+        return tf_utils.tf_ds_from_arr(ssl_samples).map(self.process_path).batch(bs).prefetch(AUTO)
 
     def prepare_ssl_ds(self, samples, bs):
         ssl_one = [self.img_folder + get_random_instance(samples, i) for i in range(len(samples))]
@@ -64,9 +66,13 @@ class RaziDataset:
         ssl_ds = tf.data.Dataset.zip((ssl_ds_one, ssl_ds_two))
         return ssl_ds
 
-    def load_and_resize_img(self, path):
+    def process_path(self, path):
         img = tf_utils.read_tf_image(path)
-        return tf.image.resize(img, (self.img_size, self.img_size))
+        return self.augment_img(img)
+
+    def augment_img(self, img):
+        aug_func = augmentation_utils.get_tf_augment(self.img_size)
+        return aug_func(img)
 
     def prepare_imgs_labels(self, df):
         all_path = [self.img_folder + get_img_name(url) for url in df['img_url']]
@@ -77,7 +83,7 @@ class RaziDataset:
 
     def make_zip_ds(self, df):
         path_ds, labels_ds = self.prepare_imgs_labels(df)
-        return tf.data.Dataset.zip((path_ds.map(self.load_and_resize_img), labels_ds))
+        return tf.data.Dataset.zip((path_ds.map(self.process_path), labels_ds))
 
     def filter_valid_samples(self, samples):
         samples['img_name'] = [get_img_name(url) for url in samples['img_url']]
@@ -104,7 +110,7 @@ class RaziDataset:
 
     def irv2_augmented_supervised_ds(self, train_ratio, group):
         train, test = self.prepare_supervised_data(train_ratio, group)
-        aug_gen = get_aug_datagen()
+        # aug_gen = get_aug_datagen()
         preprocess_datagen = get_preprocessing_datagen()
 
         # data = aug_gen.flow_from_dataframe(train, directory=self.img_folder,
@@ -113,9 +119,9 @@ class RaziDataset:
         #                                    batch_size = 16)
 
         return preprocess_datagen.flow_from_dataframe(train, directory=self.img_folder,
-                                           x_col = 'img_name', y_col='label',
-                                           target_size = (32, 32),
-                                           batch_size = 16)
+                                                      x_col='img_name', y_col='label',
+                                                      target_size=(32, 32),
+                                                      batch_size=16)
 
     def get_supervised_ds(self, train_ratio, group):
 

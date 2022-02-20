@@ -1,7 +1,7 @@
 from barlow.barlow_run import *
 
 from barlow.data_utils import prepare_input_data
-from result_plots import BarlowResVis
+from ham_plots_backup_ import BarlowResVis
 from vis_utils.model_utils import load_model
 
 from plot_confmat import *

@@ -16,9 +16,9 @@ def calc_val_loss(barlow_model, val_data):
     return loss, on_diog, off_diog
 
 
-def model_val_loss(model_path, ds, bs, aug_func):
-    x_train, x_test = ds.get_x_train_test_ds()
-    val_ssl_ds = prepare_data_loader(x_test, bs, aug_func)
+def model_val_loss(model_path, val_ssl_ds):
+    # x_train, x_test = ds.get_x_train_test_ds()
+    # val_ssl_ds = prepare_data_loader(x_test, bs, aug_func)
     founded_epochs = []
     try:
         res_df = pd.read_excel(model_path + '/val_loss.xlsx')

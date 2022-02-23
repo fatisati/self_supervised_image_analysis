@@ -67,7 +67,7 @@ class AugmentHam:
         return train, test_df
 
     def copy_train_test_from_ham(self):
-        os.mkdir(self.tar)
+        os.mkdir(self.target_folder)
         self.generate_train_test_folders()
         self.copy_imgs_to_train_test_folders()
 

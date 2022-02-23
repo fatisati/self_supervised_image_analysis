@@ -22,14 +22,16 @@ def duplicates(x, unique_df):
 
 
 class AugmentHam:
-    def __init__(self, ham_folder, target_folder, from_test_folder, train_sample_ratio):
+    def __init__(self, ham_folder, target_folder,
+                 from_test_folder,
+                 test_ratio, train_sample_ratio):
         self.ham_folder = ham_folder
         self.train_dir = os.path.join(target_folder, 'train_dir/')
         self.test_dir = os.path.join(target_folder, 'test_dir/')
         self.target_folder = target_folder
         data_pd = pd.read_csv(ham_folder + 'HAM10000_metadata.csv')
         self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
-
+        self.test_ratio = test_ratio
         if from_test_folder:
             test_img_ids = set([])
             for subdir in os.listdir(self.test_dir):
@@ -63,7 +65,7 @@ class AugmentHam:
 
     def generate_random_train_test(self, data_pd):
         samples = self.get_unique_samples(data_pd)
-        train, test_df = train_test_split(samples, test_size=0.2, stratify=samples['dx'])
+        train, test_df = train_test_split(samples, test_size=self.test_ratio, stratify=samples['dx'])
         return train, test_df
 
     def copy_train_test_from_ham(self):

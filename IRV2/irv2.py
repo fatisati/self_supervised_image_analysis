@@ -4,7 +4,7 @@ from tensorflow.keras.layers import concatenate, Dense, Conv2D, MaxPooling2D, Fl
     AveragePooling2D, BatchNormalization, Dropout
 from tensorflow.keras import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-
+from utils.model_utils import get_metrics
 
 # class_weights = {
 #     0: 1.0,  # akiec
@@ -47,7 +47,7 @@ def get_model(outshape):
     opt1 = tf.keras.optimizers.Adam(learning_rate=0.01, epsilon=0.1)
     model.compile(optimizer=opt1,
                   loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=get_metrics())
     return model
 
 

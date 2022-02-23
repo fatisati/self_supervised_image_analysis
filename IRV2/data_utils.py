@@ -26,7 +26,7 @@ class AugmentHam:
         self.ham_folder = ham_folder
         self.train_dir = os.path.join(target_folder, 'train_dir/')
         self.test_dir = os.path.join(target_folder, 'test_dir/')
-
+        self.target_folder = target_folder
         data_pd = pd.read_csv(ham_folder + 'HAM10000_metadata.csv')
         self.targetnames = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
 
@@ -43,6 +43,7 @@ class AugmentHam:
             self.test_list = list(test_img_ids)
 
         else:
+
             train, test_df = self.generate_random_train_test(data_pd)
             data_pd['train_test_split'] = data_pd['image_id'].apply(
                 lambda x: self.identify_trainOrtest(x, set(test_df['image_id'])))
@@ -66,6 +67,7 @@ class AugmentHam:
         return train, test_df
 
     def copy_train_test_from_ham(self):
+        os.mkdir(self.tar)
         self.generate_train_test_folders()
         self.copy_imgs_to_train_test_folders()
 

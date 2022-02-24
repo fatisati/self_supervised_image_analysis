@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from ham_dataset import *
 from utils.model_utils import *
+from attention.simple import SimpleAttention
 
 
 def get_resnet_encoder(resnet_backbone, use_dropout):
@@ -17,7 +18,7 @@ def get_resnet_encoder(resnet_backbone, use_dropout):
 
 # from tf.keras.layers import BatchNormalization
 def get_linear_model(barlow_encoder, crop_to, y_shape,
-                     use_dropout=False):
+                     use_dropout=False, use_attention=True):
     # Extract the backbone ResNet20.
     backbone = get_resnet_encoder(barlow_encoder, use_dropout)
     # We then create our linear classifier and train it.
@@ -25,6 +26,9 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
     # x = backbone(inputs, training=False)
     x = backbone(inputs)
+
+    if use_attention:
+        x = SimpleAttention()(x)
     # batch_out = tf.keras.layers.BatchNormalization()(x)
     outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)
     linear_model = tf.keras.Model(inputs, outputs, name="linear_model")

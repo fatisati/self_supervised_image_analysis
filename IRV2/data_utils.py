@@ -45,7 +45,6 @@ class AugmentHam:
             self.test_list = list(test_img_ids)
 
         else:
-
             train, test_df = self.generate_random_train_test(data_pd)
             data_pd['train_test_split'] = data_pd['image_id'].apply(
                 lambda x: self.identify_trainOrtest(x, set(test_df['image_id'])))
@@ -63,6 +62,7 @@ class AugmentHam:
     def generate_random_train_test(self, data_pd):
         samples = self.get_unique_samples(data_pd)
         train, test_df = train_test_split(samples, test_size=self.test_ratio, stratify=samples['dx'])
+        print(len(train), len(test_df))
         return train, test_df
 
     def copy_train_test_from_ham(self):

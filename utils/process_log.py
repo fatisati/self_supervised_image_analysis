@@ -10,6 +10,7 @@ def clean_log(path, name):
 
 if __name__ == '__main__':
     for ct in [128]:
-        path = f'../../models/twins/finetune/batchnorm_ct{ct}_bs64_aug_original/'
+        path = f'../../models/twins/finetune/dropout0.2_ct128_bs{64}_aug_tf/'
+
         name = 'log'
         clean_log(path, name)

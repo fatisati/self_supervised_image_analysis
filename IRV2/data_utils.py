@@ -24,7 +24,7 @@ def duplicates(x, unique_df):
 class AugmentHam:
     def __init__(self, ham_folder, target_folder,
                  from_test_folder,
-                 test_ratio, train_sample_ratio):
+                 test_ratio):
         self.ham_folder = ham_folder
         self.train_dir = os.path.join(target_folder, 'train_dir/')
         self.test_dir = os.path.join(target_folder, 'test_dir/')
@@ -50,12 +50,9 @@ class AugmentHam:
             data_pd['train_test_split'] = data_pd['image_id'].apply(
                 lambda x: self.identify_trainOrtest(x, set(test_df['image_id'])))
             train_df = data_pd[data_pd['train_test_split'] == 'train']
-            print(f'train size before sample: {len(train_df)}')
+            print(f'train size: {len(train_df)}')
 
-            train_size = int(len(train_df) * train_sample_ratio)
-            print(f'train sample size: {train_size}')
-
-            _, train_df = train_test_split(train_df, test_size=train_sample_ratio, stratify=train_df['dx'])
+            # _, train_df = train_test_split(train_df, test_size=train_sample_ratio, stratify=train_df['dx'])
             self.test_list = list(test_df['image_id'])
 
         self.train_list = list(train_df['image_id'])

@@ -8,12 +8,15 @@ from visualization.vis_utils import VisUtils, CompareModels
 class BarlowResVis:
     def __init__(self):
         self.res_folder = '../../results/barlow-results/'
-        self.model_folder = '../../models/twins/finetune/'
+        #twins/finetune/
+        self.model_folder = '../../models/'
+
         self.best_model = f'batchnorm/batchnorm_ct{128}_bs{64}_aug_tf/'
         self.no_bacthnorm_model = f'batchnorm/no-batchnorm_ct128_bs{64}_aug_tf/'
         self.no_pretrain_name = 'no-pretrain'
         self.aug_original = f'batchnorm_ct128_bs{64}_aug_original/'
-
+        self.drop_out = f'dropout0.2_ct128_bs{64}_aug_tf/'
+        self.irv2 = 'IRV2/'
     def batchnorm_effect(self, ct):
         bs = 64
         model1 = f'batchnorm/batchnorm_ct{ct}_bs{bs}_aug_tf/'
@@ -32,8 +35,11 @@ class BarlowResVis:
 
     def compare_all(self):
         models = [self.best_model, self.no_bacthnorm_model,
-                  self.no_pretrain_name, self.aug_original]
-        labels = ['best', 'no-batchnorm', 'no-pretrain', 'augmentation-original']
+                  self.no_pretrain_name, self.aug_original, self.drop_out]
+        models = ['twins/finetune/' + name for name in models]
+        models.append(self.irv2)
+        labels = ['best', 'no-batchnorm', 'no-pretrain',
+                  'augmentation-original', 'dropout 0.2', 'IRV2']
         cm = CompareModels(self.res_folder, self.model_folder, f'compare-all')
         cm.compare_all_metrics(models, labels)
 

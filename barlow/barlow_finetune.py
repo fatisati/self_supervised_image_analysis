@@ -16,13 +16,15 @@ def get_resnet_encoder(resnet_backbone, use_dropout):
 
 
 # from tf.keras.layers import BatchNormalization
-def get_linear_model(barlow_encoder, crop_to, y_shape, use_dropout=False):
+def get_linear_model(barlow_encoder, crop_to, y_shape,
+                     use_dropout=False):
     # Extract the backbone ResNet20.
     backbone = get_resnet_encoder(barlow_encoder, use_dropout)
     # We then create our linear classifier and train it.
     backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
-    x = backbone(inputs, training=False)
+    # x = backbone(inputs, training=False)
+    x = backbone(inputs)
     # batch_out = tf.keras.layers.BatchNormalization()(x)
     outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)
     linear_model = tf.keras.Model(inputs, outputs, name="linear_model")

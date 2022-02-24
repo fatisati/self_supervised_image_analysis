@@ -35,6 +35,10 @@ class RaziDataset:
         print('listing all valid img names...')
         self.valid_names = list(os.listdir(self.img_folder))
         self.valid_names = [name.lower() for name in self.valid_names]
+
+        self.ham_labels = ["MEL", 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']
+        self.ham_labels = [label.lower() for label in self.ham_labels]
+
         print('done')
 
     def remove_invalid_samples(self, img_names: []):
@@ -74,10 +78,12 @@ class RaziDataset:
         aug_func = augmentation_utils.get_tf_augment(self.img_size)
         return aug_func(img)
 
-    def prepare_imgs_labels(self, df):
+    def prepare_imgs_labels(self, df, prepare_label=None):
+        if not prepare_label:
+            prepare_label = lambda label: get_one_hot(label, self.all_labels)
         all_path = [self.img_folder + get_img_name(url) for url in df['img_url']]
         path_ds = tf_utils.tf_ds_from_arr(all_path)
-        labels = [get_one_hot(label, self.all_labels) for label in df['label']]
+        labels = [prepare_label(label) for label in df['label']]
         labels_ds = tf_utils.tf_ds_from_arr(labels)
         return path_ds, labels_ds
 
@@ -89,15 +95,21 @@ class RaziDataset:
         samples['img_name'] = [get_img_name(url) for url in samples['img_url']]
         return samples[samples['img_name'].isin(self.valid_names)]
 
-    def prepare_supervised_data(self, train_ratio, group):
+    def generating_valid_samples(self, group, label_set=None):
         print('generating razi supervised ds...')
         samples = pd.read_excel(self.data_folder + 'supervised_samples.xlsx')
         samples = samples[samples['group'] == group]
+        if label_set:
+            samples = samples[samples['label'].isin(label_set)]
         print(f'all sample size: {len(samples)}')
 
         samples = self.filter_valid_samples(samples)
         print(f'valid sample size: {len(samples)}')
+        return samples
 
+    def prepare_supervised_data(self, train_ratio, group):
+
+        samples = self.generating_valid_samples(group)
         train_sample_idx = get_train_test_idx(len(samples), 1 - train_ratio)
         train_sample_idx = [idx == 1 for idx in train_sample_idx]
         train = samples[train_sample_idx]
@@ -108,20 +120,13 @@ class RaziDataset:
         self.all_labels = list(set(samples['label']))
         return train, test
 
-    def irv2_augmented_supervised_ds(self, train_ratio, group):
-        train, test = self.prepare_supervised_data(train_ratio, group)
-        # aug_gen = get_aug_datagen()
-        preprocess_datagen = get_preprocessing_datagen()
+    def prepare_ham_labels(self, label):
+        return get_one_hot(label, self.ham_labels)
 
-        # data = aug_gen.flow_from_dataframe(train, directory=self.img_folder,
-        #                                    x_col = 'img_name', y_col='label',
-        #                                    target_size = (32, 32),
-        #                                    batch_size = 16)
-
-        return preprocess_datagen.flow_from_dataframe(train, directory=self.img_folder,
-                                                      x_col='img_name', y_col='label',
-                                                      target_size=(32, 32),
-                                                      batch_size=16)
+    def get_ham_format_x_y(self):
+        samples = self.generating_valid_samples('tumor', self.ham_labels)
+        path_ds, labels_ds = self.prepare_imgs_labels(samples, self.prepare_ham_labels)
+        return path_ds.map(self.process_path), labels_ds
 
     def get_supervised_ds(self, train_ratio, group):
 

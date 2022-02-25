@@ -60,8 +60,8 @@ class AugmentHam:
         self.data_pd = data_pd
 
     def generate_random_train_test(self, data_pd):
-        samples = self.get_unique_samples(data_pd)
-        train, test_df = train_test_split(samples, test_size=self.test_ratio, stratify=samples['dx'])
+        # samples = self.get_unique_samples(data_pd)
+        train, test_df = train_test_split(data_pd, test_size=self.test_ratio, stratify=data_pd['dx'])
         print(len(train), len(test_df))
         return train, test_df
 

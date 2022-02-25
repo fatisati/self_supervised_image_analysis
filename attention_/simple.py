@@ -21,7 +21,7 @@ class attention(Layer):
         e = K.tanh(K.dot(x, self.W) + self.b)
 
         # Remove dimension of size 1
-        # e = K.squeeze(e, axis=-1)
+        e = K.squeeze(e, axis=-1)
 
         # Compute the weights
         alpha = K.softmax(e)
@@ -32,5 +32,5 @@ class attention(Layer):
         # Compute the context vector
         context = x * alpha
         context = K.sum(context, axis=1)
-        
+
         return context

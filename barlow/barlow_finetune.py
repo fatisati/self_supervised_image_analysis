@@ -24,7 +24,9 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
     # Extract the backbone ResNet20.
     backbone = get_resnet_encoder(barlow_encoder, use_dropout)
     # We then create our linear classifier and train it.
-    # backbone.trainable = False
+    if not trainable_backbone:
+        backbone.trainable = False
+
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
     x = backbone(inputs, training=trainable_backbone)
     # x = backbone(inputs)

@@ -20,14 +20,14 @@ def get_resnet_encoder(resnet_backbone, use_dropout):
 
 # from tf.keras.layers import BatchNormalization
 def get_linear_model(barlow_encoder, crop_to, y_shape,
-                     use_dropout=False, use_attention=True):
+                     use_dropout=False, use_attention=True, trainable_backbone = False):
     # Extract the backbone ResNet20.
     backbone = get_resnet_encoder(barlow_encoder, use_dropout)
     # We then create our linear classifier and train it.
     # backbone.trainable = False
     inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
-    # x = backbone(inputs, training=False)
-    x = backbone(inputs)
+    x = backbone(inputs, training=trainable_backbone)
+    # x = backbone(inputs)
 
     if use_attention:
         # attention_weights = tf.keras.layers.Dense(x.shape[-1], activation="softmax")(x)

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from ham_dataset import *
 from utils.model_utils import *
-from attention_.simple import attention
+from attention_.simple import SimpleAttention
 from attention_.bahdanau import BahdanauAttention
 from IRV2.soft_attention import SoftAttention
 
@@ -30,7 +30,15 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
     x = backbone(inputs)
 
     if use_attention:
-        x = attention()(x)
+        attention_weights = tf.keras.layers.Dense(x.shape[-1], activation="softmax")(x)
+        x = tf.matmul(x, attention_weights)
+
+        # x = tf.tensordot(x, attention_weights, axes=1)
+
+        # x, _ = BahdanauAttention(5)(x)
+
+        # x = SimpleAttention()(x)
+
         # x, _ = SoftAttention(aggregate=True, m=16,
         #                      concat_with_x=False, ch=int(x.shape[-1]),
         #                      name='soft_attention')(x)

@@ -25,5 +25,5 @@ class SimpleAttention(Layer):
         alpha = K.expand_dims(alpha, axis=-1)
         # Compute the context vector
         context = x * alpha
-        context = K.sum(context, axis=1)
+        # context = K.sum(context, axis=1)
         return context

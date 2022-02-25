@@ -31,9 +31,9 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
 
     if use_attention:
         attention_weights = tf.keras.layers.Dense(x.shape[-1], activation="softmax")(x)
-        x = tf.matmul(x, attention_weights)
+        # x = tf.matmul(x, attention_weights)
 
-        # x = tf.tensordot(x, attention_weights, axes=1)
+        x = tf.tensordot(x, attention_weights, axes=1)
 
         # x, _ = BahdanauAttention(5)(x)
 

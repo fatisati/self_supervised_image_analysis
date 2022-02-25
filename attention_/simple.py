@@ -16,17 +16,21 @@ class attention(Layer):
         super(attention, self).build(input_shape)
 
     def call(self, x):
-        x = K.expand_dims(x, axis=-1)
+
         # Alignment scores. Pass them through tanh function
         e = K.tanh(K.dot(x, self.W) + self.b)
+
         # Remove dimension of size 1
-        e = K.squeeze(e, axis=-1)
+        # e = K.squeeze(e, axis=-1)
+
         # Compute the weights
         alpha = K.softmax(e)
+
         # Reshape to tensorFlow format
         alpha = K.expand_dims(alpha, axis=-1)
+
         # Compute the context vector
         context = x * alpha
         context = K.sum(context, axis=1)
-        # context = tf.reduce_sum(context, axis=1)
+        
         return context

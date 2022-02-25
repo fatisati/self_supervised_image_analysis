@@ -1,6 +1,6 @@
 from keras.layers import Layer
 import keras.backend as K
-
+import tensorflow as tf
 
 # Add attention layer to the deep learning network
 class SimpleAttention(Layer):
@@ -15,6 +15,7 @@ class SimpleAttention(Layer):
         super(SimpleAttention, self).build(input_shape)
 
     def call(self,x):
+        exp_x = K.expand_dims(x, axis=-1)
         # Alignment scores. Pass them through tanh function
         e = K.tanh(K.dot(x,self.W)+self.b)
         # Remove dimension of size 1
@@ -26,4 +27,5 @@ class SimpleAttention(Layer):
         # Compute the context vector
         context = x * alpha
         context = K.sum(context, axis=1)
+        # context = tf.reduce_sum(context, axis=1)
         return context

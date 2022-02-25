@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from ham_dataset import *
 from utils.model_utils import *
 from attention_.simple import SimpleAttention
+from attention_.bahdanau import BahdanauAttention
+from IRV2.soft_attention import SoftAttention
 
 
 def get_resnet_encoder(resnet_backbone, use_dropout):
@@ -29,6 +31,9 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
 
     if use_attention:
         x = SimpleAttention()(x)
+        # x, _ = SoftAttention(aggregate=True, m=16,
+        #                      concat_with_x=False, ch=int(x.shape[-1]),
+        #                      name='soft_attention')(x)
     # batch_out = tf.keras.layers.BatchNormalization()(x)
     outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)
     linear_model = tf.keras.Model(inputs, outputs, name="linear_model")

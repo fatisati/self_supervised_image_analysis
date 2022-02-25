@@ -1,6 +1,12 @@
 from barlow.resnet20 import ResNet
 from barlow.barlow_finetune import *
 if __name__ == '__main__':
-    encoder = ResNet(True, False, 0.2).get_network(32, n=2, hidden_dim=128, use_pred=False, return_before_head=False)
-    model = get_linear_model(encoder, 32, 7, True, True)
+    resnet = ResNet(True, False, '').get_network(128, hidden_dim=2048, use_pred=False,
+                                      return_before_head=False)
+
+    encoder = get_resnet_encoder(resnet, False)
+    encoder.summary()
+
+    model = get_linear_model(encoder, 128, 7, False, True)
+    model.summary()
     model.compile()

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from ham_dataset import *
 from utils.model_utils import *
-from attention.simple import SimpleAttention
+from attention_.simple import attention
 
 
 def get_resnet_encoder(resnet_backbone, use_dropout):
@@ -28,7 +28,7 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
     x = backbone(inputs)
 
     if use_attention:
-        x = SimpleAttention()(x)
+        x = attention()(x)
     # batch_out = tf.keras.layers.BatchNormalization()(x)
     outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)
     linear_model = tf.keras.Model(inputs, outputs, name="linear_model")

@@ -2,22 +2,23 @@ from keras.layers import Layer
 import keras.backend as K
 import tensorflow as tf
 
+
 # Add attention layer to the deep learning network
 class SimpleAttention(Layer):
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super(SimpleAttention, self).__init__(**kwargs)
 
-    def build(self,input_shape):
-        self.W=self.add_weight(name='attention_weight', shape=(input_shape[-1],1),
-                               initializer='random_normal', trainable=True)
-        self.b=self.add_weight(name='attention_bias', shape=(input_shape[1],1),
-                               initializer='zeros', trainable=True)
+    def build(self, input_shape):
+        self.W = self.add_weight(name='attention_weight', shape=(input_shape[-1], 1),
+                                 initializer='random_normal', trainable=True)
+        self.b = self.add_weight(name='attention_bias', shape=(input_shape[1], 1),
+                                 initializer='zeros', trainable=True)
         super(SimpleAttention, self).build(input_shape)
 
-    def call(self,x):
-        exp_x = K.expand_dims(x, axis=-1)
+    def call(self, x):
+        x = K.expand_dims(x, axis=-1)
         # Alignment scores. Pass them through tanh function
-        e = K.tanh(K.dot(x,self.W)+self.b)
+        e = K.tanh(K.dot(x, self.W) + self.b)
         # Remove dimension of size 1
         e = K.squeeze(e, axis=-1)
         # Compute the weights

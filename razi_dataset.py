@@ -36,9 +36,8 @@ class RaziDataset:
         self.valid_names = list(os.listdir(self.img_folder))
         self.valid_names = [name.lower() for name in self.valid_names]
 
-        self.ham_labels = ["MEL", 'NV', 'BCC', 'AKIEC', 'BKL', 'DF', 'VASC']
-        self.ham_labels = [label.lower() for label in self.ham_labels]
-
+        # the order is the same as order in irv2 datagen
+        self.ham_labels = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
         print('done')
 
     def remove_invalid_samples(self, img_names: []):

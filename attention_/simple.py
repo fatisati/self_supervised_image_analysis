@@ -3,16 +3,16 @@ import keras.backend as K
 
 
 # Add attention layer to the deep learning network
-class attention(Layer):
+class SimpleAttention(Layer):
     def __init__(self,**kwargs):
-        super(attention,self).__init__(**kwargs)
+        super(SimpleAttention, self).__init__(**kwargs)
 
     def build(self,input_shape):
         self.W=self.add_weight(name='attention_weight', shape=(input_shape[-1],1),
                                initializer='random_normal', trainable=True)
         self.b=self.add_weight(name='attention_bias', shape=(input_shape[1],1),
                                initializer='zeros', trainable=True)
-        super(attention, self).build(input_shape)
+        super(SimpleAttention, self).build(input_shape)
 
     def call(self,x):
         # Alignment scores. Pass them through tanh function
@@ -25,5 +25,5 @@ class attention(Layer):
         alpha = K.expand_dims(alpha, axis=-1)
         # Compute the context vector
         context = x * alpha
-        # context = K.sum(context, axis=1)
+        context = K.sum(context, axis=1)
         return context

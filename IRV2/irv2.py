@@ -64,3 +64,17 @@ def train_model(model, train_batches, test_batches, train_size, test_size, class
                         validation_data=test_batches, validation_steps=test_size / batch_size,
                         callbacks=[checkpoint, Earlystop], class_weight=class_weights)
     return history
+if __name__ == '__main__':
+    irv2 = tf.keras.applications.InceptionResNetV2(
+        include_top=True,
+        weights="imagenet",
+        input_tensor=None,
+        input_shape=None,
+        pooling=None,
+        classifier_activation="softmax",
+
+    )
+
+    # Excluding the last 28 layers of the model.
+    conv = irv2.layers[-28].output
+    conv.summary()

@@ -35,7 +35,7 @@ class RaziDataset:
         print('listing all valid img names...')
         self.valid_names = list(os.listdir(self.img_folder))
         self.valid_names = [name.lower() for name in self.valid_names]
-
+        print(f'{len(self.valid_names)} valid images founded.')
         # the order is the same as order in irv2 datagen
         self.ham_labels = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']
         print('done')
@@ -49,13 +49,10 @@ class RaziDataset:
 
     def get_pretrain_samples(self):
         samples = pd.read_excel(self.data_folder + 'all_samples.xlsx')
-        samples['img_names'] = get_samples_valid_img_names(samples, list(os.listdir(self.img_folder)))
+        samples['img_names'] = get_samples_valid_img_names(samples, self.valid_names)
         samples['img_cnt'] = [len(names) for names in samples['img_names']]
         samples = samples[samples['img_cnt'] > 0]
-        train = samples[samples['is_train'] == 1]
-        test = samples[samples['is_train'] == 0]
-        print(f'train-size: {len(train)}, test-size: {len(test)}')
-        return train, test
+        return samples
 
     def process_ssl_path(self, ssl_samples, bs):
         return tf_utils.tf_ds_from_arr(ssl_samples).map(self.process_path).batch(bs).prefetch(AUTO)

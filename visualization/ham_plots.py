@@ -39,7 +39,7 @@ class BarlowResVis:
         models = ['twins/finetune/' + name for name in models]
         models.append(self.irv2)
         labels = ['best', 'no-batchnorm', 'no-pretrain',
-                  'augmentation-original', 'dropout 0.2', 'IRV2']
+                  'augmentation-original', 'dropout 0.2']
         cm = CompareModels(self.res_folder, self.model_folder, f'compare-all')
         cm.compare_all_metrics(models, labels)
 

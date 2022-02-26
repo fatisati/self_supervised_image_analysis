@@ -14,11 +14,7 @@ def get_one_hot(label, all_labels: []):
 
 
 def get_valid_names(img_names, valid_names):
-    valid_imgs = []
-    for name in img_names:
-        if name in valid_names:
-            valid_imgs.append(name)
-    return valid_imgs
+    return list(set(img_names).intersection(set(valid_names)))
 
 
 def get_samples_valid_img_names(samples, all_valid_names):

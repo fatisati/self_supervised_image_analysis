@@ -32,9 +32,9 @@ def get_linear_model(barlow_encoder, crop_to, y_shape,
     # x = backbone(inputs)
 
     if use_attention:
-        # attention_weights = tf.keras.layers.Dense(x.shape[-1], activation="softmax")(x)
-        # x = tf.multiply(x, attention_weights)
-        x, _ = BahdanauAttention(10)(x)
+        attention_weights = tf.keras.layers.Dense(x.shape[-1], activation="softmax")(x)
+        x = tf.multiply(x, attention_weights)
+        # x, _ = BahdanauAttention(10)(x)
 
     # batch_out = tf.keras.layers.BatchNormalization()(x)
     outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)

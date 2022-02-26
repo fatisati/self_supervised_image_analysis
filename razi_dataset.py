@@ -52,7 +52,10 @@ class RaziDataset:
         samples['img_names'] = get_samples_valid_img_names(samples, self.valid_names)
         samples['img_cnt'] = [len(names) for names in samples['img_names']]
         samples = samples[samples['img_cnt'] > 0]
-        return samples
+        train = samples[samples['is_train'] == 1]
+        test = samples[samples['is_train'] == 0]
+        print(f'train-size: {len(train)}, test-size: {len(test)}')
+        return train, test
 
     def process_ssl_path(self, ssl_samples, bs):
         return tf_utils.tf_ds_from_arr(ssl_samples).map(self.process_path).batch(bs).prefetch(AUTO)

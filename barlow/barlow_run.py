@@ -29,6 +29,9 @@ def get_aug_function(aug_name, crop_to):
         return get_tf_augment(crop_to)
     elif aug_name == 'original':
         return lambda x: custom_augment(x, crop_to)
+
+    elif 'central-crop':
+        return lambda img: central_zoom(img, crop_to)
     else:
         return 'no-augmentation function found'
 

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from ham_dataset import *
 from utils.model_utils import *
-from attention_.simple import SimpleAttention
-from attention_.bahdanau import BahdanauAttention
+from attention.simple import SimpleAttention
+from attention.bahdanau import BahdanauAttention
 from IRV2.soft_attention import SoftAttention
 
 

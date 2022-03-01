@@ -10,6 +10,7 @@ import os
 from IRV2.data_utils import *
 
 from barlow import augmentation_utils
+import matplotlib.pyplot as plt
 
 AUTO = tf.data.AUTOTUNE
 
@@ -24,7 +25,7 @@ def get_random_instance(samples, pid):
 class RaziDataset:
 
     def __init__(self, data_folder, img_size, img_folder=None):
-        self.data_folder = data_folder
+        self.data_folder = data_folder + 'razi/'
         if img_folder:
             self.img_folder = img_folder
         else:
@@ -47,11 +48,15 @@ class RaziDataset:
                 valid_imgs.append(name)
         return valid_imgs
 
-    def get_pretrain_samples(self):
+    def prepare_multi_instance_samples(self):
         samples = pd.read_excel(self.data_folder + 'all_samples.xlsx')
         samples['img_names'] = get_samples_valid_img_names(samples, self.valid_names)
         samples['img_cnt'] = [len(names) for names in samples['img_names']]
         samples = samples[samples['img_cnt'] > 0]
+        return samples
+
+    def get_pretrain_samples(self):
+        samples = self.prepare_multi_instance_samples()
         train = samples[samples['is_train'] == 1]
         test = samples[samples['is_train'] == 0]
         print(f'train-size: {len(train)}, test-size: {len(test)}')
@@ -135,3 +140,18 @@ class RaziDataset:
 
         print('done')
         return train_ds, test_ds
+
+    def plot_sample(self, sample):
+        img_names = random.sample(list(sample['img_names']), 2)
+        img_urls = [self.img_folder + name for name in img_names]
+
+
+        plt.figure()
+        plt.subplot(1, 2, 1)
+        plt.imshow(img_urls[0])
+
+        plt.subplot(1, 2, 1)
+        plt.plot(img_urls[1])
+
+        plt.show()
+

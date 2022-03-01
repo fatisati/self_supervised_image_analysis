@@ -91,3 +91,15 @@ def get_tf_augment(crop_to):
         # layers.Rescaling(1. / 255)
     ])
     return data_augmentation
+
+
+def central_zoom(image, crop_to):
+    image = tf.image.random_hue(image, 0.02)
+    # image = tf.image.random_contrast(image, 0.7, 0.8)
+    image = tf.image.random_saturation(image, 0.75, 1.25)
+    image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_flip_up_down(image)
+    zoomed = tf.image.central_crop(image, central_fraction=0.5)
+
+    return tf.image.resize(zoomed, (crop_to, crop_to))
+

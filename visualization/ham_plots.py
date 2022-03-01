@@ -34,13 +34,12 @@ class BarlowResVis:
         cm.compare_all_metrics([no_pretrain_name, self.best_model], labels)
 
     def compare_all(self):
-        models = [self.best_model, self.no_bacthnorm_model,
-                  self.no_pretrain_name, self.aug_original, self.drop_out]
+        models = [self.best_model, self.drop_out]
         models = ['twins/finetune/' + name for name in models]
         models.append(self.irv2)
-        labels = ['best', 'no-batchnorm', 'no-pretrain',
-                  'augmentation-original', 'dropout 0.2']
-        cm = CompareModels(self.res_folder, self.model_folder, f'compare-all')
+        labels = ['no-dropout',
+                  'dropout (p=0.2)']
+        cm = CompareModels(self.res_folder, self.model_folder, f'dropout')
         cm.compare_all_metrics(models, labels)
 
 

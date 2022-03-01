@@ -93,7 +93,14 @@ class CompareModels:
 
 
 if __name__ == '__main__':
-    x = [[1, 2], [2, 3]]
-    y = [[2, 4], [3, 1]]
-    multiple_plots(x, y, [1, 2], 2, 2)
-    plt.show()
+    path = '../../results/tables/razi-models-eval.xlsx'
+    log = pd.read_excel(path)
+    # log['f1-score'] = calc_log_f1_score(log)
+    #
+    # log.to_excel(path)
+    for col in log.columns:
+        try:
+            log[col] = [round(float(num), 2) for num in log[col]]
+            print(col)
+        except: continue
+    log.to_excel(path[:-4]+'_round.xlsx')

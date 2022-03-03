@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
     # embeddings = Embedding(256)
 
-    ds = MyDataset(data_path='../../data/ISIC/ham10000/', image_folder='resized256/',
-                   label_filename='disease_labels.csv', image_col='image', data_size=15)
+    ds = HAMDataset(data_path='../../data/ISIC/ham10000/', image_folder='resized256/',
+                    label_filename='disease_labels.csv', image_col='image', data_size=15)
 
     deepset_hybrid(ds)
     # # deepset_embedded_input(ds)

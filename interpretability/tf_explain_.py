@@ -1,9 +1,9 @@
 from tf_explain.core import GradCAM
-from ham_dataset import MyDataset
+from ham_dataset import HAMDataset
 from utils.model_utils import load_model
 if __name__ == '__main__':
-    ds_sample = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+    ds_sample = HAMDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                           image_col='image', image_folder='resized256/')
     train_ds, test_ds = ds_sample.get_supervised_ds_sample()
 
     model_path = '../../models/twins/finetune/ct64_bs128_loss_normal/e100'

@@ -56,8 +56,8 @@ if __name__ == '__main__':
     epochs = 10
     batch_size = 32
     crop_to = 128
-    ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/', data_size=30)
+    ds = HAMDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/', data_size=30)
     pretrain_path = ''
     barlow_enc = None
     loss = None

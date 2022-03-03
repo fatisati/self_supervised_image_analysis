@@ -9,8 +9,8 @@ from plot_confmat import *
 
 if __name__ == '__main__':
     print('loading data...')
-    ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+    ds = HAMDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/')
 
     x_train, x_test = ds.get_x_train_test_ds()
     y_train, y_test = ds.train_labels, ds.test_labels

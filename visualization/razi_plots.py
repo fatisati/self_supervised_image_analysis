@@ -2,20 +2,26 @@ from visualization.vis_utils import VisUtils, CompareModels
 
 
 class RaziVis:
-    def __init__(self, save_path, finetune_folder):
-        self.finetune_folder = finetune_folder
+    def __init__(self, save_path, log_folder):
+        self.log_folder = log_folder
         self.res_folder = save_path
 
+        self.ham_pretrain = 'ham-pretrain'
+        self.no_pretrain = 'no-pretrain'
+
+        self.groups = ['hair', 'nail', 'tumor']
+
+        self.cm = CompareModels(save_path, log_folder, 'Razi')
+
     def compare(self, group):
-        model_folder = self.finetune_folder + group + '/'
-        pretrain_types = ['razi-pretrain', 'no-pretrain']
-        model_names = [ptype + '-bs128' for ptype in pretrain_types]
-        cp = CompareModels(self.res_folder, model_folder, group)
-        cp.compare_all_metrics(model_names, model_names)
+        models = [self.ham_pretrain + f'-{group}', self.no_pretrain + f'-{group}']
+        labels = ['ham-pretrain', 'no-pretrain']
+        self.cm.experiment = group
+        self.cm.compare_all_metrics(models, labels)
 
 
 if __name__ == '__main__':
-    rv = RaziVis('../../results/razi/', '../../models/twins/finetune/razi/')
-    groups = ['tumor']
+    rv = RaziVis('../../results/razi/', '../../models/twins/finetune/razi-logs/')
+    groups = ['tumor', 'nail', 'hair']
     for group in groups:
         rv.compare(group)

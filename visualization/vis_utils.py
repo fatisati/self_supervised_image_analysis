@@ -61,8 +61,9 @@ class CompareModels:
                             'val_auc', 'val_prc', 'f1-score']
 
     def read_log(self, model_name):
-        return pd.read_csv(self.model_folder + model_name + '/log.csv')
-
+        log =  pd.read_csv(self.model_folder + model_name + '.csv')
+        log = log[:100]
+        return log
     def plot_metric(self, metric, model_names, labels, x_metric=None, plot_func=plt.plot):
         save_name = metric
         for name, label in zip(model_names, labels):

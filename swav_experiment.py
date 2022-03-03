@@ -31,8 +31,8 @@ def fine_tune(pretrain_params):
 
 if __name__ == '__main__':
 
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+    ds = HAMDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/')
     res = open(model_path + 'results.txt', 'w')
 
     for epoch in pretrain_epochs:

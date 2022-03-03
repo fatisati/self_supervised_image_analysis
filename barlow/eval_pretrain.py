@@ -1,7 +1,7 @@
 import os
 
 from barlow import barlow_pretrain
-from ham_dataset import MyDataset
+from ham_dataset import HAMDataset
 from barlow.data_utils import prepare_data_loader
 from barlow.augmentation_utils import *
 from utils.model_utils import load_model
@@ -45,8 +45,8 @@ def model_val_loss(model_path, val_ssl_ds):
 if __name__ == '__main__':
     bs, crop_to = 64, 128
     aug_func = get_tf_augment(crop_to)
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+    ds = HAMDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/')
 
     model_path = '../models/twins/pretrain/'
     model_path = model_path + f'adam_ct{crop_to}_bs{bs}_aug_tf'

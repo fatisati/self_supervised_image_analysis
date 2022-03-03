@@ -1,4 +1,4 @@
-from ham_dataset import MyDataset
+from ham_dataset import HAMDataset
 from barlow.augmentation_utils import custom_augment
 from google.colab.patches import cv2_imshow
 import numpy as np
@@ -7,8 +7,8 @@ import cv2
 
 
 def get_ham_ds():
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/')
+    ds = HAMDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/')
     return ds
 
 

@@ -1,4 +1,4 @@
-from ham_dataset import MyDataset
+from ham_dataset import HAMDataset
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +14,7 @@ def vis_using_pca(rep, y):
     plt.scatter(trans_rep[:, 0], trans_rep[:, 1], c=y)
 
 
-def vis_model_out(model, ds: MyDataset, save_path):
+def vis_model_out(model, ds: HAMDataset, save_path):
     vis = VisUtils(save_path)
 
     bs, ct = 64, 128

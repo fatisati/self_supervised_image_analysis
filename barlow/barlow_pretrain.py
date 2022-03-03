@@ -108,8 +108,8 @@ if __name__ == '__main__':
     epochs = 5
 
     # (x_train, y_train), (x_test, y_test) = get_cfar_data()
-    ds = MyDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/', data_size=30)
+    ds = HAMDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/', data_size=30)
     x_train, x_test = ds.get_x_train_test_ds()
 
     ssl_ds = prepare_data_loader(x_train, crop_to, batch_size)

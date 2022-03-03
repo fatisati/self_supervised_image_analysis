@@ -7,8 +7,8 @@ from barlow.barlow_run import *
 if __name__ == '__main__':
     crop_batch_epoch = [[256, 16, 10]]
     model_path = '../models/twins/'
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/', data_size=1000)
+    ds = HAMDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/', data_size=1000)
     x_train, x_test = ds.get_x_train_test_ds()
 
     res = []

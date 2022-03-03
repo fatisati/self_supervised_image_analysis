@@ -56,6 +56,6 @@ def fine_tune(ds):
 
 
 if __name__ == '__main__':
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
-                   image_col='image', image_folder='resized256/', data_size=100)
+    ds = HAMDataset(data_path='../data/ISIC/ham10000/', label_filename='disease_labels.csv',
+                    image_col='image', image_folder='resized256/', data_size=100)
     pretrain(ds)

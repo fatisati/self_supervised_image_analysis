@@ -9,14 +9,16 @@ class BarlowResVis:
     def __init__(self):
         self.res_folder = '../../results/barlow-results/'
         #twins/finetune/
-        self.model_folder = '../../models/'
+        self.model_folder = '../../models/twins/finetune/train0.1_test0.9_logs/'
 
-        self.best_model = f'batchnorm/batchnorm_ct{128}_bs{64}_aug_tf/'
-        self.no_bacthnorm_model = f'batchnorm/no-batchnorm_ct128_bs{64}_aug_tf/'
-        self.no_pretrain_name = 'no-pretrain'
-        self.aug_original = f'batchnorm_ct128_bs{64}_aug_original/'
-        self.drop_out = f'dropout0.2_ct128_bs{64}_aug_tf/'
-        self.irv2 = 'IRV2/'
+        self.best_model = 'dropout0.2_ct128_bs64_aug_tf'
+        self.batchnorm = 'batchnorm_ct128_bs64_aug_tf'
+        self.no_bacthnorm_model = 'no-batchnorm_ct128_bs64_aug_tf'
+        self.no_pretrain_name = 'no-pretrain_dropout0.2_ct128'
+        self.aug_original = 'batchnorm_ct128_bs64_aug_original'
+        self.drop_out = 'dropout0.2_ct128_bs64_aug_tf'
+        self.irv2 = 'irv2'
+
     def batchnorm_effect(self, ct):
         bs = 64
         model1 = f'batchnorm/batchnorm_ct{ct}_bs{bs}_aug_tf/'
@@ -34,12 +36,14 @@ class BarlowResVis:
         cm.compare_all_metrics([no_pretrain_name, self.best_model], labels)
 
     def compare_all(self):
-        models = [self.best_model, self.drop_out]
-        models = ['twins/finetune/' + name for name in models]
-        models.append(self.irv2)
-        labels = ['no-dropout',
-                  'dropout (p=0.2)']
-        cm = CompareModels(self.res_folder, self.model_folder, f'dropout')
+        models = [self.drop_out, self.batchnorm, self.no_bacthnorm_model,
+                  self.no_pretrain_name, self.aug_original, self.irv2]
+
+        labels = ['dropout (p=0.2), batch-normalization', 'no-dropout, batch-normalization'
+                  'no-dropout, no-batch-normalization',
+                  'no-pretrain',
+                  'no-dropout, batch-normalization, original-augmentation', 'IRV2']
+        cm = CompareModels(self.res_folder, self.model_folder, f'Compare all models')
         cm.compare_all_metrics(models, labels)
 
 

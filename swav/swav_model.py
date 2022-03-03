@@ -6,7 +6,7 @@ from swav.pretrain import pretrain_utils, pretrain_model
 from swav.fine_tune.fine_tune import *
 
 from swav.config_ import *
-from ham_dataset import MyDataset
+from ham_dataset import HAMDataset
 
 from ham_dataset import *
 
@@ -91,7 +91,7 @@ class SwAVModel():
         super().evaluate()
 
 
-def run_pretrain(ds: MyDataset, model_path, params: PretrainParams):
+def run_pretrain(ds: HAMDataset, model_path, params: PretrainParams):
     print('pretraining: ', params.get_summary())
 
     swav = SwAVModel(model_path)
@@ -102,7 +102,7 @@ def run_pretrain(ds: MyDataset, model_path, params: PretrainParams):
     return pretrain_models
 
 
-def run_fine_tune(ds: MyDataset, pretrain_params: PretrainParams, fine_tune_params: FineTuneParams):
+def run_fine_tune(ds: HAMDataset, pretrain_params: PretrainParams, fine_tune_params: FineTuneParams):
     print('fine tuning: ', fine_tune_params.get_summary())
     swav = SwAVModel(pretrain_params.model_path)
 

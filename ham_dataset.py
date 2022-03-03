@@ -51,7 +51,7 @@ def label_report(labels):
     print('label report: ' + ', '.join(labels_cnt))
 
 
-class MyDataset:
+class HAMDataset:
 
     def __init__(self, data_path='data/', image_folder='ISIC2018_Task1-2_Training_Input_resized/',
                  label_filename='labels.xlsx', image_col='img_id',
@@ -170,8 +170,8 @@ def fix_validation_data(df, train_size, save_path):
 
 
 if __name__ == '__main__':
-    ds = MyDataset(data_path='../data/ISIC/ham10000/', image_folder='resized256/',
-                   label_filename='disease_labels.csv', image_col='image')
+    ds = HAMDataset(data_path='../data/ISIC/ham10000/', image_folder='resized256/',
+                    label_filename='disease_labels.csv', image_col='image')
     # x_train, x_test = ds.get_x_train_test_ds()
     #
     # sample_img = list(x_train.take(1))[0]

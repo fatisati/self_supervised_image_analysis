@@ -58,7 +58,7 @@ class SslDataset:
         print('number of images in ssl-dataset: ', len(self.all_urls))
 
     def get_ds(self):
-        urls_ds = tf.data.Dataset.from_tensor_slices(self.all_urls)
+        urls_ds = tf.data.Dataset.from_tensor_slices(list(self.all_urls))
         urls_ds.map(tf_utils.read_tf_image)
 
 

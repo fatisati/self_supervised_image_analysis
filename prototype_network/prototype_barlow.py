@@ -65,8 +65,11 @@ class PrototypeBarlow(tf.keras.Model):
             loss = prot_loss + vae_loss + barlow_loss
 
         # Compute gradients and update the parameters.
-        gradients = tape.gradient(loss, self.encoder.trainable_variables)
-        self.optimizer.apply_gradients(zip(gradients, self.encoder.trainable_variables))
+        auto_encoder_gradients = tape.gradient(loss, self.auto_encoder.trainable_variables)
+        self.optimizer.apply_gradients(zip(auto_encoder_gradients, self.auto_encoder.trainable_variables))
+
+        prot_gradients = tape.gradient(loss, self.prototype_feature_vectors.trainable_variables)
+        self.optimizer.apply_gradients(zip(prot_gradients, self.prototype_feature_vectors.trainable_variables))
 
         # Monitor loss.
         self.loss_tracker.update_state(loss)

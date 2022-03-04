@@ -7,7 +7,6 @@ import tensorflow as tf
 
 class ResidualBlock(tf.keras.layers.Layer):
     def __init__(self, filters, kernel_size=(3, 3), stride=(1, 1)):
-
         super(ResidualBlock, self).__init__()
 
         self.residual_block = tf.keras.Sequential([
@@ -27,14 +26,18 @@ class ResidualBlock(tf.keras.layers.Layer):
 
 class ResNetEncoder(tf.keras.models.Model):
     def __init__(self,
-                 n_ResidualBlock=8,
+                 n_ResidualBlock=None,
                  n_levels=4,
                  z_dim=10,
                  bUseMultiResSkips=True):
 
+        if not n_ResidualBlock:
+            depth = n_levels * 9 + 2
+            n_ResidualBlock = ((depth - 2) // 9) - 1
+
         super(ResNetEncoder, self).__init__()
 
-        self.max_filters = 2 ** (n_levels+3)
+        self.max_filters = 2 ** (n_levels + 3)
         self.n_levels = n_levels
         self.bUseMultiResSkips = bUseMultiResSkips
 
@@ -102,14 +105,18 @@ class ResNetEncoder(tf.keras.models.Model):
 
 class ResNetDecoder(tf.keras.models.Model):
     def __init__(self,
-                 n_ResidualBlock=8,
+                 n_ResidualBlock=None,
                  n_levels=4,
                  output_channels=3,
                  bUseMultiResSkips=True):
 
         super(ResNetDecoder, self).__init__()
 
-        self.max_filters = 2 ** (n_levels+3)
+        if not n_ResidualBlock:
+            depth = n_levels * 9 + 2
+            n_ResidualBlock = ((depth - 2) // 9) - 1
+
+        self.max_filters = 2 ** (n_levels + 3)
         self.n_levels = n_levels
         self.bUseMultiResSkips = bUseMultiResSkips
 
@@ -228,7 +235,6 @@ class ResNetVAE(tf.keras.models.Model):
         self.decoder = ResNetDecoder(n_ResidualBlock=n_ResidualBlock, n_levels=n_levels,
                                      output_channels=output_channels, bUseMultiResSkips=bUseMultiResSkips)
 
-
         # Assumes the input to be of shape 256x256
         self.fc21 = tf.keras.layers.Dense(bottleneck_dim)
         self.fc22 = tf.keras.layers.Dense(bottleneck_dim)
@@ -240,9 +246,9 @@ class ResNetVAE(tf.keras.models.Model):
         return self.fc21(h1), self.fc22(h1)
 
     def reparameterize(self, mu, logvar):
-        std = tf.keras.backend.exp(0.5*logvar)
+        std = tf.keras.backend.exp(0.5 * logvar)
         eps = tf.random.normal(std.shape)
-        return mu + eps*std
+        return mu + eps * std
 
     def decode(self, z):
         z = self.fc3(z)
@@ -261,6 +267,7 @@ class VectorQuantizer(tf.keras.layers.Layer):
     Implementation of VectorQuantizer Layer from: simplegan.autoencoder.vq_vae
     url: https://simplegan.readthedocs.io/en/latest/_modules/simplegan/autoencoder/vq_vae.html
     """
+
     def __init__(self, num_embeddings, embedding_dim, commiment_cost):
         super(VectorQuantizer, self).__init__()
 
@@ -274,13 +281,12 @@ class VectorQuantizer(tf.keras.layers.Layer):
         )
 
     def call(self, x, **kwargs):
-
         flat_x = tf.reshape(x, [-1, self.embedding_dim])
 
         distances = (
-            tf.math.reduce_sum(flat_x ** 2, axis=1, keepdims=True)
-            - 2 * tf.linalg.matmul(flat_x, self.embedding)
-            + tf.math.reduce_sum(self.embedding ** 2, axis=0, keepdims=True)
+                tf.math.reduce_sum(flat_x ** 2, axis=1, keepdims=True)
+                - 2 * tf.linalg.matmul(flat_x, self.embedding)
+                + tf.math.reduce_sum(self.embedding ** 2, axis=0, keepdims=True)
         )
 
         encoding_indices = tf.math.argmax(-distances, axis=1)
@@ -346,7 +352,6 @@ class ResNetVQVAE(tf.keras.models.Model):
 
 
 if __name__ == '__main__':
-
     import numpy as np
 
     # encoder = ResNetEncoder()
@@ -355,14 +360,14 @@ if __name__ == '__main__':
     # out_encoder = encoder(np.random.rand(10, 256, 256, 3).astype('float32'))
     # out_decoder = decoder(np.random.rand(10, 16, 16, 10).astype('float32'))
 
-    a=1
+    a = 1
 
     ae = ResNetAE()
     out = ae(np.random.rand(10, 256, 256, 3).astype('float32'))
 
-    a=1
+    a = 1
 
     vae = ResNetVAE()
     out = vae(np.random.rand(10, 256, 256, 3).astype('float32'))
 
-    a=1
+    a = 1

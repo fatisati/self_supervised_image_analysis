@@ -9,9 +9,11 @@ def decode_img(img):
     return img
 
 
-def read_tf_image(path):
+def read_tf_image(path, size = None):
     img = tf.io.read_file(path)
     img = decode_img(img)
+    if size:
+        img = tf.image.resize(img, (size, size))
     return img
 
 

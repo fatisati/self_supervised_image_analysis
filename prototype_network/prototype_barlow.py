@@ -42,7 +42,7 @@ class PrototypeBarlow(tf.keras.Model):
         return error_1 + error_2, prot_dist_a, prot_dist_b
 
     def vae_loss_embedding(self, x, z):
-        decoded = self.decoder(z)
+        decoded = self.auto_encoder.decode(z)
         return tf.reduce_mean(list_of_norms(decoded - x), name='ae_error')
 
     def vae_loss(self, ds1, z1, ds2, z2):

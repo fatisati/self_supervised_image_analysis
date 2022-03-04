@@ -72,3 +72,12 @@ class PrototypeBarlow(tf.keras.Model):
         # Monitor loss.
         self.loss_tracker.update_state(loss)
         return {"loss": self.loss_tracker.result()}
+
+from prototype_network.ResNetAE import ResNetAE
+if __name__ == '__main__':
+    ct = 128
+    auto_encoder = ResNetAE.ResNetAE(input_shape=(ct, ct, 3),
+                 n_levels=2,
+                 z_dim=2048,
+                 bottleneck_dim=128)
+

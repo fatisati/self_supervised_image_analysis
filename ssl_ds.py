@@ -1,21 +1,8 @@
 import os
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
 import pandas as pd
 from utils import tf_utils
-
-
-def identify_train_test(img, test_imgs):
-    if img in test_imgs:
-        return 'test'
-    return 'train'
-
-
-def split_data(df, label_col, id_col, train_ratio):
-    train, test = train_test_split(df, train_size=train_ratio, stratify=df[label_col])
-
-    df['split'] = [identify_train_test(img, list(test[id_col])) for img in df[id_col]]
-    return df
+from data_codes.split_data import split_data
 
 
 def split_razi(data_folder):
@@ -45,6 +32,11 @@ def split_isic(data_folder):
 class SslData:
     def __init__(self, img_folder, split_df, img_name_col, split='train'):
         self.train = split_df[split_df['split'] == split]
+
+        print(f'all {split} image names count: {len(self.train)}')
+        all_imgs = list(os.listdir(img_folder))
+        self.train = self.train[self.train[img_name_col].isin(all_imgs)]
+        print(f'all valid {split} image count: {len(self.train)}')
         self.img_urls = [img_folder + name for name in self.train[img_name_col]]
         print(f'train size: {len(self.train)}, test size: {len(split_df) - len(self.train)}')
 

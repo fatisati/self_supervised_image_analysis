@@ -180,7 +180,7 @@ class ResNetDecoder(tf.keras.models.Model):
 class ResNetAE(tf.keras.models.Model):
     def __init__(self,
                  input_shape=(256, 256, 3),
-                 n_ResidualBlock=8,
+                 n_ResidualBlock=None,
                  n_levels=4,
                  z_dim=128,
                  bottleneck_dim=128,

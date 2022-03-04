@@ -2,12 +2,10 @@ import tensorflow as tf
 from prototype_network.PrototypeDL.autoencoder_helpers import list_of_distances, list_of_norms
 from barlow import barlow_pretrain
 
-
 class PrototypeBarlow(tf.keras.Model):
-    def __init__(self, encoder, decoder, n_prototypes, project_dim, lambd=5e-3):
+    def __init__(self, auto_encoder, n_prototypes, project_dim, lambd=5e-3):
         super(PrototypeBarlow, self).__init__()
-        self.encoder = encoder
-        self.decoder = decoder
+        self.auto_encoder = auto_encoder
         self.lambd = lambd
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
 
@@ -57,7 +55,7 @@ class PrototypeBarlow(tf.keras.Model):
 
         # Forward pass through the encoder and predictor.
         with tf.GradientTape() as tape:
-            z_a, z_b = self.encoder(ds_one, training=True), self.encoder(ds_two, training=True)
+            z_a, z_b = self.auto_encoder.encode(ds_one, training=True), self.auto_encoder.encode(ds_two, training=True)
 
             prot_loss, prot_dist_a, prot_dist_b = self.prototype_loss(z_a, z_b)
 

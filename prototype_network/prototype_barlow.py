@@ -12,7 +12,7 @@ class PrototypeBarlow(tf.keras.Model):
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
 
         # the list prototype feature vectors
-        self.prototype_feature_vectors = tf.Variable(tf.random_uniform(shape=[n_prototypes, project_dim],
+        self.prototype_feature_vectors = tf.Variable(tf.random.uniform(shape=[n_prototypes, project_dim],
                                                                        dtype=tf.float32),
                                                      name='prototype_feature_vectors')
 

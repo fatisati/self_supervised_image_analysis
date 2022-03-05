@@ -10,12 +10,12 @@ class SupervisedDs:
     def __init__(self, image_folder, image_names, labels):
         self.image_folder = image_folder
         self.image_urls = [image_folder + name for name in image_names]
-        self.labels = labels
         self.label_set = list(set(labels))
         print(self.label_set)
+        self.labels = [self.one_hot(label) for label in labels]
 
     def one_hot(self, label):
-        one_hot = [0]*len(self.label_set)
+        one_hot = [0] * len(self.label_set)
         label_idx = self.label_set.index(label)
         one_hot[label_idx] = 1
         return one_hot
@@ -23,7 +23,7 @@ class SupervisedDs:
     def process_sample(self, url, label, aug_func):
         img = read_tf_image(url, 512)
         img = aug_func(img)
-        return img, self.one_hot(label)
+        return img, label
 
     def get_ds(self, aug_func, batch_size):
         # .map(lambda img: read_tf_image(img, 512))

@@ -15,7 +15,7 @@ class SupervisedDs:
         print(self.label_set)
 
     def one_hot(self, label):
-        one_hot = np.zeros(len(self.label_set))
+        one_hot = [0]*len(self.label_set)
         label_idx = self.label_set.index(label)
         one_hot[label_idx] = 1
         return one_hot

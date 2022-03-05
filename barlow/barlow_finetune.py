@@ -2,11 +2,9 @@ from datasets.ham_dataset import *
 from utils.model_utils import *
 
 
-def get_resnet_encoder(resnet_backbone, use_dropout):
-    if use_dropout:
-        embed_idx = -9
-    else:
-        embed_idx = -8
+def get_resnet_encoder(resnet_backbone):
+
+    embed_idx = -8
 
     backbone = tf.keras.Model(
         resnet_backbone.input, resnet_backbone.layers[embed_idx].output
@@ -15,10 +13,9 @@ def get_resnet_encoder(resnet_backbone, use_dropout):
 
 
 # from tf.keras.layers import BatchNormalization
-def get_linear_model(barlow_encoder, crop_to, y_shape,
-                     use_dropout=False, use_attention=True, trainable_backbone = False):
+def get_linear_model(barlow_encoder, crop_to, y_shape, use_attention=True, trainable_backbone = False):
     # Extract the backbone ResNet20.
-    backbone = get_resnet_encoder(barlow_encoder, use_dropout)
+    backbone = get_resnet_encoder(barlow_encoder)
     # We then create our linear classifier and train it.
     if not trainable_backbone:
         backbone.trainable = False

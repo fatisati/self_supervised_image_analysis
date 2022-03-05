@@ -1,14 +1,9 @@
-import matplotlib.pyplot as plt
-
 # from self_supervised_model import *
 from swav.pretrain import pretrain_utils, pretrain_model
 
 from swav.fine_tune.fine_tune import *
 
-from swav.config_ import *
-from ham_dataset import HAMDataset
-
-from ham_dataset import *
+from datasets.ham_dataset import *
 
 
 class PretrainParams:

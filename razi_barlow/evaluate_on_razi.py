@@ -1,4 +1,4 @@
-from razi_dataset import RaziDataset
+from datasets.razi_dataset import RaziDataset
 from utils.model_utils import load_model
 if __name__ == '__main__':
     ct, bs = 128, 64

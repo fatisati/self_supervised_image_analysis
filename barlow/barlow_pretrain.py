@@ -2,7 +2,7 @@ import barlow.resnet20 as resnet20
 import barlow.lr_scheduler as lr_scheduler
 
 from barlow.data_utils import *
-from ham_dataset import *
+from datasets.ham_dataset import *
 
 AUTO = tf.data.AUTOTUNE
 

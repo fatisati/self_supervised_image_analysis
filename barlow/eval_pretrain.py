@@ -1,8 +1,7 @@
 import os
 
 from barlow import barlow_pretrain
-from ham_dataset import HAMDataset
-from barlow.data_utils import prepare_data_loader
+from datasets.ham_dataset import HAMDataset
 from barlow.augmentation_utils import *
 from utils.model_utils import load_model
 import pandas as pd

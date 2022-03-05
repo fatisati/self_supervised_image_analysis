@@ -1,8 +1,6 @@
-import os
-
 from barlow.barlow_pretrain import *
 from utils.model_utils import *
-from razi_dataset import *
+from datasets.razi_dataset import *
 from barlow.barlow_run import get_backbone
 
 if __name__ == '__main__':

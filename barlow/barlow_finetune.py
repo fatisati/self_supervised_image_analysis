@@ -1,9 +1,5 @@
-import matplotlib.pyplot as plt
-from ham_dataset import *
+from datasets.ham_dataset import *
 from utils.model_utils import *
-from attention.simple import SimpleAttention
-from attention.bahdanau import BahdanauAttention
-from IRV2.soft_attention import SoftAttention
 
 
 def get_resnet_encoder(resnet_backbone, use_dropout):

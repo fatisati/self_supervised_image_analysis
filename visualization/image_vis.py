@@ -1,6 +1,6 @@
 import random
 
-from razi_dataset import RaziDataset
+from datasets.razi_dataset import RaziDataset
 
 if __name__ == '__main__':
     ds = RaziDataset('../../data/', 256)

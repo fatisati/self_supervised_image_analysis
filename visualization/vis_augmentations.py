@@ -1,4 +1,4 @@
-from ham_dataset import HAMDataset
+from datasets.ham_dataset import HAMDataset
 from barlow.augmentation_utils import custom_augment
 from google.colab.patches import cv2_imshow
 import numpy as np

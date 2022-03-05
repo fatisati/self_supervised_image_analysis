@@ -1,4 +1,4 @@
-from ham_dataset import HAMDataset
+from datasets.ham_dataset import HAMDataset
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np

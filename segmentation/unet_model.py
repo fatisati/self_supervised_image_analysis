@@ -1,6 +1,6 @@
 from tensorflow.keras import layers
 import keras
-from dermoscopic_dataset import *
+from datasets.dermoscopic_dataset import *
 
 
 def get_unet_backbone(img_size):

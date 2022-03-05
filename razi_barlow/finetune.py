@@ -1,4 +1,4 @@
-from razi_dataset import RaziDataset
+from datasets.razi_dataset import RaziDataset
 from barlow import resnet20
 from barlow.barlow_finetune import *
 

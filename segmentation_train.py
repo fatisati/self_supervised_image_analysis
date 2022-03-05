@@ -1,4 +1,3 @@
-from dermoscopic_dataset import *
 from segmentation.unet_model import *
 from segmentation.evaluation import SegmentationVisualization
 from utils.model_utils import train_model

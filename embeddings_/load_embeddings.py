@@ -1,12 +1,8 @@
-import random
-
-import numpy as np
-
 import swav.utils.architecture as swav_architecture
 import barlow_pretrain.resnet20 as barlow_architecture
 from embeddings_.config import *
 
-from ham_dataset import *
+from datasets.ham_dataset import *
 
 from deepset.deepset_model import *
 

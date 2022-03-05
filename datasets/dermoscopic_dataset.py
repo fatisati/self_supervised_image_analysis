@@ -73,7 +73,7 @@ class DermoscopicImage(keras.utils.Sequence):
 
 
 if __name__ == '__main__':
-    train_input_img_paths, val_input_img_paths = split_train_test('../data/ISIC/dermoscopic/resized255/')
+    train_input_img_paths, val_input_img_paths = split_train_test('../../data/ISIC/dermoscopic/resized255/')
     ds = DermoscopicImage(10, (160, 160), [], '../data/ISIC/dermoscopic/ISIC2018_Task2_Training_GroundTruth_v3/')
 
     mask = ds.load_mask('ISIC_0011345.jpg')

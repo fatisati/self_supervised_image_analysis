@@ -1,5 +1,5 @@
 from tf_explain.core import GradCAM
-from ham_dataset import HAMDataset
+from datasets.ham_dataset import HAMDataset
 from utils.model_utils import load_model
 if __name__ == '__main__':
     ds_sample = HAMDataset(data_path='../../data/ISIC/ham10000/', label_filename='disease_labels.csv',

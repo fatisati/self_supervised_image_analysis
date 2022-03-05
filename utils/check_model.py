@@ -1,5 +1,5 @@
 import barlow.inception_v3 as inception_v3
-from ham_dataset import HAMDataset
+from datasets.ham_dataset import HAMDataset
 
 from barlow.data_utils import prepare_data_loader
 

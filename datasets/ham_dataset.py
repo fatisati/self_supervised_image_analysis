@@ -170,7 +170,7 @@ def fix_validation_data(df, train_size, save_path):
 
 
 if __name__ == '__main__':
-    ds = HAMDataset(data_path='../data/ISIC/ham10000/', image_folder='resized256/',
+    ds = HAMDataset(data_path='../../data/ISIC/ham10000/', image_folder='resized256/',
                     label_filename='disease_labels.csv', image_col='image')
     # x_train, x_test = ds.get_x_train_test_ds()
     #

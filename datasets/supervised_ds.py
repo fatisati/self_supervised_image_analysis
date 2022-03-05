@@ -14,9 +14,15 @@ class SupervisedDs:
     def process_sample(url, label):
         return read_tf_image(url, 512), label
 
-    
+    @staticmethod
+    def augment_sample(img, label, augment_function):
+        return augment_function(img), label
+
     def get_ds(self, aug_func, batch_size):
         urls_ds = tf.data.Dataset.from_tensor_slices(self.image_urls)
         labels_ds = tf.data.Dataset.from_tensor_slices(self.labels)
         zip_ds = tf.data.Dataset.zip((urls_ds, labels_ds))
-        return (zip_ds.map(self.process_sample, num_parallel_calls=AUTOTUNE)).map(aug_func).batch(batch_size)
+
+        aug = lambda img, label: self.augment_sample(img, label, aug_func)
+
+        return (zip_ds.map(self.process_sample, num_parallel_calls=AUTOTUNE)).map(aug).batch(batch_size)

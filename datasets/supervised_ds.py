@@ -14,6 +14,6 @@ class SupervisedDs:
         img_ds = tf.data.Dataset.from_tensor_slices(self.image_urls).map(lambda img: read_tf_image(img, 512))
         img_ds = img_ds.map(aug_func)
         labels_ds = tf.data.Dataset.from_tensor_slices(self.labels)
-        zip_ds = tf.data.Dataset.zip((img_ds, labels_ds))
+        zip_ds = tf.data.Dataset.zip(img_ds, labels_ds)
 
         return zip_ds.batch(batch_size)

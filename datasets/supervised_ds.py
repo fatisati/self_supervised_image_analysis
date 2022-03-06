@@ -32,4 +32,4 @@ class SupervisedDs:
         labels_ds = tf.data.Dataset.from_tensor_slices(self.labels)
         ds = tf.data.Dataset.zip((img_ds, labels_ds)).map(lambda img, label: self.process_sample(img, label, aug_func))
 
-        return ds.batch(batch_size)
+        return ds.shuffle(1024).batch(batch_size)

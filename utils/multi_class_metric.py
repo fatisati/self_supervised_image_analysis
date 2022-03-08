@@ -40,7 +40,7 @@ from sklearn.metrics import classification_report
 
 
 def weighted_recall(y_true, y_pred):
-    res = classification_report(y_true, y_pred, output_dict=True)
+    res = classification_report(y_true.numpy(), y_pred.numpy(), output_dict=True)
     return res['weighted avg']['recall']
 
 

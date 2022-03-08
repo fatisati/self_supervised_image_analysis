@@ -139,7 +139,10 @@ def train_model(model, data, checkpoints, path, name,
     #     print(f'cant train model. exception {e}')
     return model, history
 
+
 from utils.multi_class_metric import weighted_recall
+
+
 def get_metrics():
     METRICS = [
         # keras.metrics.TruePositives(name='tp'),

@@ -38,9 +38,10 @@ def get_multi_class_metrics(num_class, batch_size):
 
 from sklearn.metrics import classification_report
 
+
 def weighted_recall(y_true, y_pred):
     y_pred = y_pred.numpy().round()
-    print(y_pred, y_true.numpy())
+    # print(y_pred, y_true.numpy())
     res = classification_report(y_true.numpy(), y_pred, output_dict=True)
     return res['weighted avg']['recall']
 
@@ -52,6 +53,7 @@ def macro_precision(): pass
 
 
 def macro_recall(): pass
+
 
 def get_metircs():
     metrics = ['accuracy', f1_score, precision_func, recall_func]

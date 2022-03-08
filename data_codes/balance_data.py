@@ -18,14 +18,15 @@ def balance_data(train_df, x_col, y_col, Sampler):
 
 
 if __name__ == '__main__':
-    isic = '../../data/ISIC/2020/'
-    df = pd.read_csv(isic + 'stratify-split.csv')
+    data_folder = '../../data/razi/'
+    df = pd.read_excel(data_folder + 'tumor-stratify-split.xlsx')
     # tumor = df[df['group'] == 'tumor']
     train = df[df['split'] == 'train']
 
-    train_splited = split_data(train, 'benign_malignant', 'image_name', 0.1)
-    train_splited = train_splited[train_splited['split'] == 'train']
-    print('10 percent train size: ', len(train_splited))
+    # train_splited = split_data(train, 'benign_malignant', 'image_name', 0.1)
+    # train_splited = train_splited[train_splited['split'] == 'train']
+    # print('10 percent train size: ', len(train_splited))
 
-    balanced_df = balance_data(train_splited, 'image_name', 'benign_malignant', RandomOverSampler)
-    balanced_df.to_csv(isic + 'ten-percent-train-oversampled.csv')
+    balanced_df = balance_data(train, 'img_name', 'label', RandomOverSampler)
+    print(len(balanced_df))
+    balanced_df.to_csv(data_folder + 'tumor-oversample.csv')

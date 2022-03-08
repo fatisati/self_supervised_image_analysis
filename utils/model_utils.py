@@ -140,11 +140,7 @@ def train_model(model, data, checkpoints, path, name,
     return model, history
 
 
-from utils.multi_class_metric import weighted_recall
-
-
 def get_metrics():
-
     METRICS = [
         # keras.metrics.TruePositives(name='tp'),
         # keras.metrics.FalsePositives(name='fp'),
@@ -156,8 +152,6 @@ def get_metrics():
         tf.keras.metrics.Recall(name='recall'),
         tf.keras.metrics.AUC(name='auc'),
         tf.keras.metrics.AUC(name='prc', curve='PR'),  # precision-recall curve
-        weighted_recall
-        # lambda y, y_pred: tf.py_function(weighted_recall, [y, y_pred])
     ]
     return METRICS
 

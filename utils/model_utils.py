@@ -144,7 +144,7 @@ from utils.multi_class_metric import weighted_recall
 
 
 def get_metrics():
-    tf.config.run_functions_eagerly(True)
+
     METRICS = [
         # keras.metrics.TruePositives(name='tp'),
         # keras.metrics.FalsePositives(name='fp'),

@@ -38,7 +38,7 @@ def get_multi_class_metrics(num_class, batch_size):
 
 from sklearn.metrics import classification_report
 
-
+@tf.function
 def weighted_recall(y_true, y_pred):
     res = classification_report(y_true.numpy(), y_pred.numpy(), output_dict=True)
     return res['weighted avg']['recall']

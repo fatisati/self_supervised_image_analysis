@@ -1,38 +1,6 @@
 from datasets.ham_dataset import *
 from utils.model_utils import *
-
-
-def get_resnet_encoder(resnet_backbone):
-
-    embed_idx = -8
-
-    backbone = tf.keras.Model(
-        resnet_backbone.input, resnet_backbone.layers[embed_idx].output
-    )
-    return backbone
-
-
-# from tf.keras.layers import BatchNormalization
-def get_linear_model(barlow_encoder, crop_to, y_shape, use_attention=True, trainable_backbone = False):
-    # Extract the backbone ResNet20.
-    backbone = get_resnet_encoder(barlow_encoder)
-    # We then create our linear classifier and train it.
-    if not trainable_backbone:
-        backbone.trainable = False
-
-    inputs = tf.keras.layers.Input((crop_to, crop_to, 3))
-    x = backbone(inputs, training=trainable_backbone)
-    # x = backbone(inputs)
-
-    if use_attention:
-        attention_weights = tf.keras.layers.Dense(x.shape[-1], activation="softmax")(x)
-        x = tf.multiply(x, attention_weights)
-        # x, _ = BahdanauAttention(10)(x)
-
-    # batch_out = tf.keras.layers.BatchNormalization()(x)
-    outputs = tf.keras.layers.Dense(y_shape, activation="softmax")(x)
-    linear_model = tf.keras.Model(inputs, outputs, name="linear_model")
-    return linear_model
+from models import *
 
 
 def get_cosine_lr(epochs, train_size, batch_size):
@@ -61,7 +29,7 @@ if __name__ == '__main__':
         barlow_enc = tf.keras.models.load_model(pretrain_path)
 
     cosine_lr = get_cosine_lr(epochs, len(train_ds), batch_size)
-    linear_model = get_linear_model(barlow_enc, crop_to, outshape)
+    linear_model = get_classifier(barlow_enc, crop_to, outshape)
     # Compile model and start training.
     if loss is None:
         loss = "binary_crossentropy"

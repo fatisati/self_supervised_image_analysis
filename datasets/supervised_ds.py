@@ -37,14 +37,16 @@ class SupervisedDs:
 
 
 class ZipDs(SupervisedDs):
-    def __init__(self, zip_folder, zip_subfolder, image_folder, image_names, labels):
+    def __init__(self, zip_folder, zip_subfolder, image_names, labels):
         self.zip_folder = zip_folder
         self.zip_subfolder = zip_subfolder
-        super(ZipDs, self).__init__(image_folder, image_names, labels)
+        super(ZipDs, self).__init__('', image_names, labels)
 
     def process_sample(self, name, label, aug_func):
         read_img = lambda url: read_tf_image(url, 512)
+        name_str = name.numpy()
+        print(type(name_str))
         img = load_img_from_zip(self.zip_folder, self.zip_subfolder, './',
-                                name, read_img)
+                                name_str, read_img)
         img = aug_func(img)
         return img, label

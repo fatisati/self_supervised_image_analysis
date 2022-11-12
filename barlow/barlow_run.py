@@ -31,7 +31,7 @@ def get_aug_function(aug_name, crop_to):
         return lambda x: custom_augment(x, crop_to)
 
     elif 'central-crop':
-        return lambda img: central_zoom(img, crop_to)
+        return lambda img: dermoscopic_augment(img, crop_to)
     else:
         return 'no-augmentation function found'
 

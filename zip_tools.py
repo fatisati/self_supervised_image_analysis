@@ -1,18 +1,15 @@
 import os
 import zipfile
 
+# generate a class and open zip_file in the constructor
 
-def copy_img_from_zip():
-    src_path = '../data/ISIC/dermoscopic/ISIC2018_Task1-2_Training_Input.zip'
-    dest_path = '../data/ISIC/dermoscopic/'
+def get_all_files_in_zip(zip_file):
+    return list(zip_file.namelist())
 
+
+def copy_img_from_zip(src_path, dest_path, img_name):
     zip_file = zipfile.ZipFile(src_path)
-    for member in zip_file.namelist():
-        if member.endswith('.jpg'):
-            print(member)
-            zip_file.extract(member, dest_path)
-            os.remove(dest_path + member)
-            break
+    zip_file.extract(img_name, dest_path)
 
 
 def load_img_from_zip(zip_path, zip_subfolder, dest_folder,

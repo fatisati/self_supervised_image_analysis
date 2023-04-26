@@ -36,7 +36,7 @@ if __name__ == '__main__':
     print('done')
 
     print('preparing model...')
-    linear_model = get_linear_model(backbone, img_size, outshape)
+    linear_model = get_classifier(backbone, img_size, outshape)
     linear_model.compile(
         loss='binary_crossentropy',
         metrics=get_metrics(),

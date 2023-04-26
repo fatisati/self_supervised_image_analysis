@@ -3,7 +3,15 @@ import pandas as pd
 from visualization.vis_utils import VisUtils
 
 
-def prepare_bar_data(label_df):
+def prepare_list_bar_data(data_arr: []):
+    label_set = set(data_arr)
+    label_sum = {}
+    for label in label_set:
+        label_sum[label] = data_arr.count(label)
+    return list(label_sum.keys()), list(label_sum.values())
+
+
+def prepare_label_df_bar_data(label_df):
     label_sum = {}
     for col in label_df.columns:
         label_sum[col] = label_df[col].sum()
@@ -18,7 +26,7 @@ class Ham10000:
         self.vis_utils = VisUtils('../../results/data-plots/')
 
     def plot_disease_dist(self):
-        bar_data = prepare_bar_data(self.labels)
+        bar_data = prepare_label_df_bar_data(self.labels)
         plt.bar(list(bar_data.keys()), list(bar_data.values()))
         plt.title('Disease sample count in HAM10000 dataset')
         plt.xlabel('Disease')
@@ -86,7 +94,25 @@ class Razi:
         pd.DataFrame([report]).to_excel(self.data_folder + '/reports/general_report.xlsx')
 
 
+class ISIC2020:
+    def __init__(self, data_folder):
+        self.data = pd.read_csv(data_folder + 'ISIC/2020/train-metadata.csv')
+        self.labels = list(self.data['benign_malignant'])
+        self.diagnosis = list(self.data['diagnosis'])
+
+    def bar_plot(self):
+        x, h = prepare_list_bar_data(self.labels)
+        plt.bar(x, h)
+        plt.title('ISIC 2020 train data label count')
+        plt.show()
+
+        # x, h = prepare_list_bar_data(self.diagnosis)
+        # plt.bar(x, h)
+        # plt.show()
+
 if __name__ == '__main__':
-    razi = Razi()
-    razi.general_report()
+    isic = ISIC2020('../../data/')
+    isic.bar_plot()
+    # razi = Razi()
+    # razi.general_report()
     # razi.all_groups_samples_bar()

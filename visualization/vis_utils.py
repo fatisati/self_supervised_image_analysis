@@ -61,9 +61,10 @@ class CompareModels:
                             'val_auc', 'val_prc', 'f1-score']
 
     def read_log(self, model_name):
-        log =  pd.read_csv(self.model_folder + model_name + '.csv')
+        log = pd.read_csv(self.model_folder + model_name + '/log.csv')
         log = log[:100]
         return log
+
     def plot_metric(self, metric, model_names, labels, x_metric=None, plot_func=plt.plot):
         save_name = metric
         for name, label in zip(model_names, labels):
@@ -103,5 +104,6 @@ if __name__ == '__main__':
         try:
             log[col] = [round(float(num), 2) for num in log[col]]
             print(col)
-        except: continue
-    log.to_excel(path[:-4]+'_round.xlsx')
+        except:
+            continue
+    log.to_excel(path[:-4] + '_round.xlsx')

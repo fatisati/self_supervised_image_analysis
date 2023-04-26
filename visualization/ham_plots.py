@@ -9,11 +9,11 @@ class BarlowResVis:
     def __init__(self):
         self.res_folder = '../../results/barlow-results/'
         #twins/finetune/
-        self.model_folder = '../../models/twins/finetune/train0.1_test0.9_logs/'
+        self.model_folder = '../../models/twins/finetune/train0.08_test0.2/'
 
         self.best_model = 'dropout0.2_ct128_bs64_aug_tf'
-        self.batchnorm = 'batchnorm_ct128_bs64_aug_tf'
-        self.no_bacthnorm_model = 'no-batchnorm_ct128_bs64_aug_tf'
+        self.batchnorm = '/batchnorm/batchnorm_ct128_bs64_aug_tf'
+        self.no_bacthnorm_model = '/batchnorm/no-batchnorm_ct128_bs64_aug_tf'
         self.no_pretrain_name = 'no-pretrain_dropout0.2_ct128'
         self.aug_original = 'batchnorm_ct128_bs64_aug_original'
         self.drop_out = 'dropout0.2_ct128_bs64_aug_tf'
@@ -36,14 +36,16 @@ class BarlowResVis:
         cm.compare_all_metrics([no_pretrain_name, self.best_model], labels)
 
     def compare_all(self):
-        models = [self.drop_out, self.batchnorm, self.no_bacthnorm_model,
-                  self.no_pretrain_name, self.aug_original, self.irv2]
+        # models = [self.drop_out, self.batchnorm, self.no_bacthnorm_model,
+        #           self.no_pretrain_name, self.aug_original, self.irv2]
 
-        labels = ['dropout (p=0.2), batch-normalization', 'no-dropout, batch-normalization'
-                  'no-dropout, no-batch-normalization',
-                  'no-pretrain',
-                  'no-dropout, batch-normalization, original-augmentation', 'IRV2']
-        cm = CompareModels(self.res_folder, self.model_folder, f'Compare all models')
+        # labels = ['dropout (p=0.2), batch-normalization', 'no-dropout, batch-normalization'
+        #           'no-dropout, no-batch-normalization',
+        #           'no-pretrain',
+        #           'no-dropout, batch-normalization, original-augmentation', 'IRV2']
+        models = [self.batchnorm, self.no_bacthnorm_model]
+        labels = ['Batch normalization', 'no-batch normalizatio']
+        cm = CompareModels(self.res_folder, self.model_folder, f'Evaluating dropout effect')
         cm.compare_all_metrics(models, labels)
 
 

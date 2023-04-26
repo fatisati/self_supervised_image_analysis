@@ -25,8 +25,9 @@ if __name__ == '__main__':
     # splited = split_data(df, 'dx', 'image_id', 0.8)
     # splited.to_csv(isic_folder + 'HAM10000_metadata.csv')
 
-    razi_folder = '../../data/razi/'
-    tumor = pd.read_excel(razi_folder + 'tumor-stratify-split.xlsx')
-    train = tumor[tumor['split'] == 'train']
-    splited_train = split_data(train, 'label', 'img_name', 0.1)
-    splited_train.to_csv(razi_folder + 'tumor-ten-percent-train.csv')
+    data_folder = '../../data/ISIC/ham10000/'
+    data = pd.read_csv(data_folder + 'HAM10000_metadata.csv')
+    # train = tumor[tumor['split'] == 'train']
+    splited_train = split_data(data, 'dx', 'image_id', 0.8)
+    splited_train['image_id'] = [img + '.jpg' for img in splited_train['image_id']]
+    splited_train.to_csv(data_folder + 'stratify-split.csv')

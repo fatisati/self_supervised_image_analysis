@@ -18,8 +18,8 @@ def balance_data(train_df, x_col, y_col, Sampler):
 
 
 if __name__ == '__main__':
-    data_folder = '../../data/razi/'
-    df = pd.read_excel(data_folder + 'tumor-stratify-split.xlsx')
+    data_folder = '../../data/ISIC/ham10000/'
+    df = pd.read_csv(data_folder + 'stratify-split.csv')
     # tumor = df[df['group'] == 'tumor']
     train = df[df['split'] == 'train']
 
@@ -27,6 +27,6 @@ if __name__ == '__main__':
     # train_splited = train_splited[train_splited['split'] == 'train']
     # print('10 percent train size: ', len(train_splited))
 
-    balanced_df = balance_data(train, 'img_name', 'label', RandomOverSampler)
+    balanced_df = balance_data(train, 'image_id', 'dx', RandomUnderSampler)
     print(len(balanced_df))
-    balanced_df.to_csv(data_folder + 'tumor-oversample.csv')
+    balanced_df.to_csv(data_folder + 'train-under-sample.csv')

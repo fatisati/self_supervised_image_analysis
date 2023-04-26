@@ -2,7 +2,7 @@ import numpy as np
 
 from utils.tf_utils import read_tf_image
 import tensorflow as tf
-from zip_ import *
+from zip_tools import *
 
 AUTOTUNE = tf.data.AUTOTUNE
 

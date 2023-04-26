@@ -13,13 +13,14 @@ def clean_log(path, name):
     log_df.to_csv(path + name + '.csv')
 
 
+import matplotlib.pyplot as plt
+
 if __name__ == '__main__':
-    for ct in [128]:
-        path = f'../../models/twins/finetune/train0.1_test0.9_logs/'
-        # clean_log(path+'tumor/', 'ham-pretrain-train0.8')
-        for model in os.listdir(path):
-            # for model in os.listdir(path + group):
-            try:
-                clean_log(path, model[:-4])
-            except Exception as e:
-                print(model, e)
+
+    log_path = '../../results/model_logs/isic2020/'
+    for file in os.listdir(log_path):
+        clean_log(log_path, file[:-4])
+        df = pd.read_csv(log_path + file)
+        plt.plot(df['val_prc'], label=file)
+    plt.legend()
+    plt.show()

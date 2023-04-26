@@ -6,6 +6,6 @@ if __name__ == '__main__':
 
     # encoder = get_resnet_encoder(resnet, False)
 
-    model = get_linear_model(resnet, 128, 7, False, True)
+    model = get_classifier(resnet, 128, 7, False, True)
     model.summary()
     # model.compile()

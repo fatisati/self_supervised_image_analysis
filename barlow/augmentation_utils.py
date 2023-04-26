@@ -93,7 +93,7 @@ def get_tf_augment(crop_to):
     return data_augmentation
 
 
-def central_zoom(image, crop_to):
+def dermoscopic_augment(image, crop_to):
     image = tf.image.random_hue(image, 0.02)
     # image = tf.image.random_contrast(image, 0.7, 0.8)
     image = tf.image.random_saturation(image, 0.75, 1.25)

@@ -1,7 +1,7 @@
 import barlow.resnet20 as resnet20
 import models
 from utils.model_utils import *
-from datasets.supervised_ds import SupervisedDs
+from datasets.isic2020 import *
 from barlow.augmentation_utils import *
 
 
@@ -27,7 +27,9 @@ def train_linear_isic(isic_img_folder):
     bs = 64
     ct = 128
     loss = 'binary_crossentropy'
-    aug_func = lambda img: custom_augment(img, ct)
-    train = SupervisedDs(isic_img_folder + 'train', 'image_name', 'target').get_ds(aug_func, bs)
-    test = SupervisedDs(isic_img_folder + 'test', 'image_name', 'target').get_ds(aug_func, bs)
+    aug_func = lambda img: dermoscopic_augment(img, ct)
+    train = isic2020(isic_img_folder + 'train', isic_img_folder + 'labels.csv').get_ds(aug_func, bs)
+    test = isic2020(isic_img_folder + 'test', isic_img_folder + 'labels.csv').get_ds(aug_func, bs)
     train_linear_resnet(train, test, ct, 2, loss, 'linear-isic')
+
+if __name__ == '__main__':
